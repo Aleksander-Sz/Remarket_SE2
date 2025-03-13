@@ -1,2 +1,28 @@
 # Remarket_SE2
-A university project.
+After a long descussion, here is our planning
+
+## Technology:
+# Frontend: HTML, CSS, JS(optional)
+# Backend: C#
+
+
+## Conventions:
+gitflow
+Scrum
+
+## Roles:
+Aleksander Szydlowski:Integration
+Aleksandra Struzik: Back-end
+Esbol Erlan:Front-end
+Patryk Sukiennik:Back-end
+
+
+## Scheudle
+Trello
+
+## Time Estimation
+we dont know
+
+
+
+
