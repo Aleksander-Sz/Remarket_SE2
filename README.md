@@ -20,8 +20,9 @@ Scrum
 ## Scheudle
 Trello
 
+
 ## Time Estimation
-we dont know
+FInish 1 sprint within 2 weeks
 
 
 
