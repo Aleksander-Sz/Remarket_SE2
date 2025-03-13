@@ -2,7 +2,7 @@
 After a long descussion, here is our planning
 
 ## Technology:
-# Frontend: HTML, CSS, JS(optional)
+# Frontend: HTML, CSS,React
 # Backend: C#
 
 
@@ -11,10 +11,10 @@ gitflow
 Scrum
 
 ## Roles:
-Aleksander Szydlowski:Integration
-Aleksandra Struzik: Back-end
-Esbol Erlan:Front-end
-Patryk Sukiennik:Back-end
+# Aleksander Szydlowski:Integration
+# Aleksandra Struzik: Back-end
+# Esbol Erlan:Front-end
+# Patryk Sukiennik:Back-end
 
 
 ## Scheudle
