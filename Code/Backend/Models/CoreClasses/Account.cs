@@ -12,6 +12,7 @@ namespace ReMarket.Models
         public string username { get; set; }
         public string password { get; set; }
         public Email email { get; set; }
+        public string PasswordHash { get; set; }
 
     public Account(string username, string password, Email email)
     {
@@ -20,8 +21,25 @@ namespace ReMarket.Models
         this.email = email;
     }
         
-        public void Register() { throw new NotImplementedException(); }
-        public void Login() { throw new NotImplementedException(); }
+                public void Register()
+        {
+            Console.WriteLine($"Register user: {Username}");
+            // we will add here user to databse
+        }
+
+        public bool Login(string inputPassword)
+        {
+            if (inputPassword == PasswordHash)
+            {
+                Console.WriteLine($"Logowanie udane dla użytkownika: {Username}");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Błędne hasło!");
+                return false;
+            }
+        }
 
 
     }
