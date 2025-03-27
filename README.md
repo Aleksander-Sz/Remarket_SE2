@@ -4,14 +4,16 @@ After a long descussion, here is our planning
 ## Technology:
 # Frontend: HTML, CSS,React
 # Backend: C#
-
+We will use and SQL database to store all the necessary data. The database design will be stored as a .sql file containing the commands for creating the database. The example data will be stored in the same way.
 
 ## Conventions:
 gitflow
 Scrum
 
+We will use two main branches: main and develop. No commits to the main branch should be made. When working on more complex parts of the project everyone is encouraged to create additional branches and then merge them back into develop. Pull requests to the main branch will happen after finishing a specific stage/ feature of the project, they shall not be made daily.
+
 ## Roles:
-# Aleksander Szydlowski:Integration
+# Aleksander Szydlowski: Integration
 # Aleksandra Struzik: Back-end
 # Esbol Erlan:Front-end
 # Patryk Sukiennik:Back-end
