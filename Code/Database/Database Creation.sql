@@ -24,21 +24,21 @@ CREATE TABLE Reviev (
     descriprion VARCHAR(100) UNIQUE NOT NULL,
 );
 
--- Create the 'Product' table
-CREATE TABLE Product (
+-- Create the 'Wishlist' table
+CREATE TABLE Wishlist (
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Category VARCHAR(100) NOT NULL,
-    SellerId INT,
-    Date DATE NOT NULL,
-    Available BOOLEAN NOT NULL,
-    FOREIGN KEY (SellerId) REFERENCES Seller(Id)
+    Name VARCHAR(255)
 );
 
--- Create the 'Sale' table
-CREATE TABLE Sale (
+-- Create the 'Order' table
+CREATE TABLE Order (
     Id INT AUTO_INCREMENT PRIMARY KEY,
-    Date DATE NOT NULL,
     ProductId INT,
     FOREIGN KEY (ProductId) REFERENCES Product(Id)
+    description VARCHAR(255)
+);
+-- Create the 'Payment' table
+CREATE TABLE Payment (
+    Id INT AUTO_INCREMENT PRIMARY KEY,
+    Name VARCHAR(255)
 );
