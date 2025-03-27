@@ -31,12 +31,12 @@ namespace ReMarket.Models
         {
             if (inputPassword == PasswordHash)
             {
-                Console.WriteLine($"Logowanie udane dla użytkownika: {Username}");
+                Console.WriteLine($"Loging of a user: {Username}");
                 return true;
             }
             else
             {
-                Console.WriteLine("Błędne hasło!");
+                Console.WriteLine("Wrong password!");
                 return false;
             }
         }
