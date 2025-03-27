@@ -5,21 +5,23 @@ CREATE DATABASE EcommercePlatform;
 USE EcommercePlatform;
 
 -- Create the 'User' table
-CREATE TABLE User (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
-    Surname VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL
+CREATE TABLE Account (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    userame VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL
+);
+-- Create the 'Web User' table
+CREATE TABLE WebUser (
+    loginId VARCHAR(100) UNIQUE NOT NULL,
 );
 
--- Create the 'Seller' table
-CREATE TABLE Seller (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
-    Surname VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL
+-- Create the 'Reviev' table
+CREATE TABLE Reviev (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    score VARCHAR(100) NOT NULL,
+    descriprion VARCHAR(100) UNIQUE NOT NULL,
 );
 
 -- Create the 'Product' table
