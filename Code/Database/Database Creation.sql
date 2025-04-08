@@ -44,7 +44,11 @@ CREATE TABLE Listing (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     price DECIMAL(10, 2) NOT NULL,
-    status VARCHAR(50) NOT NULL
+    status VARCHAR(50) NOT NULL,
+    descriptionId INT,
+    categoryId INT,
+    FOREIGN KEY (descriptionId) REFERENCES Description(id),
+    FOREIGN KEY (categoryId) REFERENCES Category(id)
 );
 
 CREATE TABLE Category (
