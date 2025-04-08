@@ -8,13 +8,15 @@ CREATE TABLE Account (
     email VARCHAR(100) NOT NULL
 );
 
-CREATE TABLE `order` (
+CREATE TABLE `Order` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     shipTo VARCHAR(255) NOT NULL,
     shipped DATE,
     description TEXT,
     accountId INT,
-    FOREIGN KEY (accountId) REFERENCES Account(id)
+    paymentId INT,
+    FOREIGN KEY (accountId) REFERENCES Account(id),
+    FOREIGN KEY (paymentId) REFERENCES Payment(id)
 );
 
 CREATE TABLE Payment (
@@ -29,7 +31,11 @@ CREATE TABLE Review (
     id INT AUTO_INCREMENT PRIMARY KEY,
     title VARCHAR(100) NOT NULL,
     score INT NOT NULL,
-    description TEXT
+    description TEXT,
+    accountId INT,
+    listingId INT,
+    FOREIGN KEY (accountId) REFERENCES Account(id),
+    FOREIGN KEY (listingId) REFERENCES Listing(id)
 );
 
 CREATE TABLE Listing (
