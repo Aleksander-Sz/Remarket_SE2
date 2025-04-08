@@ -12,13 +12,17 @@ CREATE TABLE `order` (
     id INT AUTO_INCREMENT PRIMARY KEY,
     shipTo VARCHAR(255) NOT NULL,
     shipped DATE,
-    description TEXT
+    description TEXT,
+    accountId INT,
+    FOREIGN KEY (accountId) REFERENCES Account(id)
 );
 
 CREATE TABLE Payment (
     id INT AUTO_INCREMENT PRIMARY KEY,
     paidOn DATE,
-    total DECIMAL(10, 2) NOT NULL
+    total DECIMAL(10, 2) NOT NULL,
+    accountId INT,
+    FOREIGN KEY (accountId) REFERENCES Account(id)
 );
 
 CREATE TABLE Review (
