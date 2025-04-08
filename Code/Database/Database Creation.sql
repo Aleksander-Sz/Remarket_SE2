@@ -95,3 +95,4 @@ CREATE TABLE ListingPhoto (
     FOREIGN KEY (listingId) REFERENCES Listing(id),
     FOREIGN KEY (photoId) REFERENCES Photo(id)
 );
+-- end
