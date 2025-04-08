@@ -1,42 +1,63 @@
--- Create the database
-CREATE DATABASE EcommercePlatform;
+CREATE DATABASE ReMarket;
+USE ReMarket;
 
--- Use the created database
-USE EcommercePlatform;
-
--- Create the 'User' table
-CREATE TABLE User (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
-    Surname VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL
+CREATE TABLE Account (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    username VARCHAR(50) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    email VARCHAR(100) NOT NULL
 );
 
--- Create the 'Seller' table
-CREATE TABLE Seller (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(100) NOT NULL,
-    Surname VARCHAR(100) NOT NULL,
-    Email VARCHAR(100) UNIQUE NOT NULL,
-    Password VARCHAR(255) NOT NULL
+CREATE TABLE `order` (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    shipTo VARCHAR(255) NOT NULL,
+    shipped DATE,
+    description TEXT
 );
 
--- Create the 'Product' table
-CREATE TABLE Product (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    Name VARCHAR(255) NOT NULL,
-    Category VARCHAR(100) NOT NULL,
-    SellerId INT,
-    Date DATE NOT NULL,
-    Available BOOLEAN NOT NULL,
-    FOREIGN KEY (SellerId) REFERENCES Seller(Id)
+CREATE TABLE Payment (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    paidOn DATE,
+    total DECIMAL(10, 2) NOT NULL
 );
 
--- Create the 'Sale' table
-CREATE TABLE Sale (
-    Id INT AUTO_INCREMENT PRIMARY KEY,
-    Date DATE NOT NULL,
-    ProductId INT,
-    FOREIGN KEY (ProductId) REFERENCES Product(Id)
+CREATE TABLE Review (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    score INT NOT NULL,
+    description TEXT
+);
+
+CREATE TABLE Listing (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    title VARCHAR(100) NOT NULL,
+    price DECIMAL(10, 2) NOT NULL,
+    status VARCHAR(50) NOT NULL
+);
+
+CREATE TABLE Category (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE Description (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    header VARCHAR(255) NOT NULL,
+    paragraph TEXT
+);
+
+CREATE TABLE Photo (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    bytes LONGBLOB NOT NULL
+);
+
+CREATE TABLE Wishlist (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    name VARCHAR(100) NOT NULL
+);
+
+CREATE TABLE WebUser (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    logInId VARCHAR(100) NOT NULL
 );
