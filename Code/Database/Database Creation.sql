@@ -5,7 +5,9 @@ CREATE TABLE Account (
     id INT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
     password VARCHAR(255) NOT NULL,
-    email VARCHAR(100) NOT NULL
+    email VARCHAR(100) NOT NULL,
+    photoId INT,
+    FOREIGN KEY (photoId) REFERENCES Photo(id)
 );
 
 CREATE TABLE `Order` (
@@ -70,4 +72,22 @@ CREATE TABLE Wishlist (
 CREATE TABLE WebUser (
     id INT AUTO_INCREMENT PRIMARY KEY,
     logInId VARCHAR(100) NOT NULL
+);
+
+-- Many-to-many relationship between Order and Listing
+CREATE TABLE OrderListing (
+    orderId INT,
+    listingId INT,
+    PRIMARY KEY (orderId, listingId),
+    FOREIGN KEY (orderId) REFERENCES `Order`(id),
+    FOREIGN KEY (listingId) REFERENCES Listing(id)
+);
+
+-- Many-to-one relationship between Listing and Photo
+CREATE TABLE ListingPhoto (
+    listingId INT,
+    photoId INT,
+    PRIMARY KEY (listingId, photoId),
+    FOREIGN KEY (listingId) REFERENCES Listing(id),
+    FOREIGN KEY (photoId) REFERENCES Photo(id)
 );
