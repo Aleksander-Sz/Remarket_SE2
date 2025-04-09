@@ -32,4 +32,63 @@ namespace ReMarket.Models
             return new Account(name, username, email, PasswordHasher.HashPassword(password))
             {
                 Name = name,
-           
+                Username = username,
+                Email = email,
+                PasswordHash = PasswordHasher.HashPassword(password) 
+            };
+        }
+
+        private static void ValidateInputs(string name, string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name is required");
+
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Username is required");
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                throw new ArgumentException("Password must be at least 8 characters");
+
+            if (!password.Any(char.IsUpper) || !password.Any(char.IsLower))
+                throw new ArgumentException("Password must contain uppercase and lowercase letters");
+
+            if (!password.Any(char.IsDigit))
+                throw new ArgumentException("Password must contain at least one number");
+            if (!password.Any(char.IsDigit))
+                throw new ArgumentException("Password must contain at least one number");
+        }
+        public bool VerifyPassword(string inputPassword)
+        {
+            return PasswordHasher.VerifyPassword(inputPassword, PasswordHash);
+        }
+        //this is to be done after email is confirmed
+        public void MarkAsVerified() => IsVerified = true;
+
+
+
+        //Im moving this to AccountServices.cs
+       /*
+        public void Register()
+        {
+            Console.WriteLine($"Register user: {Username}");
+            // we will add here user to databse
+        }
+
+        public bool Login(string inputPassword)
+        {
+            if (inputPassword == PasswordHash)
+            {
+                Console.WriteLine($"Loging of a user: {Username}");
+                return true;
+            }
+            else
+            {
+                Console.WriteLine("Wrong password!");
+                return false;
+            }
+        }*/
+
+
+    }
+
+}
