@@ -1,16 +1,15 @@
-using System;
-using ReMarket.Models;
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
 
-//my vs code is screaming at me that i am violating naming conventions 
-//but thats how they wanted to call all the propertiesit in documentation
+app.UseDefaultFiles();
+app.UseStaticFiles();
 
-//for now (march 23) this includes only properties that were explicitly stated in documentation
-namespace ReMarket
+app.MapGet("/api/info", () =>
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-        }
-    }
-}
+    var time = DateTime.Now.ToString("HH:mm:ss"); 
+    var userId = new Random().Next(1000, 9999); 
+
+    return Results.Json(new { time, userId }); 
+});
+
+app.Run();
