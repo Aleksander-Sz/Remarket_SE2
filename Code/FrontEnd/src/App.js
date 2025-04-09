@@ -7,6 +7,8 @@ import CategoryGrid from './components/CategoryGrid';
 import QuoteSection from './components/QuoteSection';
 import GalleryShowcase from './components/GalleryShowcase';
 import Footer from './components/Footer';
+import Login from './components/Login';
+
 
 import OurStories from './components/OurStories'; // ✅ Updated path here
 
@@ -41,7 +43,9 @@ function App() {
             <OurStories />
           </>
         } />
+      <Route path="/login" element={<Login />} />
       </Routes>
+
     </Router>
   );
 }
