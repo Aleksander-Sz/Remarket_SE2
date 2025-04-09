@@ -1,5 +1,5 @@
 using System;
-
+using ReMarket.Utilities;
 namespace ReMarket.Models
 {
 //"The Account class represents the user account details."
@@ -9,40 +9,27 @@ namespace ReMarket.Models
 
     public class Account
     {
-        public string username { get; set; }
-        public string password { get; set; }
-        public Email email { get; set; }
-        public string PasswordHash { get; set; }
+        public string  Username { get; private set; }
+        public Email Email { get; private set; }
+        public string PasswordHash { get; private set; }
 
-    public Account(string username, string password, Email email)
-    {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-        
-                public void Register()
+        public string Name { get; set; }
+        public bool IsVerified { get; private set; } = false;
+        public List<WebUser> WebUsers { get; set; } = new List<WebUser>();
+
+
+        public Account(string name, string username, Email email, string passwordHash)
         {
-            Console.WriteLine($"Register user: {Username}");
-            // we will add here user to databse
+            Name = name;
+            Username = username;
+            Email = email;
+            PasswordHash = passwordHash;
         }
-
-        public bool Login(string inputPassword)
+        public static Account Create(string name, string username, Email email, string password)
         {
-            if (inputPassword == PasswordHash)
+            ValidateInputs(name, username, password);
+
+            return new Account(name, username, email, PasswordHasher.HashPassword(password))
             {
-                Console.WriteLine($"Loging of a user: {Username}");
-                return true;
-            }
-            else
-            {
-                Console.WriteLine("Wrong password!");
-                return false;
-            }
-        }
-
-
-    }
-
-   
-}
+                Name = name,
+           
