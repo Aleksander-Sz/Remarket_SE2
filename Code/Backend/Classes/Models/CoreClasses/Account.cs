@@ -23,7 +23,7 @@ namespace ReMarket.Models
         
                 public void Register()
         {
-            Console.WriteLine($"Register user: {Username}");
+            Console.WriteLine($"Register user: {username}");
             // we will add here user to databse
         }
 
@@ -31,7 +31,7 @@ namespace ReMarket.Models
         {
             if (inputPassword == PasswordHash)
             {
-                Console.WriteLine($"Loging of a user: {Username}");
+                Console.WriteLine($"Loging of a user: {username}");
                 return true;
             }
             else
