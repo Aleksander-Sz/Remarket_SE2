@@ -24,7 +24,7 @@ convention:
     build: Changes affecting the build system or external dependencies.
     revert: Undoing previous changes.
 
-
+The commit message should consist of the category and, after a comma, the explanation.
 We will use two main branches: main and develop and feature branches. No commits to the main branch should be made. When working on more complex parts of the project everyone is encouraged to create additional feature branches and then merge them back into the develop branch. Pull requests to the main branch will happen after finishing a specific stage/ feature of the project, they shall not be made daily.
 
 ## Roles:
