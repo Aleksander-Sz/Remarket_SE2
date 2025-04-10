@@ -1,14 +1,12 @@
-using Microsoft.EntityFrameworkCore;
-using Remarket_SE2; 
-
-builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseMySql(
-        builder.Configuration.GetConnectionString("DefaultConnection"),
-        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-    ));
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
+
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseMySql(
+//        builder.Configuration.GetConnectionString("DefaultConnection"),
+//        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+//    ));
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
