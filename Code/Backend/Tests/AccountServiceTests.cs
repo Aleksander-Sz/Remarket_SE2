@@ -113,6 +113,70 @@ namespace ReMarket.Tests
             Assert.False(wrongPasswordResult);
         }
 
+        [Fact]
+        public void Login_ValidCredentials_ReturnsAccount()
+        {//correct login
+            var registration = RegisterTestAccount();
+            registration.Account!.MarkAsVerified(); 
+
+
+            var result = _accountService.Login(TestEmail, ValidPassword);
+            
+
+            Assert.True(result.IsSuccess);
+            Assert.Equal(TestName, result.Account!.Name);
+            Assert.Equal(TestEmail, result.Account.Email.Value);
+            Assert.True(PasswordHasher.VerifyPassword(ValidPassword, result.Account.PasswordHash));
+        }
+
+        [Fact]
+        public void Login_WrongPassword_Fails()
+        {//wrong password login
+
+            RegisterTestAccount();
+            var result = _accountService.Login(TestEmail, "WrongPassword123");
+            
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Invalid email or password", result.ErrorMessage);
+        }
+
+        [Fact]
+        public void Login_BlocksAfter5FailedAttempts()
+        {//rate limmiting
+
+            RegisterTestAccount();
+
+            for (int i = 0; i < 5; i++)
+            {
+                var attempt = _accountService.Login(TestEmail, "wrongpass");
+                Assert.False(attempt.IsSuccess);
+            }
+            
+            var blockedResult = _accountService.Login(TestEmail, ValidPassword);
+            
+            Assert.False(blockedResult.IsSuccess);
+            Assert.Contains("Too many attempts", blockedResult.ErrorMessage);
+        }
+
+        [Fact]
+        public void Login_UnverifiedAccount_Rejects()
+        {//unveryfied account cannot log in
+            RegisterTestAccount(); 
+
+            var result = _accountService.Login(TestEmail, ValidPassword);
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Please verify your email first", result.ErrorMessage);
+        }
+
+        [Fact]
+        public void Login_UnknownAccount_Fails()
+        {//account has to be registered
+            var result = _accountService.Login(TestEmail, ValidPassword);
+            
+            Assert.False(result.IsSuccess);
+            Assert.Equal("Invalid email or password", result.ErrorMessage);
+        }
+
         private RegistrationResult RegisterTestAccount()
         {
             return _accountService.Register(new RegistrationRequest(
@@ -123,6 +187,8 @@ namespace ReMarket.Tests
                 ConfirmPassword: ValidPassword
             ));
         }
+
+        
     }
 
     public class MockEmailService : IEmailService
