@@ -10,7 +10,7 @@ We will use and SQL database to store all the necessary data. The database desig
 gitflow
 Scrum
 
-We will use two main branches: main and develop and personal branches. No commits to the main or develop branch should be made. When working on more complex parts of the project everyone is encouraged to create additional branches and then merge them back into their personal branch. Pull requests to the main branch will happen after finishing a specific stage/ feature of the project, they shall not be made daily. Pull requests from the personal branches shall be madefrequently.
+We will use two main branches: main and develop and personal branches. No commits to the main or develop branch should be made. When working on more complex parts of the project everyone is encouraged to create additional branches and then merge them back into their personal branch. Pull requests to the main branch will happen after finishing a specific stage/ feature of the project, they shall not be made daily. Pull requests from the personal branches shall be madefrequently. 
 
 ## Roles:
 # Aleksander Szydlowski: Integration
