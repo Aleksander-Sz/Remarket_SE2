@@ -5,13 +5,13 @@ namespace ReMarket.Models
     //Each listing is required to have one description (1)"
     public class Description
     {
-        public string header { get; set; }
-        public string paragraph { get; set; }
+        public string Header { get; set; }
+        public string Paragraph { get; set; }
 
         public Description(string header, string paragraph)
     {
-        this.header = header;
-        this.paragraph = paragraph;
+        Header = header;
+        Paragraph = paragraph;
     }
     }
 }
