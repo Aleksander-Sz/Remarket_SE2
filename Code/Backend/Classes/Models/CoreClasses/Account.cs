@@ -1,5 +1,6 @@
 using System;
 using ReMarket.Utilities;
+
 namespace ReMarket.Models
 {
 //"The Account class represents the user account details."
@@ -90,5 +91,4 @@ namespace ReMarket.Models
 
 
     }
-
 }

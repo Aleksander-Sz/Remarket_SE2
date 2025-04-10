@@ -21,7 +21,8 @@ function Navbar() {
 
 <div className="navbar-right">
   <Link to="#"><i className="icon">🔍</i></Link>
-  <Link to="#" className="login-link">Login</Link>
+  <Link to="/login" className="login-link">Login</Link>
+
   <Link to="#"><i className="icon">🛒</i></Link>
 </div>
 
