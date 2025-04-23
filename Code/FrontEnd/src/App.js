@@ -9,6 +9,8 @@ import CategoryGrid from './components/CategoryGrid';
 import QuoteSection from './components/QuoteSection';
 import GalleryShowcase from './components/GalleryShowcase';
 import Footer from './components/Footer';
+import Login from './components/Login';
+
 
 import Login from './pages/Login';
 import ClothesPage from './pages/ClothesPage';

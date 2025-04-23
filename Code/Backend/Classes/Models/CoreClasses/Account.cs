@@ -1,4 +1,5 @@
 using System;
+using ReMarket.Utilities;
 
 namespace ReMarket.Models
 {
@@ -9,21 +10,68 @@ namespace ReMarket.Models
 
     public class Account
     {
-        public string username { get; set; }
-        public string password { get; set; }
-        public Email email { get; set; }
-        public string PasswordHash { get; set; }
+        public string  Username { get; private set; }
+        public Email Email { get; private set; }
+        public string PasswordHash { get; private set; }
 
-    public Account(string username, string password, Email email)
-    {
-        this.username = username;
-        this.password = password;
-        this.email = email;
-    }
-        
-                public void Register()
+        public string Name { get; set; }
+        public bool IsVerified { get; private set; } = false;
+        public List<WebUser> WebUsers { get; set; } = new List<WebUser>();
+
+
+        public Account(string name, string username, Email email, string passwordHash)
         {
-            Console.WriteLine($"Register user: {username}");
+            Name = name;
+            Username = username;
+            Email = email;
+            PasswordHash = passwordHash;
+        }
+        public static Account Create(string name, string username, Email email, string password)
+        {
+            ValidateInputs(name, username, password);
+
+            return new Account(name, username, email, PasswordHasher.HashPassword(password))
+            {
+                Name = name,
+                Username = username,
+                Email = email,
+                PasswordHash = PasswordHasher.HashPassword(password) 
+            };
+        }
+
+        private static void ValidateInputs(string name, string username, string password)
+        {
+            if (string.IsNullOrWhiteSpace(name))
+                throw new ArgumentException("Name is required");
+
+            if (string.IsNullOrWhiteSpace(username))
+                throw new ArgumentException("Username is required");
+
+            if (string.IsNullOrWhiteSpace(password) || password.Length < 8)
+                throw new ArgumentException("Password must be at least 8 characters");
+
+            if (!password.Any(char.IsUpper) || !password.Any(char.IsLower))
+                throw new ArgumentException("Password must contain uppercase and lowercase letters");
+
+            if (!password.Any(char.IsDigit))
+                throw new ArgumentException("Password must contain at least one number");
+            if (!password.Any(char.IsDigit))
+                throw new ArgumentException("Password must contain at least one number");
+        }
+        public bool VerifyPassword(string inputPassword)
+        {
+            return PasswordHasher.VerifyPassword(inputPassword, PasswordHash);
+        }
+        //this is to be done after email is confirmed
+        public void MarkAsVerified() => IsVerified = true;
+
+
+
+        //Im moving this to AccountServices.cs
+       /*
+        public void Register()
+        {
+            Console.WriteLine($"Register user: {Username}");
             // we will add here user to databse
         }
 
@@ -31,7 +79,7 @@ namespace ReMarket.Models
         {
             if (inputPassword == PasswordHash)
             {
-                Console.WriteLine($"Loging of a user: {username}");
+                Console.WriteLine($"Loging of a user: {Username}");
                 return true;
             }
             else
@@ -39,10 +87,8 @@ namespace ReMarket.Models
                 Console.WriteLine("Wrong password!");
                 return false;
             }
-        }
+        }*/
 
 
     }
-
-   
 }

@@ -1,16 +1,22 @@
-using System;
-using ReMarket.Models;
 
-//my vs code is screaming at me that i am violating naming conventions 
-//but thats how they wanted to call all the propertiesit in documentation
+var builder = WebApplication.CreateBuilder(args);
+var app = builder.Build();
 
-//for now (march 23) this includes only properties that were explicitly stated in documentation
-namespace ReMarket
+//builder.Services.AddDbContext<AppDbContext>(options =>
+//    options.UseMySql(
+//        builder.Configuration.GetConnectionString("DefaultConnection"),
+//        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+//    ));
+
+app.UseDefaultFiles();
+app.UseStaticFiles();
+
+app.MapGet("/api/info", () =>
 {
-    class Program
-    {
-        static void Main(string[] args)
-        {
-        }
-    }
-}
+    var time = DateTime.Now.ToString("HH:mm:ss"); 
+    var userId = new Random().Next(1000, 9999); 
+
+    return Results.Json(new { time, userId }); 
+});
+
+app.Run();
