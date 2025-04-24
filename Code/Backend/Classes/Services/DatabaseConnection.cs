@@ -69,7 +69,7 @@ namespace ReMarket.Services
             using (var connection = new MySqlConnection(fullConnectionString))
             {
                 connection.Open();
-                string sqlScript = File.ReadAllText("Database Creation.sql"); // Specify the path to your SQL file
+                string sqlScript = File.ReadAllText("C:\\Users\\Zuzia\\Aleksander\\Remarket_SE2\\Code\\Backend\\Classes\\Services\\Database Creation.sql"/*Path.Combine(Directory.GetCurrentDirectory(), "Classes/Services/Database Creation.sql")*/); // Specify the path to your SQL file
                 var command = new MySqlCommand(sqlScript, connection);
                 command.ExecuteNonQuery();
                 Console.WriteLine("SQL script executed successfully.");
