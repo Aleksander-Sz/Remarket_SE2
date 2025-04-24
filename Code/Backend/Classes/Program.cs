@@ -1,5 +1,8 @@
 
 using ReMarket.Models;
+using ReMarket.Services;
+
+var databaseConnection = new DatabaseConnection("ReMarket");
 
 var builder = WebApplication.CreateBuilder(args);
 var app = builder.Build();
