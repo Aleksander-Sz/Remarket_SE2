@@ -62,10 +62,10 @@ function CategoryGrid() {
             <img src={cat.image} alt={cat.title} />
             <h3>{cat.title}</h3>
             <p>{cat.description}</p>
-            <Link to={cat.link}>
-              <button>{cat.button}</button>
-            </Link>
-          </div>
+            <Link to={cat.link} className="category-button">
+             {cat.button}
+           </Link>
+  </div>
         ))}
       </div>
     </section>
