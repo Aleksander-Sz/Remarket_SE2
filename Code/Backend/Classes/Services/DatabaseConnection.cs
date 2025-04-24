@@ -11,11 +11,11 @@ namespace ReMarket.Services
     {
         private readonly string _connectionString;
         private readonly string _databaseName;
-        public DatabaseConnection(string databaseName)
+        public DatabaseConnection(string databaseName, string user, string password)
         {
             _databaseName = databaseName;
             //YOUR PASSWORD IF U R RUNNING IT
-            var baseConnectionString = "server=localhost;user=root;password=your_password;";
+            var baseConnectionString = "server=localhost;user=" + user + ";password=" + password + ";";
 
             // Check if the database exists
             if (!DatabaseExists(baseConnectionString, _databaseName))
