@@ -1,13 +1,31 @@
+import React, { useState, useEffect } from 'react';
 import './CategoryPage.css';
 
 import Footer from '../components/Footer';
+import axios from 'axios';
 
-function AccessoriesPage() {
+/*function AccessoriesPage() {
   const items = [
     { id: 1, name: 'Leather Bag', price: '$18', image: require('../assets/accessories.jpg') },
     { id: 2, name: 'Vintage Earrings', price: '$12', image: require('../assets/accessories.jpg') },
     { id: 3, name: 'Retro Sunglasses', price: '$15', image: require('../assets/accessories.jpg') },
-  ];
+  ];*/
+
+function AccessoriesPage() {
+    // State to store fetched items
+    const [items, setItems] = useState([]);
+
+    // Fetch data when the component mounts
+    useEffect(() => {
+        // Make a GET request to fetch clothes items
+        axios.get('/api/accessories')
+            .then(response => {
+                setItems(response.data);  // Set the fetched items into state
+            })
+            .catch(error => {
+                console.error('Error fetching clothes data:', error);
+            });
+    }, []);
 
   return (
     <div className="category-page">

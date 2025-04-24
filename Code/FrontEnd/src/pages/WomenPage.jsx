@@ -1,14 +1,32 @@
+import React, { useState, useEffect } from 'react';
 import './CategoryPage.css';
 import AnimatedPage from '../components/AnimatedPage';
 
 import Footer from '../components/Footer';
+import axios from 'axios';
 
-function WomenPage() {
+/*function WomenPage() {
   const items = [
     { id: 1, name: 'Vintage Blazer', price: '$22', image: require('../assets/women.jpg') },
     { id: 2, name: 'Silk Scarf', price: '$10', image: require('../assets/women.jpg') },
     { id: 3, name: 'Midi Skirt', price: '$17', image: require('../assets/women.jpg') },
-  ];
+  ];*/
+
+function WomenPage() {
+    // State to store fetched items
+    const [items, setItems] = useState([]);
+
+    // Fetch data when the component mounts
+    useEffect(() => {
+        // Make a GET request to fetch clothes items
+        axios.get('/api/women')
+            .then(response => {
+                setItems(response.data);  // Set the fetched items into state
+            })
+            .catch(error => {
+                console.error('Error fetching clothes data:', error);
+            });
+    }, []);
 
   return (
     <AnimatedPage>
