@@ -1,22 +1,26 @@
 using System;
+using MySql.Data.MySqlClient;
+using System.Data;
 using ReMarket.Utilities;
-
 namespace ReMarket.Models
 {
-//"The Account class represents the user account details."
-//"It contains attributes such as username, password, and email"
-//"Each account is associated with one or more Web User entities"
+    //"The Account class represents the user account details."
+    //"It contains attributes such as username, password, and email"
+    //"Each account is associated with one or more Web User entities"
 
+    //IS VERYFIED AND NAME NEED TO BE ADDED TO THE DATABASE! 
+    //PHOTO FOREIGN KEY IS NOT IMPLEMENTED YET
 
     public class Account
     {
-        public string  Username { get; private set; }
+        public string Username { get; private set; }
         public Email Email { get; private set; }
         public string PasswordHash { get; private set; }
 
         public string Name { get; set; }
         public bool IsVerified { get; private set; } = false;
         public List<WebUser> WebUsers { get; set; } = new List<WebUser>();
+        public int Id { get; private set; }
 
 
         public Account(string name, string username, Email email, string passwordHash)
@@ -35,7 +39,7 @@ namespace ReMarket.Models
                 Name = name,
                 Username = username,
                 Email = email,
-                PasswordHash = PasswordHasher.HashPassword(password) 
+                PasswordHash = PasswordHasher.HashPassword(password)
             };
         }
 
@@ -66,29 +70,50 @@ namespace ReMarket.Models
         public void MarkAsVerified() => IsVerified = true;
 
 
-
-        //Im moving this to AccountServices.cs
-       /*
-        public void Register()
+        public void SaveToDatabase(MySqlConnection connection)
         {
-            Console.WriteLine($"Register user: {Username}");
-            // we will add here user to databse
+            using var command = new MySqlCommand(@"
+                INSERT INTO Accounts (Username, Email, PasswordHash, Name, IsVerified)
+                VALUES (@Username, @Email, @PasswordHash, @Name, @IsVerified);
+                SELECT LAST_INSERT_ID();", connection);
+
+            command.Parameters.AddWithValue("@Username", Username);
+            command.Parameters.AddWithValue("@Email", Email.Value);
+            command.Parameters.AddWithValue("@PasswordHash", PasswordHash);
+            command.Parameters.AddWithValue("@Name", Name);
+            command.Parameters.AddWithValue("@IsVerified", IsVerified);
+
+            Id = Convert.ToInt32(command.ExecuteScalar());
         }
 
-        public bool Login(string inputPassword)
+        public static Account? LoadByEmail(MySqlConnection connection, string email)
         {
-            if (inputPassword == PasswordHash)
-            {
-                Console.WriteLine($"Loging of a user: {Username}");
-                return true;
-            }
-            else
-            {
-                Console.WriteLine("Wrong password!");
-                return false;
-            }
-        }*/
+            using var command = new MySqlCommand(@"
+                SELECT Id, Username, Email, PasswordHash, Name, IsVerified
+                FROM Accounts
+                WHERE Email = @Email", connection);
 
+            command.Parameters.AddWithValue("@Email", email);
 
+            using var reader = command.ExecuteReader();
+
+            if (!reader.Read()) return null;
+
+            var account = new Account(
+                name: reader.GetString("Name"),
+                username: reader.GetString("Username"),
+                email: new Email(reader.GetString("Email")),
+                passwordHash: reader.GetString("PasswordHash")
+            )
+            {
+                Id = reader.GetInt32("Id"),
+                IsVerified = reader.GetBoolean("IsVerified")
+            };
+
+            return account;
+        }
     }
+
+
 }
+
