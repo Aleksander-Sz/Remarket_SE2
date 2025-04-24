@@ -63,7 +63,7 @@ function CategoryGrid() {
             <h3>{cat.title}</h3>
             <p>{cat.description}</p>
             <Link to={cat.link} className="category-button">
-             {cat.button}
+             <button>{cat.button}</button>
            </Link>
   </div>
         ))}
