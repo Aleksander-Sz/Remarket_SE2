@@ -1,17 +1,20 @@
-
+using Pomelo.EntityFrameworkCore.MySql.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System;
 using ReMarket.Models;
 using ReMarket.Services;
 
 //var databaseConnection = new DatabaseConnection("ReMarket", "root", "toor1234");
 
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//    options.UseMySql(
-//        builder.Configuration.GetConnectionString("DefaultConnection"),
-//        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-//    ));
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseMySql(
+        builder.Configuration.GetConnectionString("DefaultConnection"),
+        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
+    ));
+
+var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
@@ -39,7 +42,15 @@ var clothesListings = new List<Listing>
     new Listing(0,"Test Coat",600,new Category(0,"Clothes"),new Description("Example desc 123", "more useful text"))
 };
 //clothesListings[0].Thumbnail = new Photo();
-app.MapGet("/api/clothes", () => Results.Json(clothesListings));
+//app.MapGet("/api/clothes", () => Results.Json(clothesListings));
+app.MapGet("/api/clothes", async (AppDbContext db) =>
+{
+    var listings = await db.Listings
+        .Include(l => l.Category)
+        .Include(l => l.Description)
+        .ToListAsync();
+    return Results.Json(listings);
+});
 app.MapGet("/api/accessories", () => Results.Json(clothesListings));
 app.MapGet("/api/toys", () => Results.Json(clothesListings));
 app.MapGet("/api/kids", () => Results.Json(clothesListings));
