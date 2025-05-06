@@ -38,7 +38,13 @@ var clothesListings = new List<Listing>
     new Listing(0,"Test T-Shirt",20,new Category(0,"Clothes"),new Description("Example desc hello", "more useful text")),
     new Listing(0,"Test Coat",600,new Category(0,"Clothes"),new Description("Example desc 123", "more useful text"))
 };
-//clothesListings[0].Thumbnail = new Photo();
+string filePath = "C:\\Users\\Zuzia\\Aleksander\\Remarket_SE2\\Code\\Backend\\example.jpg"; // path to an image file
+string name = Path.GetFileName(filePath);
+byte[] imageBytes = File.ReadAllBytes(filePath);
+string base64String = Convert.ToBase64String(imageBytes);
+
+Photo photo = new Photo(name, base64String, false);
+clothesListings[0].Thumbnail = photo;
 app.MapGet("/api/clothes", () => Results.Json(clothesListings));
 app.MapGet("/api/accessories", () => Results.Json(clothesListings));
 app.MapGet("/api/toys", () => Results.Json(clothesListings));
