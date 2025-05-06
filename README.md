@@ -12,9 +12,9 @@ Scrum
 All the commits shall be named according to the gitflow 
 convention:
 
-<<<<<<< HEAD
+
 We will use two main branches: main and develop and personal branches. No commits to the main or develop branch should be made. When working on more complex parts of the project everyone is encouraged to create additional branches and then merge them back into their personal branch. Pull requests to the main branch will happen after finishing a specific stage/ feature of the project, they shall not be made daily. Pull requests from the personal branches shall be madefrequently. 
-=======
+
     feat: Introducing new features or significant improvements.
     fix: Bug fixes that resolve issues in your code.
     docs: Updates or additions to documentation.
@@ -29,7 +29,6 @@ We will use two main branches: main and develop and personal branches. No commit
 
 The commit message should consist of the category and, after a comma, the explanation.
 We will use two main branches: main and develop and feature branches. No commits to the main branch should be made. When working on more complex parts of the project everyone is encouraged to create additional feature branches and then merge them back into the develop branch. Pull requests to the main branch will happen after finishing a specific stage/ feature of the project, they shall not be made daily.
->>>>>>> e4d93d28db7248d524193771442ba66bbdb1a7b2
 
 ## Roles:
 # Aleksander Szydlowski: Integration
