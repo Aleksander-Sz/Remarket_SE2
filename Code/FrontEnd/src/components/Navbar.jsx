@@ -1,31 +1,27 @@
 import './Navbar.css';
-import { FaSearch, FaShoppingCart } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
-
 
 function Navbar() {
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        <span className="logo">ReMarket</span>
+        {/* ✅ Make logo clickable */}
+        <Link to="/" className="logo">ReMarket</Link>
       </div>
 
       <ul className="navbar-center">
-      <ul className="navbar-center">
-  <li><Link to="/categories">Categories</Link></li>
-  <li><Link to="/our-stories">Our stories</Link></li>
-  <li><Link to="/super-deals">Super deals</Link></li>
-  <li><Link to="/about">About Us</Link></li>
-</ul>
-</ul>
+        <li><Link to="/categories">Categories</Link></li>
+        <li><Link to="/our-stories">Our stories</Link></li>
+        <li><Link to="/super-deals">Super deals</Link></li>
+        <li><Link to="/about">About Us</Link></li>
+        <li><Link to="/dashboard">Dashboard</Link></li>
+      </ul>
 
-<div className="navbar-right">
-  <Link to="#"><i className="icon">🔍</i></Link>
-  <Link to="/login" className="login-link">Login</Link>
-
-  <Link to="#"><i className="icon">🛒</i></Link>
-</div>
-
+      <div className="navbar-right">
+        <Link to="#"><i className="icon">🔍</i></Link>
+        <Link to="/login" className="login-link">Login</Link>
+        <Link to="#"><i className="icon">🛒</i></Link>
+      </div>
     </nav>
   );
 }

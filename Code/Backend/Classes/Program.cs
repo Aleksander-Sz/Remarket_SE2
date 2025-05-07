@@ -42,6 +42,7 @@ var clothesListings = new List<Listing>
     new Listing(0,"Test T-Shirt",20,new Category(0,"Clothes"),new Description("Example desc hello", "more useful text")),
     new Listing(0,"Test Coat",600,new Category(0,"Clothes"),new Description("Example desc 123", "more useful text"))
 };
+
 //clothesListings[0].Thumbnail = new Photo();
 //app.MapGet("/api/clothes", () => Results.Json(clothesListings));
 app.MapGet("/api/clothes", async (AppDbContext db) =>
@@ -52,6 +53,16 @@ app.MapGet("/api/clothes", async (AppDbContext db) =>
         .ToListAsync();
     return Results.Json(listings);
 });
+
+/*string filePath = "C:\\Users\\Zuzia\\Aleksander\\Remarket_SE2\\Code\\Backend\\example.jpg"; // path to an image file
+string name = Path.GetFileName(filePath);
+byte[] imageBytes = File.ReadAllBytes(filePath);
+string base64String = Convert.ToBase64String(imageBytes);
+
+Photo photo = new Photo(name, base64String, false);
+clothesListings[0].Thumbnail = photo;
+app.MapGet("/api/clothes", () => Results.Json(clothesListings));*/
+  
 app.MapGet("/api/accessories", () => Results.Json(clothesListings));
 app.MapGet("/api/toys", () => Results.Json(clothesListings));
 app.MapGet("/api/kids", () => Results.Json(clothesListings));
@@ -60,12 +71,11 @@ app.MapGet("/api/men", () => Results.Json(clothesListings));
 
 app.MapGet("/api/info", () =>
 {
-    var time = DateTime.Now.ToString("HH:mm:ss"); 
-    var userId = new Random().Next(1000, 9999); 
+    var time = DateTime.Now.ToString("HH:mm:ss");
+    var userId = new Random().Next(1000, 9999);
 
     return Results.Json(new { time, userId });
 });
-
 
 /*app.MapPost("/api/login", async (HttpContext context, AppDbContext db) =>
 {
@@ -92,7 +102,7 @@ record LoginRequest(string Username, string Password);*/
     {
         user.Id,
         user.Username,
-        // inne pola jeœli chcesz
+        // inne pola jeï¿½li chcesz
     });
 });
 
