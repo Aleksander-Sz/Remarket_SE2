@@ -9,10 +9,12 @@ import CategoryGrid from './components/CategoryGrid';
 import QuoteSection from './components/QuoteSection';
 import GalleryShowcase from './components/GalleryShowcase';
 import Footer from './components/Footer';
+
 import ProfilePage from './pages/ProfilePage';
 import { WishlistProvider } from './context/WishlistContext';
 import { UserProvider } from './context/UserContext';
 import ListingGrid from './components/ListingGrid';
+
 
 // Pages
 import Login from './pages/Login';
