@@ -1,11 +1,11 @@
 // src/api/axiosInstance.js
 import axios from 'axios';
 
-const instance = axios.create({
-  baseURL: 'https://your-backend-url.com/api', // ✅ change when backend is ready
+const axiosInstance = axios.create({
+  baseURL: 'https://your-backend.com/api', // replace with your backend root URL
   headers: {
     'Content-Type': 'application/json',
   },
 });
 
-export default instance;
+export default axiosInstance;

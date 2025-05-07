@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import ProfilePage from './pages/ProfilePage';
 import { WishlistProvider } from './context/WishlistContext';
 import { UserProvider } from './context/UserContext';
-
+import ListingGrid from './components/ListingGrid';
 
 // Pages
 import Login from './pages/Login';
@@ -50,17 +50,17 @@ function AnimatedRoutes() {
 
         {/* Categories Page */}
         <Route
-          path="/categories"
-          element={
-            <>
-              <WipeTransition />
-              <CategoryGrid />
-              <QuoteSection />
-              <GalleryShowcase />
-              <Footer />
-            </>
-          }
-        />
+  path="/categories"
+  element={
+    <>
+      <WipeTransition />
+      <ListingGrid /> 
+      <QuoteSection />
+      <GalleryShowcase />
+      <Footer />
+    </>
+  }
+/>
 
         {/* Dynamic Category Listings */}
         <Route path="/category/clothes" element={<><WipeTransition /><ClothesPage /></>} />
