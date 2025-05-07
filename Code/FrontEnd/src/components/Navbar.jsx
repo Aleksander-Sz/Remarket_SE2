@@ -10,7 +10,7 @@ function Navbar() {
       </div>
 
       <ul className="navbar-center">
-        <li><Link to="/categories">Categories</Link></li>
+        <li><Link to="/products">Products</Link></li>
         <li><Link to="/our-stories">Our stories</Link></li>
         <li><Link to="/super-deals">Super deals</Link></li>
         <li><Link to="/about">About Us</Link></li>
