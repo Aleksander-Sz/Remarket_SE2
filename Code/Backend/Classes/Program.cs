@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using System;
 using ReMarket.Models;
 using ReMarket.Services;
+using System.Net.Http;
 
 //var databaseConnection = new DatabaseConnection("ReMarket", "root", "toor1234");
 
@@ -62,7 +63,44 @@ app.MapGet("/api/info", () =>
     var time = DateTime.Now.ToString("HH:mm:ss"); 
     var userId = new Random().Next(1000, 9999); 
 
-    return Results.Json(new { time, userId }); 
+    return Results.Json(new { time, userId });
 });
+
+
+/*app.MapPost("/api/login", async (HttpContext context, AppDbContext db) =>
+{
+    var loginRequest = await context.Request.ReadFromJsonAsync<LoginRequest>();
+    if (loginRequest == null) return Results.BadRequest();
+
+    var user = db.Accounts.FirstOrDefault(a => a.Username == loginRequest.Username);
+    if (user == null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password))
+        return Results.Unauthorized();
+
+    SessionManager.Login(user);
+    return Results.Ok(new { message = "Login successful" });
+});
+
+record LoginRequest(string Username, string Password);*/
+
+/*app.MapGet("/api/user", () =>
+{
+    var user = SessionManager.CurrentUser;
+    if (user == null)
+        return Results.Unauthorized();
+
+    return Results.Json(new
+    {
+        user.Id,
+        user.Username,
+        // inne pola jeœli chcesz
+    });
+});
+
+
+app.MapPost("/api/logout", () =>
+{
+    SessionManager.Logout();
+    return Results.Ok(new { message = "Logged out" });
+});*/
 
 app.Run();
