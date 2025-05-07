@@ -1,4 +1,5 @@
 import './CategoryGrid.css';
+import { Link } from 'react-router-dom';
 
 const categories = [
   {
@@ -6,42 +7,48 @@ const categories = [
     title: 'Clothes',
     description: 'Explore affordable and sustainable clothing options.',
     image: require('../assets/clothes.jpg'),
-    button: 'Shop now'
+    button: 'Shop now',
+    link: '/category/clothes'
   },
   {
     id: 2,
     title: 'Accessories',
     description: 'From jewelry to bags, find unique second-hand pieces.',
     image: require('../assets/accessories.jpg'),
-    button: 'Learn more'
+    button: 'Learn more',
+    link: '/category/accessories'
   },
   {
     id: 3,
     title: 'Toys',
     description: 'Toys with stories — joy for kids and savings for parents.',
     image: require('../assets/toys.jpg'),
-    button: 'Learn more'
+    button: 'Learn more',
+    link: '/category/toys'
   },
   {
     id: 4,
     title: 'Kids',
     description: 'Clothing and gear your children will outgrow in style.',
     image: require('../assets/kids.jpg'),
-    button: 'Learn more'
+    button: 'Learn more',
+    link: '/category/kids'
   },
   {
     id: 5,
     title: 'Women’s section',
     description: 'Style meets sustainability — fashion with a story.',
     image: require('../assets/women.jpg'),
-    button: 'Learn more'
+    button: 'Learn more',
+    link: '/category/women'
   },
   {
     id: 6,
     title: 'Men section',
     description: 'Minimalist, vintage, or rugged looks — second-hand for men.',
     image: require('../assets/men.jpg'),
-    button: 'Learn more'
+    button: 'Learn more',
+    link: '/category/men'
   },
 ];
 
@@ -55,8 +62,10 @@ function CategoryGrid() {
             <img src={cat.image} alt={cat.title} />
             <h3>{cat.title}</h3>
             <p>{cat.description}</p>
-            <button>{cat.button}</button>
-          </div>
+            <Link to={cat.link} className="category-button">
+             <button>{cat.button}</button>
+           </Link>
+  </div>
         ))}
       </div>
     </section>
