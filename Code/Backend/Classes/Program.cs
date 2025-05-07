@@ -1,22 +1,36 @@
+using Microsoft.EntityFrameworkCore;
+using ReMarket.Data;
+using Microsoft.Extensions.Configuration;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// Add services to the container.
+builder.Services.AddDbContext<ReMarketContext>(options =>
+    options.UseMySql(builder.Configuration.GetConnectionString("DefaultConnection"),
+    new MySqlServerVersion(new Version(8, 0, 30))));
+
 var app = builder.Build();
 
-//builder.Services.AddDbContext<AppDbContext>(options =>
-//    options.UseMySql(
-//        builder.Configuration.GetConnectionString("DefaultConnection"),
-//        ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
-//    ));
+// Configure the HTTP request pipeline.
+if (app.Environment.IsDevelopment())
+{
+    app.UseDeveloperExceptionPage();
+}
+else
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
 
-app.UseDefaultFiles();
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.MapGet("/api/info", () =>
-{
-    var time = DateTime.Now.ToString("HH:mm:ss"); 
-    var userId = new Random().Next(1000, 9999); 
+app.UseRouting();
 
-    return Results.Json(new { time, userId }); 
-});
+app.UseAuthorization();
+
+app.MapControllerRoute(
+    name: "default",
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 app.Run();
