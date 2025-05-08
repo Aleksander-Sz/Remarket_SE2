@@ -3,8 +3,39 @@ using System.Collections.Generic;
 using ReMarket.Services;
 using MySql.Data.MySqlClient;
 using System.Data;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace ReMarket.Models
+{
+    public class Listing
+    {
+        public int Id { get; set; }
+
+        [Required]
+        public string Title { get; set; } = string.Empty;
+
+        [Column(TypeName = "decimal(10,2)")]
+        public decimal Price { get; set; }
+
+        [Required]
+        public ListingStatus Status { get; set; }
+
+        // Navigation properties
+        public int CategoryId { get; set; }
+        public Category Category { get; set; } = null!;
+
+        public int DescriptionId { get; set; }
+        public Description Description { get; set; } = null!;
+
+        public int? ThumbnailId { get; set; }
+        public Photo? Thumbnail { get; set; }
+
+        public List<Photo> Photos { get; set; } = new();
+    }
+}
+
+/*namespace ReMarket.Models
 {
     //"The Listing class is central to the marketplace, representing items posted by sellers."
     //"Key attributes include title, price,and status"
@@ -177,4 +208,4 @@ namespace ReMarket.Models
             return listings;
         }
     }
-}
+}*/

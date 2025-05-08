@@ -1,6 +1,19 @@
 using MySql.Data.MySqlClient;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
+
 namespace ReMarket.Models
+{
+    public class Description
+    {
+        [Key]
+        public int Id { get; set; }
+
+        public string Short { get; set; }
+        public string Long { get; set; }
+    }
+}
+/*namespace ReMarket.Models
 {
     //"The Description class provides textual information for listings, 
     //with attributes such as header and paragraph. 
@@ -94,4 +107,4 @@ namespace ReMarket.Models
         }
     }
 
-}
+}*/
