@@ -19,20 +19,20 @@ function ListingGrid() {
 
   const fetchAll = async () => {
     try {
-      const response = await axios.get('/products');
+      const response = await axios.get('/api/products');
       setItems(response.data);
     } catch (err) {
-      console.error('Failed to fetch from /products:', err);
+      console.error('Failed to fetch from /api/products:', err);
     }
   };
 
   const handleFilter = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('/products/filter', filters);
+      const response = await axios.post('/api/products/filter', filters);
       setItems(response.data);
     } catch (err) {
-      console.warn('Filter endpoint not available, fallback to GET /products');
+      console.warn('Filter endpoint not available, fallback to GET /api/products');
       fetchAll();
     }
   };
