@@ -12,73 +12,40 @@ function ListingGrid() {
   const { wishlist, toggleWishlist } = useWishlist();
 
   const [filters, setFilters] = useState({
-    category: '',
+    category: 'all',
     minPrice: '',
     maxPrice: '',
   });
 
   useEffect(() => {
-    const fetchProducts = async () => {
+    const fetchData = async () => {
       try {
         const response = await axios.get('/products');
-        const mapped = response.data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          price: item.price,
-          imageUrl: getImageByCategory(item.category?.name || ''),
-        }));
-        setItems(mapped);
+        setItems(response.data);
       } catch (err) {
-        console.error('Backend unavailable, using dummy data');
-        const dummyListings = [
-          {
-            id: 1,
-            title: 'Vintage Jacket',
-            price: 29.99,
-            imageUrl: require('../assets/clothes.jpg'),
-          },
-          {
-            id: 2,
-            title: 'Leather Bag',
-            price: 24.99,
-            imageUrl: require('../assets/accessories.jpg'),
-          },
-        ];
-        setItems(dummyListings);
+        console.error('Failed to fetch from /api/products:', err);
       }
     };
 
-    fetchProducts();
+    fetchData();
   }, []);
-
-  const getImageByCategory = (category) => {
-    switch (category.toLowerCase()) {
-      case 'clothing': return require('../assets/clothes.jpg');
-      case 'furniture': return require('../assets/accessories.jpg');
-      case 'books': return require('../assets/kids.jpg');
-      case 'toys': return require('../assets/toys.jpg');
-      case 'electronics': return require('../assets/men.jpg');
-      default: return require('../assets/clothes.jpg');
-    }
-  };
 
   return (
     <section className="listing-grid">
       <h2 className="listing-title">Browse Listings</h2>
 
+      {/* Filter UI (visual only) */}
       <form className="filter-form" onSubmit={(e) => e.preventDefault()}>
         <select
           value={filters.category}
           onChange={(e) => setFilters({ ...filters, category: e.target.value })}
         >
-          <option value="">All Categories</option>
-          <option value="clothes">Clothes</option>
-          <option value="accessories">Accessories</option>
-          <option value="jewelry">Jewelry</option>
+          <option value="all">All Categories</option>
+          <option value="electronics">Electronics</option>
+          <option value="furniture">Furniture</option>
+          <option value="books">Books</option>
+          <option value="clothing">Clothing</option>
           <option value="toys">Toys</option>
-          <option value="kids">Kids</option>
-          <option value="women">Women</option>
-          <option value="men">Men</option>
         </select>
 
         <input
@@ -95,7 +62,7 @@ function ListingGrid() {
           onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
         />
 
-        <button disabled>Filter (disabled)</button>
+        <button type="submit">Filter</button>
       </form>
 
       <div className="grid">
@@ -110,9 +77,13 @@ function ListingGrid() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <img src={item.imageUrl} alt={item.title} />
+              {/* No image since backend doesn't send imageUrl */}
               <h3>{item.title}</h3>
-              <p>${item.price.toFixed(2)}</p>
+              <p>Price: ${item.price.toFixed(2)}</p>
+              <p>Category: {item.category?.name}</p>
+              <p>{item.description?.header}</p>
+              <p>{item.description?.paragraph}</p>
+              <p>Status: {item.status}</p>
               <button onClick={() => setSelectedItem(item)}>Buy Now</button>
               <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
                 {isWished ? <FaHeart color="red" /> : <FaRegHeart />}
