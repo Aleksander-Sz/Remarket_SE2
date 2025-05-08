@@ -19,7 +19,7 @@ namespace ReMarket.Models
         public decimal Price { get; set; }
 
         [Required]
-        public ListingStatus Status { get; set; }
+        public string Status { get; set; }
 
         // Navigation properties
         public int CategoryId { get; set; }
@@ -32,6 +32,7 @@ namespace ReMarket.Models
         public Photo? Thumbnail { get; set; }
 
         public List<Photo> Photos { get; set; } = new();
+
     }
 }
 

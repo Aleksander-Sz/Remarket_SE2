@@ -56,7 +56,7 @@ app.MapGet("/api/products", async (AppDbContext db) =>
             l.Title,
             l.Price,
             Category = new { l.Category.Id, l.Category.Name },
-            Description = new { l.Description.Id, l.Description.Short, l.Description.Long },
+            Description = new { l.Description.Id, l.Description.Header, l.Description.Paragraph },
             Status = l.Status.ToString()
         })
         .ToListAsync();
@@ -73,7 +73,7 @@ Photo photo = new Photo(name, base64String, false);
 clothesListings[0].Thumbnail = photo;
 app.MapGet("/api/clothes", () => Results.Json(clothesListings));*/
 
-app.MapGet("/api/accessories", () => Results.Json(clothesListings));
+app.MapGet("/api/accessories", () => builder.Configuration.GetConnectionString("DefaultConnection"));
 app.MapGet("/api/toys", () => Results.Json(clothesListings));
 app.MapGet("/api/kids", () => Results.Json(clothesListings));
 app.MapGet("/api/women", () => Results.Json(clothesListings));

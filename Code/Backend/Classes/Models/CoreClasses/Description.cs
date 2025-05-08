@@ -9,8 +9,8 @@ namespace ReMarket.Models
         [Key]
         public int Id { get; set; }
 
-        public string Short { get; set; }
-        public string Long { get; set; }
+        public string Header { get; set; }
+        public string Paragraph { get; set; }
     }
 }
 /*namespace ReMarket.Models
