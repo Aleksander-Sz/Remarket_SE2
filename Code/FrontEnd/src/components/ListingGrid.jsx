@@ -17,62 +17,85 @@ function ListingGrid() {
     maxPrice: '',
   });
 
-  const handleFilter = async (e) => {
-    if (e) e.preventDefault();
-
-    try {
-      const response = await axios.get('/products'); // GET all, filter frontend for now
-      let filtered = response.data.filter((item) => item.status === 'Available');
-
-      if (filters.category) {
-        filtered = filtered.filter((item) =>
-          item.category?.name?.toLowerCase().includes(filters.category.toLowerCase())
-        );
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('/products');
+        const mapped = response.data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          imageUrl: getImageByCategory(item.category?.name || ''),
+        }));
+        setItems(mapped);
+      } catch (err) {
+        console.error('Backend unavailable, using dummy data');
+        const dummyListings = [
+          {
+            id: 1,
+            title: 'Vintage Jacket',
+            price: 29.99,
+            imageUrl: require('../assets/clothes.jpg'),
+          },
+          {
+            id: 2,
+            title: 'Leather Bag',
+            price: 24.99,
+            imageUrl: require('../assets/accessories.jpg'),
+          },
+        ];
+        setItems(dummyListings);
       }
+    };
 
-      if (filters.minPrice) {
-        filtered = filtered.filter((item) => item.price >= parseFloat(filters.minPrice));
-      }
+    fetchProducts();
+  }, []);
 
-      if (filters.maxPrice) {
-        filtered = filtered.filter((item) => item.price <= parseFloat(filters.maxPrice));
-      }
-
-      setItems(filtered);
-    } catch (err) {
-      console.error('Error loading from /api/products:', err);
-      setItems([]); // fallback to empty list
+  const getImageByCategory = (category) => {
+    switch (category.toLowerCase()) {
+      case 'clothing': return require('../assets/clothes.jpg');
+      case 'furniture': return require('../assets/accessories.jpg');
+      case 'books': return require('../assets/kids.jpg');
+      case 'toys': return require('../assets/toys.jpg');
+      case 'electronics': return require('../assets/men.jpg');
+      default: return require('../assets/clothes.jpg');
     }
   };
-
-  useEffect(() => {
-    handleFilter();
-  }, []);
 
   return (
     <section className="listing-grid">
       <h2 className="listing-title">Browse Listings</h2>
 
-      <form className="filter-form" onSubmit={handleFilter}>
-        <input
-          type="text"
-          placeholder="Category"
+      <form className="filter-form" onSubmit={(e) => e.preventDefault()}>
+        <select
           value={filters.category}
           onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-        />
+        >
+          <option value="">All Categories</option>
+          <option value="clothes">Clothes</option>
+          <option value="accessories">Accessories</option>
+          <option value="jewelry">Jewelry</option>
+          <option value="toys">Toys</option>
+          <option value="kids">Kids</option>
+          <option value="women">Women</option>
+          <option value="men">Men</option>
+        </select>
+
         <input
           type="number"
           placeholder="Min Price"
           value={filters.minPrice}
           onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
         />
+
         <input
           type="number"
           placeholder="Max Price"
           value={filters.maxPrice}
           onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
         />
-        <button type="submit">Filter</button>
+
+        <button disabled>Filter (disabled)</button>
       </form>
 
       <div className="grid">
@@ -87,13 +110,9 @@ function ListingGrid() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <img
-                src={require(`../assets/${item.category?.name?.toLowerCase() || 'default'}.jpg`)}
-                alt={item.title}
-              />
+              <img src={item.imageUrl} alt={item.title} />
               <h3>{item.title}</h3>
               <p>${item.price.toFixed(2)}</p>
-              <small>{item.description?.header}</small>
               <button onClick={() => setSelectedItem(item)}>Buy Now</button>
               <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
                 {isWished ? <FaHeart color="red" /> : <FaRegHeart />}
