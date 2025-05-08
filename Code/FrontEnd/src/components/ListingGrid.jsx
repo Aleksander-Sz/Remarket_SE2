@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import PaymentModal from '../components/PaymentModal';
 import { useWishlist } from '../context/WishlistContext';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
-import axios from '../api/axiosInstance'; // Update path if needed
+import axios from '../api/axiosInstance';
 
 function ListingGrid() {
   const [items, setItems] = useState([]);
@@ -17,49 +17,28 @@ function ListingGrid() {
     maxPrice: '',
   });
 
-  // Fetch filtered items on form submit
-  const handleFilter = async (e) => {
-    e.preventDefault();
-
+  const fetchAll = async () => {
     try {
-      const response = await axios.post('/listings/filter', filters);
+      const response = await axios.get('/products');
       setItems(response.data);
     } catch (err) {
-      console.error('Backend unavailable, using dummy data');
-      const dummyListings = {
-        clothes: [
-          { id: 1, title: 'Vintage Jacket', price: 29.99, imageUrl: require('../assets/clothes.jpg') },
-          { id: 2, title: 'Denim Shirt', price: 19.99, imageUrl: require('../assets/clothes.jpg') },
-        ],
-        accessories: [
-          { id: 3, title: 'Leather Bag', price: 24.99, imageUrl: require('../assets/accessories.jpg') },
-          { id: 4, title: 'Vintage Keychain', price: 9.99, imageUrl: require('../assets/accessories.jpg') },
-        ],
-        toys: [
-          { id: 5, title: 'LEGO Set', price: 14.99, imageUrl: require('../assets/toys.jpg') },
-          { id: 6, title: 'Action Figures', price: 12.99, imageUrl: require('../assets/toys.jpg') },
-        ],
-        kids: [
-          { id: 7, title: 'Colorful T-Shirts', price: 6.99, imageUrl: require('../assets/kids.jpg') },
-          { id: 8, title: 'Kid’s Hoodie', price: 11.99, imageUrl: require('../assets/kids.jpg') },
-        ],
-        women: [
-          { id: 9, title: 'Wool Coat', price: 39.99, imageUrl: require('../assets/women.jpg') },
-          { id: 10, title: 'Formal Blazer', price: 34.99, imageUrl: require('../assets/women.jpg') },
-        ],
-        men: [
-          { id: 11, title: 'Denim Jacket', price: 32.99, imageUrl: require('../assets/men.jpg') },
-          { id: 12, title: 'Flannel Shirt', price: 22.99, imageUrl: require('../assets/men.jpg') },
-        ],
-      };
-
-      setItems(dummyListings[filters.category] || []);
+      console.error('Failed to fetch from /products:', err);
     }
   };
 
-  // On load, fetch default category (e.g., clothes)
+  const handleFilter = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await axios.post('/products/filter', filters);
+      setItems(response.data);
+    } catch (err) {
+      console.warn('Filter endpoint not available, fallback to GET /products');
+      fetchAll();
+    }
+  };
+
   useEffect(() => {
-    handleFilter(new Event('load'));
+    fetchAll();
   }, []);
 
   return (
@@ -100,7 +79,6 @@ function ListingGrid() {
       <div className="grid">
         {items.map((item) => {
           const isWished = wishlist.find((w) => w.id === item.id);
-
           return (
             <motion.div
               className="listing-card"
@@ -108,10 +86,11 @@ function ListingGrid() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
+              style={{ position: 'relative' }} 
             >
-              <img src={item.imageUrl} alt={item.title} />
+              <img src={item.imageUrl || '/fallback.jpg'} alt={item.title} />
               <h3>{item.title}</h3>
-              <p>${item.price.toFixed(2)}</p>
+              <p>${item.price?.toFixed(2) || 'N/A'}</p>
               <button onClick={() => setSelectedItem(item)}>Buy Now</button>
               <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
                 {isWished ? <FaHeart color="red" /> : <FaRegHeart />}
