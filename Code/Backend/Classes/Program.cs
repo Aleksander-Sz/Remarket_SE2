@@ -36,21 +36,31 @@ app.Use(async (context, next) =>
 
 var clothesListings = new List<Listing>
 {
-    new Listing(0,"Test Jacked",100,new Category(0,"Clothes"),new Description("Example desc", "more useful text")),
-    new Listing(0,"Test Trousers",50,new Category(0,"Clothes"),new Description("Example desc", "more useful text lorem ipsum")),
-    new Listing(0,"Test Blazer",70,new Category(0,"Clothes"),new Description("Example desc", "more useful text")),
-    new Listing(0,"Test T-Shirt",20,new Category(0,"Clothes"),new Description("Example desc hello", "more useful text")),
-    new Listing(0,"Test Coat",600,new Category(0,"Clothes"),new Description("Example desc 123", "more useful text"))
+    //new Listing(0,"Test Jacked",100,new Category(0,"Clothes"),new Description("Example desc", "more useful text")),
+    //new Listing(0,"Test Trousers",50,new Category(0,"Clothes"),new Description("Example desc", "more useful text lorem ipsum")),
+    //new Listing(0,"Test Blazer",70,new Category(0,"Clothes"),new Description("Example desc", "more useful text")),
+    //new Listing(0,"Test T-Shirt",20,new Category(0,"Clothes"),new Description("Example desc hello", "more useful text")),
+    //new Listing(0,"Test Coat",600,new Category(0,"Clothes"),new Description("Example desc 123", "more useful text"))
 };
 
 //clothesListings[0].Thumbnail = new Photo();
 //app.MapGet("/api/clothes", () => Results.Json(clothesListings));
-app.MapGet("/api/clothes", async (AppDbContext db) =>
+app.MapGet("/api/products", async (AppDbContext db) =>
 {
     var listings = await db.Listings
         .Include(l => l.Category)
         .Include(l => l.Description)
+        .Select(l => new
+        {
+            l.Id,
+            l.Title,
+            l.Price,
+            Category = new { l.Category.Id, l.Category.Name },
+            Description = new { l.Description.Id, l.Description.Header, l.Description.Paragraph },
+            Status = l.Status.ToString()
+        })
         .ToListAsync();
+
     return Results.Json(listings);
 });
 
@@ -62,8 +72,8 @@ string base64String = Convert.ToBase64String(imageBytes);
 Photo photo = new Photo(name, base64String, false);
 clothesListings[0].Thumbnail = photo;
 app.MapGet("/api/clothes", () => Results.Json(clothesListings));*/
-  
-app.MapGet("/api/accessories", () => Results.Json(clothesListings));
+
+app.MapGet("/api/accessories", () => builder.Configuration.GetConnectionString("DefaultConnection"));
 app.MapGet("/api/toys", () => Results.Json(clothesListings));
 app.MapGet("/api/kids", () => Results.Json(clothesListings));
 app.MapGet("/api/women", () => Results.Json(clothesListings));

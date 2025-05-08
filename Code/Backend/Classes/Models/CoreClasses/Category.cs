@@ -1,6 +1,20 @@
 using MySql.Data.MySqlClient;
+using System.ComponentModel.DataAnnotations;
 using System.Data;
+
 namespace ReMarket.Models
+{
+    public class Category
+    {
+        [Key]
+        public int Id { get; set; }
+
+        [Required]
+        public string Name { get; set; }
+    }
+}
+
+/*namespace ReMarket.Models
 
 {
     //"The Category class organizes listings into logical groupings. 
@@ -88,4 +102,4 @@ namespace ReMarket.Models
             command.ExecuteNonQuery();
         }
     }
-}
+}*/
