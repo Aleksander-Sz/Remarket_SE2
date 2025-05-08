@@ -6,14 +6,16 @@ namespace ReMarket.Models
 //for both user accounts and communications within the platform."
     public struct Email
     {
-        public string value { get; }
+        public string Value { get; }
 
-        public Email(string _value)
-        {
-            if (!_value.Contains("@"))
-                throw new ArgumentException("Invalid email format");
-            
-            value = _value;
-        }
+        public Email(string value)
+    {
+        if (string.IsNullOrWhiteSpace(value) || !value.Contains("@") || !value.Contains("."))
+            throw new ArgumentException("Invalid email format");
+        
+        Value = value;
+    }
+
+    public override string ToString() => Value;
     }
 }
