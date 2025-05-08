@@ -52,7 +52,7 @@ function AnimatedRoutes() {
 
         {/* Categories Page */}
         <Route
-  path="/categories"
+  path="/products"
   element={
     <>
       <WipeTransition />
