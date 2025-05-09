@@ -73,7 +73,7 @@ Photo photo = new Photo(name, base64String, false);
 clothesListings[0].Thumbnail = photo;
 app.MapGet("/api/clothes", () => Results.Json(clothesListings));*/
 
-app.MapGet("/api/accessories", () => builder.Configuration.GetConnectionString("DefaultConnection"));
+app.MapGet("/api/connectionstring", () => builder.Configuration.GetConnectionString("DefaultConnection"));
 app.MapGet("/api/toys", () => Results.Json(clothesListings));
 app.MapGet("/api/kids", () => Results.Json(clothesListings));
 app.MapGet("/api/women", () => Results.Json(clothesListings));
@@ -123,4 +123,41 @@ app.MapPost("/api/logout", () =>
     return Results.Ok(new { message = "Logged out" });
 });*/
 
+
+//FROM HERE CHANGES BY ALEKSANDRA FROM 7.05
+
+var accountService = new AccountService(new DummyEmailService());
+app.MapPost("/api/login", async (HttpContext context) =>
+{
+    var loginRequest = await context.Request.ReadFromJsonAsync<LoginRequest>();
+    if (loginRequest == null)
+        return Results.BadRequest("Invalid request");
+
+    var result = accountService.Login(loginRequest.Email, loginRequest.Password);
+
+    if (!result.IsSuccess)
+        return Results.Json(new { error = "Email or password is wrong" }, statusCode: 401);
+
+    return Results.Ok(new
+    {
+        message = "Login successful",
+        user = new
+        {
+            result.Account.Username,
+            result.Account.Email.Value,
+            result.Account.Name
+        }
+    });
+});
+
+AccountRepository.Add(new Account(
+    username: "testuser",
+    name: "Test User",
+    email: new Email("test@example.com"),
+    passwordHash: BCrypt.Net.BCrypt.HashPassword("password123")
+));
+
+
 app.Run();
+
+record LoginRequest(string Email, string Password);

@@ -106,7 +106,7 @@ namespace ReMarket.Services
             if (account == null || !account.VerifyPassword(password))
             {
                 _failedAttempts[email] = _failedAttempts.GetValueOrDefault(email, 0) + 1;
-                return LoginResult.Failure("Invalid email or password");
+                return LoginResult.Failure("Email or password is wrong");
             }
 
             if (!account.IsVerified)
@@ -147,6 +147,14 @@ namespace ReMarket.Services
     {
         //this needs to be implemented later
         void SendConfirmationEmail(string email, string name);
+    }
+
+    public class DummyEmailService : IEmailService
+    {
+        public void SendConfirmationEmail(string email, string name)
+        {
+            // No-op for now
+        }
     }
 
 
