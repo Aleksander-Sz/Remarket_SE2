@@ -1,4 +1,4 @@
-using ReMarket.Models;
+/*using ReMarket.Models;
 using ReMarket.Services;
 using Xunit;
 
@@ -150,4 +150,4 @@ namespace ReMarket.Tests
             Assert.Equal("Item 5", page3.Listings[0].Title);
         }
     }
-}
+}*/

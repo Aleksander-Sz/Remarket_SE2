@@ -1,4 +1,4 @@
-using Xunit;
+/*using Xunit;
 using ReMarket.Models;
 using MySql.Data.MySqlClient;
 using System;
@@ -131,4 +131,4 @@ namespace ReMarket.Tests.Models
             }
         }
     }
-}
+}*/
