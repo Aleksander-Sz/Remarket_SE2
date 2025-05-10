@@ -12,40 +12,58 @@ function ListingGrid() {
   const { wishlist, toggleWishlist } = useWishlist();
 
   const [filters, setFilters] = useState({
-    category: 'all',
+    category: '',
     minPrice: '',
     maxPrice: '',
   });
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get('/products');
-        setItems(response.data);
-      } catch (err) {
-        console.error('Failed to fetch from /api/products:', err);
-      }
-    };
+  const fetchProducts = async () => {
+    try {
+      const params = {};
+      if (filters.category) params.category = filters.category;
+      if (filters.minPrice) params.minPrice = filters.minPrice;
+      if (filters.maxPrice) params.maxPrice = filters.maxPrice;
 
-    fetchData();
+      const response = await axios.get('/products', { params });
+
+      const products = response.data.map((item) => ({
+        ...item,
+        imageUrl: item.imageData
+          ? `data:image/jpeg;base64,${item.imageData}`
+          : null, // fallback if no image
+      }));
+
+      setItems(products);
+    } catch (err) {
+      console.error('Failed to fetch from backend:', err);
+      setItems([]); // No fallback dummy data anymore
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
   }, []);
+
+  const handleFilter = (e) => {
+    e.preventDefault();
+    fetchProducts();
+  };
 
   return (
     <section className="listing-grid">
       <h2 className="listing-title">Browse Listings</h2>
 
-      {/* Filter UI (visual only) */}
-      <form className="filter-form" onSubmit={(e) => e.preventDefault()}>
+      <form className="filter-form" onSubmit={handleFilter}>
         <select
           value={filters.category}
           onChange={(e) => setFilters({ ...filters, category: e.target.value })}
         >
-          <option value="all">All Categories</option>
-          <option value="electronics">Electronics</option>
-          <option value="furniture">Furniture</option>
-          <option value="books">Books</option>
-          <option value="clothing">Clothing</option>
-          <option value="toys">Toys</option>
+          <option value="">All Categories</option>
+          <option value="Electronics">Electronics</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Books">Books</option>
+          <option value="Clothing">Clothing</option>
+          <option value="Toys">Toys</option>
         </select>
 
         <input
@@ -77,13 +95,17 @@ function ListingGrid() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {/* No image since backend doesn't send imageUrl */}
+              {item.imageUrl ? (
+                <img src={item.imageUrl} alt={item.title} />
+              ) : (
+                <div className="image-placeholder">No image</div>
+              )}
               <h3>{item.title}</h3>
-              <p>Price: ${item.price.toFixed(2)}</p>
-              <p>Category: {item.category?.name}</p>
-              <p>{item.description?.header}</p>
-              <p>{item.description?.paragraph}</p>
-              <p>Status: {item.status}</p>
+              <p>${item.price.toFixed(2)}</p>
+              <p className="desc">{item.description?.header}</p>
+              <p className="desc-small">{item.description?.paragraph}</p>
+              <p className="status">{item.status}</p>
+
               <button onClick={() => setSelectedItem(item)}>Buy Now</button>
               <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
                 {isWished ? <FaHeart color="red" /> : <FaRegHeart />}

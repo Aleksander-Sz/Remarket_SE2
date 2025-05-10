@@ -1,36 +1,75 @@
+// src/pages/Login.jsx
 import './Login.css';
 import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { useState } from 'react';
+import { dummyUsers } from '../data/dummyUsers';
 
 function Login() {
   const { loginAs } = useUser();
   const navigate = useNavigate();
 
-  const handleLogin = (role) => {
-    loginAs({
-      role,
-      name: role === 'admin' ? 'Admin Anna' : role === 'seller' ? 'Seller Sam' : 'User Uma',
-      email: `${role}@example.com`,
-    });
-    navigate('/profile');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+
+  const handleLogin = (e) => {
+    e.preventDefault();
+
+    const user = dummyUsers.find(
+      (u) => u.email === email && u.password === password
+    );
+
+    if (user) {
+      loginAs({ name: user.name, role: user.role, email: user.email });
+      navigate('/profile');
+    } else {
+      setError('Invalid email or password.');
+    }
   };
 
   return (
     <div className="login-page">
       <div className="login-box">
         <h2>Login to ReMarket</h2>
-        <p>Choose a role to simulate:</p>
-        <div className="login-options">
-          <button onClick={() => handleLogin('user')}>Login as User</button>
-          <button onClick={() => handleLogin('seller')}>Login as Seller</button>
-          <button onClick={() => handleLogin('admin')}>Login as Admin</button>
-        </div>
+        <form onSubmit={handleLogin}>
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+          />
+          <button type="submit">Login</button>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
+        </form>
+
+        {/* Register button below the form */}
+        <p style={{ marginTop: '1rem' }}>
+          Don’t have an account?{' '}
+          <button
+            onClick={() => navigate('/register')}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#4bb869',
+              textDecoration: 'underline',
+              cursor: 'pointer'
+            }}
+          >
+            Register here
+          </button>
+        </p>
       </div>
     </div>
   );
 }
-// Later:
-// const response = await axios.post('/auth/login', { email, password });
-// loginAs(response.data); // { role, name, email }
 
 export default Login;
