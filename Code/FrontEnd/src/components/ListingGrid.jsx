@@ -1,3 +1,4 @@
+// src/components/ListingGrid.jsx
 import React, { useEffect, useState } from 'react';
 import './ListingGrid.css';
 import { motion } from 'framer-motion';
@@ -17,6 +18,7 @@ function ListingGrid() {
     maxPrice: '',
   });
 
+  // 🔁 Function to fetch products with filter query params
   const fetchProducts = async () => {
     try {
       const params = {};
@@ -30,20 +32,22 @@ function ListingGrid() {
         ...item,
         imageUrl: item.imageData
           ? `data:image/jpeg;base64,${item.imageData}`
-          : null, // fallback if no image
+          : null,
       }));
 
       setItems(products);
     } catch (err) {
-      console.error('Failed to fetch from backend:', err);
-      setItems([]); // No fallback dummy data anymore
+      console.error('Failed to fetch products:', err);
+      setItems([]);
     }
   };
 
+  // ⏬ Load once on mount
   useEffect(() => {
     fetchProducts();
   }, []);
 
+  // 🔘 Apply filters button
   const handleFilter = (e) => {
     e.preventDefault();
     fetchProducts();
@@ -80,7 +84,7 @@ function ListingGrid() {
           onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
         />
 
-        <button type="submit">Filter</button>
+        <button type="submit">Apply Filters</button>
       </form>
 
       <div className="grid">
