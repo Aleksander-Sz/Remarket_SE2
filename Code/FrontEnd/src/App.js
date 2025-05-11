@@ -27,6 +27,9 @@ import MenPage from './pages/MenPage';
 import OurStories from './pages/OurStories';
 import SuperDealsPage from './pages/SuperDealsPage';
 import SellerDashboard from './pages/SellerDashboard';
+import Register from './pages/Register';
+import AboutUs from './pages/AboutUs'; 
+
 
 
 
@@ -78,6 +81,9 @@ function AnimatedRoutes() {
         <Route path="/profile" element={<><WipeTransition /><ProfilePage /></>} />
         <Route path="/super-deals" element={<><WipeTransition /><SuperDealsPage /></>} />
         <Route path="/dashboard" element={<><WipeTransition /><SellerDashboard /></>} />
+        <Route path="/register" element={<><WipeTransition /><Register /></>} />
+        <Route path="/about" element={<><WipeTransition /><AboutUs /></>} />
+
 
         
 
