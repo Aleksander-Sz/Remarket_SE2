@@ -5,6 +5,10 @@ using ReMarket.Models;
 using ReMarket.Services;
 using System.Net.Http;
 using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
+using Microsoft.IdentityModel.Tokens;
+using System.Text;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 //var databaseConnection = new DatabaseConnection("ReMarket", "root", "toor1234");
 
@@ -16,10 +20,28 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         ServerVersion.AutoDetect(builder.Configuration.GetConnectionString("DefaultConnection"))
     ));
 
+builder.Services.AddAuthentication("Bearer")
+    .AddJwtBearer("Bearer", options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = false,
+            ValidateAudience = false,
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes("YOUR_SECRET_KEY_HERE"))
+        };
+    });
+
+builder.Services.AddAuthorization();
+
+
 var app = builder.Build();
 
 app.UseDefaultFiles();
 app.UseStaticFiles();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.Use(async (context, next) =>
 {
@@ -82,20 +104,56 @@ app.MapGet("/api/products", async (
     return Results.Json(listings);
 });
 
-/*string filePath = "C:\\Users\\Zuzia\\Aleksander\\Remarket_SE2\\Code\\Backend\\example.jpg"; // path to an image file
-string name = Path.GetFileName(filePath);
-byte[] imageBytes = File.ReadAllBytes(filePath);
-string base64String = Convert.ToBase64String(imageBytes);
+app.MapPost("/api/login", async (
+    AppDbContext db,
+    string? email,
+    string? password) =>
+{
+    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
+        return Results.BadRequest("Email and password are required.");
 
-Photo photo = new Photo(name, base64String, false);
-clothesListings[0].Thumbnail = photo;
-app.MapGet("/api/clothes", () => Results.Json(clothesListings));*/
+    var user = await db.Accounts.FirstOrDefaultAsync(u => u.Email == email);
+    if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+        return Results.Unauthorized();
 
-app.MapGet("/api/accessories", () => builder.Configuration.GetConnectionString("DefaultConnection"));
-app.MapGet("/api/toys", () => Results.Json(clothesListings));
-app.MapGet("/api/kids", () => Results.Json(clothesListings));
-app.MapGet("/api/women", () => Results.Json(clothesListings));
-app.MapGet("/api/men", () => Results.Json(clothesListings));
+    var claims = new[]
+    {
+        new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+        new Claim(ClaimTypes.Email, user.Email)
+    };
+
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YOUR_SECRET_KEY_HERE"));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var token = new JwtSecurityToken(
+        claims: claims,
+        expires: DateTime.Now.AddHours(1),
+        signingCredentials: creds);
+
+    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+    return Results.Ok(new { token = tokenString });
+});
+
+app.MapGet("/api/account", async (
+    ClaimsPrincipal user,
+    AppDbContext db) =>
+{
+    var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    int userId = int.Parse(userIdClaim.Value);
+
+    var account = await db.Accounts
+        .Where(a => a.Id == userId)
+        .Select(a => new { a.Id, a.Email, a.Name }) // don't return password
+        .FirstOrDefaultAsync();
+
+    return account is not null ? Results.Ok(account) : Results.NotFound();
+}).RequireAuthorization();
+
+app.MapGet("/api/connection_string", () => builder.Configuration.GetConnectionString("DefaultConnection"));
+
 
 app.MapGet("/api/info", () =>
 {

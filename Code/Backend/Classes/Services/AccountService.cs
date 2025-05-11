@@ -37,7 +37,7 @@ namespace ReMarket.Services
                 if (request.Password != request.ConfirmPassword)
                     return RegistrationResult.Failure("Passwords do not match");
 
-                var email = new Email(request.Email);
+                var email = request.Email;
 
                 Account? existing = null;
                 if (_useDatabase)
@@ -48,7 +48,7 @@ namespace ReMarket.Services
                 }
                 else
                 {
-                    existing = _accounts.FirstOrDefault(a => a.Email.Value == request.Email);
+                    existing = _accounts.FirstOrDefault(a => a.Email == request.Email);
                 }
 
                 if (existing != null)
@@ -100,7 +100,7 @@ namespace ReMarket.Services
             }
             else
             {
-                account = _accounts.FirstOrDefault(a => a.Email.Value == email);
+                account = _accounts.FirstOrDefault(a => a.Email == email);
             }
 
             if (account == null || !account.VerifyPassword(password))

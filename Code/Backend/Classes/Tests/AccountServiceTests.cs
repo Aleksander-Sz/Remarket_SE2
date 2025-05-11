@@ -125,7 +125,7 @@ namespace ReMarket.Tests
 
             Assert.True(result.IsSuccess);
             Assert.Equal(TestName, result.Account!.Name);
-            Assert.Equal(TestEmail, result.Account.Email.Value);
+            Assert.Equal(TestEmail, result.Account.Email);
             Assert.True(PasswordHasher.VerifyPassword(ValidPassword, result.Account.PasswordHash));
         }
 

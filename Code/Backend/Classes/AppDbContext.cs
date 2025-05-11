@@ -17,6 +17,7 @@ namespace ReMarket.Services
         public DbSet<Listing> Listings { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<Description> Descriptions { get; set; }
+        public DbSet<Account> Accounts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -28,6 +29,7 @@ namespace ReMarket.Services
                 .ToTable("category");
             modelBuilder.Entity<Description>()
                 .ToTable("description");
+
         }
     }
 }

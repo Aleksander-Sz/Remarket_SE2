@@ -92,7 +92,7 @@ namespace ReMarket.Tests.Database
                 Assert.NotNull(dbAccount);
                 Assert.Equal(TestName, dbAccount.Name);
                 Assert.Equal(TestUsername, dbAccount.Username);
-                Assert.Equal(TestEmail, dbAccount.Email.Value);
+                Assert.Equal(TestEmail, dbAccount.Email);
                 Assert.True(PasswordHasher.VerifyPassword(ValidPassword, dbAccount.PasswordHash));
             }
         }
@@ -104,7 +104,7 @@ namespace ReMarket.Tests.Database
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                var account = Account.Create(TestName, TestUsername, new Email(TestEmail), ValidPassword);
+                var account = Account.Create(TestName, TestUsername, TestEmail, ValidPassword);
                 account.MarkAsVerified();
                 account.SaveToDatabase(connection);
             }
@@ -113,7 +113,7 @@ namespace ReMarket.Tests.Database
 
             Assert.True(result.IsSuccess);
             Assert.Equal(TestName, result.Account!.Name);
-            Assert.Equal(TestEmail, result.Account!.Email.Value);
+            Assert.Equal(TestEmail, result.Account!.Email);
         }
 
         [Fact]
@@ -123,7 +123,7 @@ namespace ReMarket.Tests.Database
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                var account = Account.Create(TestName, TestUsername, new Email(TestEmail), ValidPassword);
+                var account = Account.Create(TestName, TestUsername, TestEmail, ValidPassword);
                 account.SaveToDatabase(connection);
             }
 
@@ -145,7 +145,7 @@ namespace ReMarket.Tests.Database
             using (var connection = new MySqlConnection(_connectionString))
             {
                 connection.Open();
-                var account = Account.Create(TestName, TestUsername, new Email(TestEmail), ValidPassword);
+                var account = Account.Create(TestName, TestUsername, TestEmail, ValidPassword);
                 account.MarkAsVerified();
                 account.SaveToDatabase(connection);
             }

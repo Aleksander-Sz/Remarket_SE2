@@ -14,7 +14,7 @@ namespace ReMarket.Models
     public class Account
     {
         public string Username { get; private set; }
-        public Email Email { get; private set; }
+        public string Email { get; private set; }
         public string PasswordHash { get; private set; }
 
         public string Name { get; set; }
@@ -23,14 +23,14 @@ namespace ReMarket.Models
         public int Id { get; private set; }
 
 
-        public Account(string name, string username, Email email, string passwordHash)
+        public Account(string name, string username, string email, string passwordHash)
         {
             Name = name;
             Username = username;
             Email = email;
             PasswordHash = passwordHash;
         }
-        public static Account Create(string name, string username, Email email, string password)
+        public static Account Create(string name, string username, string email, string password)
         {
             ValidateInputs(name, username, password);
 
@@ -78,7 +78,7 @@ namespace ReMarket.Models
                 SELECT LAST_INSERT_ID();", connection);
 
             command.Parameters.AddWithValue("@Username", Username);
-            command.Parameters.AddWithValue("@Email", Email.Value);
+            command.Parameters.AddWithValue("@Email", Email);
             command.Parameters.AddWithValue("@PasswordHash", PasswordHash);
             command.Parameters.AddWithValue("@Name", Name);
             command.Parameters.AddWithValue("@IsVerified", IsVerified);
@@ -102,7 +102,7 @@ namespace ReMarket.Models
             var account = new Account(
                 name: reader.GetString("Name"),
                 username: reader.GetString("Username"),
-                email: new Email(reader.GetString("Email")),
+                email: reader.GetString("Email"),
                 passwordHash: reader.GetString("PasswordHash")
             )
             {
