@@ -16,37 +16,43 @@ function ListingGrid() {
     minPrice: '',
     maxPrice: '',
   });
+  const fetchProducts = async () => {
+    try {
+        const response = await axios.get('/products', {
+            params: {
+                category: filters.category,
+                min_price: filters.minPrice,
+                max_price: filters.maxPrice,
+            },
+        });
+        const mapped = response.data.map((item) => ({
+            id: item.id,
+            title: item.title,
+            price: item.price,
+            imageUrl: getImageByCategory(item.category?.name || ''),
+    }));
+    setItems(mapped);
+    } catch (err) {
+    console.error('Backend unavailable, using dummy data');
+    const dummyListings = [
+        {
+        id: 1,
+        title: 'Vintage Jacket',
+        price: 29.99,
+        imageUrl: require('../assets/clothes.jpg'),
+        },
+        {
+        id: 2,
+        title: 'Leather Bag',
+        price: 24.99,
+        imageUrl: require('../assets/accessories.jpg'),
+        },
+    ];
+    setItems(dummyListings);
+    }
+};
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      try {
-        const response = await axios.get('/products');
-        const mapped = response.data.map((item) => ({
-          id: item.id,
-          title: item.title,
-          price: item.price,
-          imageUrl: getImageByCategory(item.category?.name || ''),
-        }));
-        setItems(mapped);
-      } catch (err) {
-        console.error('Backend unavailable, using dummy data');
-        const dummyListings = [
-          {
-            id: 1,
-            title: 'Vintage Jacket',
-            price: 29.99,
-            imageUrl: require('../assets/clothes.jpg'),
-          },
-          {
-            id: 2,
-            title: 'Leather Bag',
-            price: 24.99,
-            imageUrl: require('../assets/accessories.jpg'),
-          },
-        ];
-        setItems(dummyListings);
-      }
-    };
 
     fetchProducts();
   }, []);
@@ -71,14 +77,17 @@ function ListingGrid() {
           value={filters.category}
           onChange={(e) => setFilters({ ...filters, category: e.target.value })}
         >
-          <option value="">All Categories</option>
-          <option value="clothes">Clothes</option>
-          <option value="accessories">Accessories</option>
-          <option value="jewelry">Jewelry</option>
-          <option value="toys">Toys</option>
-          <option value="kids">Kids</option>
-          <option value="women">Women</option>
-          <option value="men">Men</option>
+                  <option value="">All Categories</option>
+                  <option value="clothing">Clothes</option>
+                  <option value="accessories">Accessories</option>
+                  <option value="jewelry">Jewelry</option>
+                  <option value="toys">Toys</option>
+                  <option value="kids">Kids</option>
+                  <option value="women">Women</option>
+                  <option value="men">Men</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="furniture">Furniture</option>
+                  <option value="toys">Toys</option>
         </select>
 
         <input
@@ -95,7 +104,7 @@ function ListingGrid() {
           onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
         />
 
-        <button disabled>Filter (disabled)</button>
+        <button onClick={() => fetchProducts()}>Filter</button>
       </form>
 
       <div className="grid">

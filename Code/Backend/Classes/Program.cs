@@ -4,6 +4,7 @@ using System;
 using ReMarket.Models;
 using ReMarket.Services;
 using System.Net.Http;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 //var databaseConnection = new DatabaseConnection("ReMarket", "root", "toor1234");
 
@@ -45,11 +46,28 @@ var clothesListings = new List<Listing>
 
 //clothesListings[0].Thumbnail = new Photo();
 //app.MapGet("/api/clothes", () => Results.Json(clothesListings));
-app.MapGet("/api/products", async (AppDbContext db) =>
+app.MapGet("/api/products", async (
+    AppDbContext db,
+    string? category,
+    string? min_price,
+    string? max_price) =>
 {
-    var listings = await db.Listings
+    var query = db.Listings
         .Include(l => l.Category)
         .Include(l => l.Description)
+        .AsQueryable();
+    if (!string.IsNullOrEmpty(category))
+    {
+        query = query.Where(l => l.Category.Name.ToLower() == category.ToLower());
+    }
+
+    if (decimal.TryParse(min_price, out var minVal))
+        query = query.Where(l => l.Price >= minVal);
+
+    if (decimal.TryParse(max_price, out var maxVal))
+        query = query.Where(l => l.Price <= maxVal);
+
+    var listings = await query
         .Select(l => new
         {
             l.Id,
