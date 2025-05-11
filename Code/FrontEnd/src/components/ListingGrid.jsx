@@ -1,4 +1,3 @@
-// src/components/ListingGrid.jsx
 import React, { useEffect, useState } from 'react';
 import './ListingGrid.css';
 import { motion } from 'framer-motion';
@@ -18,57 +17,68 @@ function ListingGrid() {
     maxPrice: '',
   });
 
-
-  // 🔁 Function to fetch products with filter query params
-  const fetchProducts = async () => {
-    try {
-      const params = {};
-      if (filters.category) params.category = filters.category;
-      if (filters.minPrice) params.minPrice = filters.minPrice;
-      if (filters.maxPrice) params.maxPrice = filters.maxPrice;
-
-      const response = await axios.get('/products', { params });
-
-      const products = response.data.map((item) => ({
-        ...item,
-        imageUrl: item.imageData
-          ? `data:image/jpeg;base64,${item.imageData}`
-          : null,
-      }));
-
-      setItems(products);
-    } catch (err) {
-      console.error('Failed to fetch products:', err);
-      setItems([]);
-    }
-  };
-
-  // ⏬ Load once on mount
   useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const response = await axios.get('/products');
+        const mapped = response.data.map((item) => ({
+          id: item.id,
+          title: item.title,
+          price: item.price,
+          imageUrl: getImageByCategory(item.category?.name || ''),
+        }));
+        setItems(mapped);
+      } catch (err) {
+        console.error('Backend unavailable, using dummy data');
+        const dummyListings = [
+          {
+            id: 1,
+            title: 'Vintage Jacket',
+            price: 29.99,
+            imageUrl: require('../assets/clothes.jpg'),
+          },
+          {
+            id: 2,
+            title: 'Leather Bag',
+            price: 24.99,
+            imageUrl: require('../assets/accessories.jpg'),
+          },
+        ];
+        setItems(dummyListings);
+      }
+    };
+
     fetchProducts();
   }, []);
 
-  // 🔘 Apply filters button
-  const handleFilter = (e) => {
-    e.preventDefault();
-    fetchProducts();
+  const getImageByCategory = (category) => {
+    switch (category.toLowerCase()) {
+      case 'clothing': return require('../assets/clothes.jpg');
+      case 'furniture': return require('../assets/accessories.jpg');
+      case 'books': return require('../assets/kids.jpg');
+      case 'toys': return require('../assets/toys.jpg');
+      case 'electronics': return require('../assets/men.jpg');
+      default: return require('../assets/clothes.jpg');
+    }
   };
 
   return (
     <section className="listing-grid">
       <h2 className="listing-title">Browse Listings</h2>
 
-      <form className="filter-form" onSubmit={handleFilter}>
+      <form className="filter-form" onSubmit={(e) => e.preventDefault()}>
         <select
           value={filters.category}
           onChange={(e) => setFilters({ ...filters, category: e.target.value })}
         >
           <option value="">All Categories</option>
-          <option value="Electronics">Electronics</option>
-          <option value="Furniture">Furniture</option>
-          <option value="Books">Books</option>
-          <option value="Clothing">Clothing</option>
-          <option value="Toys">Toys</option>
+          <option value="clothes">Clothes</option>
+          <option value="accessories">Accessories</option>
+          <option value="jewelry">Jewelry</option>
+          <option value="toys">Toys</option>
+          <option value="kids">Kids</option>
+          <option value="women">Women</option>
+          <option value="men">Men</option>
         </select>
 
         <input
@@ -85,11 +95,12 @@ function ListingGrid() {
           onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
         />
 
-        <button type="submit">Apply Filters</button>
+        <button disabled>Filter (disabled)</button>
       </form>
+
       <div className="grid">
-          {items.map((item) => {
-              const isWished = wishlist.find((w) => w.id === item.id);
+        {items.map((item) => {
+          const isWished = wishlist.find((w) => w.id === item.id);
 
           return (
             <motion.div
@@ -99,17 +110,9 @@ function ListingGrid() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              {item.imageUrl ? (
-                <img src={item.imageUrl} alt={item.title} />
-              ) : (
-                <div className="image-placeholder">No image</div>
-              )}
+              <img src={item.imageUrl} alt={item.title} />
               <h3>{item.title}</h3>
               <p>${item.price.toFixed(2)}</p>
-              <p className="desc">{item.description?.header}</p>
-              <p className="desc-small">{item.description?.paragraph}</p>
-              <p className="status">{item.status}</p>
-
               <button onClick={() => setSelectedItem(item)}>Buy Now</button>
               <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
                 {isWished ? <FaHeart color="red" /> : <FaRegHeart />}
@@ -119,6 +122,10 @@ function ListingGrid() {
         })}
       </div>
 
+      {selectedItem && (
+        <PaymentModal item={selectedItem} onClose={() => setSelectedItem(null)} />
+      )}
+    </section>
   );
 }
 
