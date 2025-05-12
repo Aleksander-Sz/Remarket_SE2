@@ -115,6 +115,7 @@ app.MapPost("/api/login", async (
         return Results.BadRequest("Email and password are required.");
 
     var user = await db.Accounts.FirstOrDefaultAsync(u => u.Email == email);
+    //return Results.Json(user);
     if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
         return Results.Unauthorized();
 
@@ -124,7 +125,7 @@ app.MapPost("/api/login", async (
         new Claim(ClaimTypes.Email, user.Email)
     };
 
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("YOUR_SECRET_KEY_HERE"));
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("p8ZfQsR2Xj6sDk93YtBLu7cV1gX9aEfM"));
     var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
     var token = new JwtSecurityToken(
         claims: claims,
