@@ -10,6 +10,8 @@ using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.Data;
+using Mysqlx.Crud;
+using System.Drawing;
 
 //var databaseConnection = new DatabaseConnection("ReMarket", "root", "toor1234");
 
@@ -30,7 +32,7 @@ builder.Services.AddAuthentication("Bearer")
             ValidateAudience = false,
             ValidateIssuerSigningKey = true,
             IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes("YOUR_SECRET_KEY_HERE"))
+                Encoding.UTF8.GetBytes("p8ZfQsR2Xj6sDk93YtBLu7cV1gX9aEfM"))
         };
     });
 
@@ -73,7 +75,9 @@ app.MapGet("/api/products", async (
     AppDbContext db,
     string? category,
     string? min_price,
-    string? max_price) =>
+    string? max_price,
+    string? page,
+    string? limit) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -89,6 +93,14 @@ app.MapGet("/api/products", async (
 
     if (decimal.TryParse(max_price, out var maxVal))
         query = query.Where(l => l.Price <= maxVal);
+
+    // page and limit
+
+    if (Int32.TryParse(page, out var pageVal) && Int32.TryParse(limit, out var limitVal))
+    {
+        int skip = (pageVal - 1) * limitVal;
+        query = query.Skip(skip).Take(limitVal);
+    }
 
     var listings = await query
         .Select(l => new
