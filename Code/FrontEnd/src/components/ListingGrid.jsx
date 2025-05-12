@@ -16,46 +16,41 @@ function ListingGrid() {
     minPrice: '',
     maxPrice: '',
   });
+
+  const [page, setPage] = useState(1);
+  const [hasMore, setHasMore] = useState(true); // determines if next page exists
+  const ITEMS_PER_PAGE = 40;
+
   const fetchProducts = async () => {
     try {
-        const response = await axios.get('/products', {
-            params: {
-                category: filters.category,
-                min_price: filters.minPrice,
-                max_price: filters.maxPrice,
-            },
-        });
-        const mapped = response.data.map((item) => ({
-            id: item.id,
-            title: item.title,
-            price: item.price,
-            imageUrl: getImageByCategory(item.category?.name || ''),
-    }));
-    setItems(mapped);
+      const response = await axios.get('/products', {
+        params: {
+          category: filters.category,
+          min_price: filters.minPrice,
+          max_price: filters.maxPrice,
+          page,
+          limit: ITEMS_PER_PAGE,
+        },
+      });
+
+      const mapped = response.data.map((item) => ({
+        id: item.id,
+        title: item.title,
+        price: item.price,
+        imageUrl: getImageByCategory(item.category?.name || ''),
+      }));
+
+      setItems(mapped);
+      setHasMore(mapped.length === ITEMS_PER_PAGE); // if less than 40 → no more pages
     } catch (err) {
-    console.error('Backend unavailable, using dummy data');
-    const dummyListings = [
-        {
-        id: 1,
-        title: 'Vintage Jacket',
-        price: 29.99,
-        imageUrl: require('../assets/clothes.jpg'),
-        },
-        {
-        id: 2,
-        title: 'Leather Bag',
-        price: 24.99,
-        imageUrl: require('../assets/accessories.jpg'),
-        },
-    ];
-    setItems(dummyListings);
+      console.error('Backend unavailable, using dummy data');
+      setItems([]);
     }
-};
+  };
 
   useEffect(() => {
-
     fetchProducts();
-  }, []);
+  }, [page]); // fetch when page changes
 
   const getImageByCategory = (category) => {
     switch (category.toLowerCase()) {
@@ -68,26 +63,31 @@ function ListingGrid() {
     }
   };
 
+  const handleFilter = (e) => {
+    e.preventDefault();
+    setPage(1); // reset to first page on filter
+    fetchProducts();
+  };
+
   return (
     <section className="listing-grid">
       <h2 className="listing-title">Browse Listings</h2>
 
-      <form className="filter-form" onSubmit={(e) => e.preventDefault()}>
+      <form className="filter-form" onSubmit={handleFilter}>
         <select
           value={filters.category}
           onChange={(e) => setFilters({ ...filters, category: e.target.value })}
         >
-                  <option value="">All Categories</option>
-                  <option value="clothing">Clothes</option>
-                  <option value="accessories">Accessories</option>
-                  <option value="jewelry">Jewelry</option>
-                  <option value="toys">Toys</option>
-                  <option value="kids">Kids</option>
-                  <option value="women">Women</option>
-                  <option value="men">Men</option>
-                  <option value="electronics">Electronics</option>
-                  <option value="furniture">Furniture</option>
-                  <option value="toys">Toys</option>
+          <option value="">All Categories</option>
+          <option value="clothing">Clothes</option>
+          <option value="accessories">Accessories</option>
+          <option value="jewelry">Jewelry</option>
+          <option value="toys">Toys</option>
+          <option value="kids">Kids</option>
+          <option value="women">Women</option>
+          <option value="men">Men</option>
+          <option value="electronics">Electronics</option>
+          <option value="furniture">Furniture</option>
         </select>
 
         <input
@@ -104,13 +104,12 @@ function ListingGrid() {
           onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
         />
 
-        <button onClick={() => fetchProducts()}>Filter</button>
+        <button type="submit">Filter</button>
       </form>
 
       <div className="grid">
         {items.map((item) => {
           const isWished = wishlist.find((w) => w.id === item.id);
-
           return (
             <motion.div
               className="listing-card"
@@ -129,6 +128,17 @@ function ListingGrid() {
             </motion.div>
           );
         })}
+      </div>
+
+      {/* Pagination */}
+      <div className="pagination-controls">
+        <button onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1}>
+          ◀ Previous
+        </button>
+        <span>Page {page}</span>
+        <button onClick={() => setPage((p) => p + 1)} disabled={!hasMore}>
+          Next ▶
+        </button>
       </div>
 
       {selectedItem && (

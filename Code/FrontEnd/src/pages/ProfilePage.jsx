@@ -1,105 +1,54 @@
 // src/pages/ProfilePage.jsx
-import React from 'react';
+import { useEffect, useState } from 'react';
+import axios from '../api/axiosInstance';
 import './ProfilePage.css';
 import { useUser } from '../context/UserContext';
-import { useWishlist } from '../context/WishlistContext';
+import { useNavigate } from 'react-router-dom';
 
 function ProfilePage() {
-  const { role, name, email } = useUser();
-  const { wishlist } = useWishlist();
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const { logout } = useUser();
+  const navigate = useNavigate();
 
-  const dummyAdminData = {
-    users: [
-      { id: 1, name: 'User One', email: 'user1@example.com' },
-      { id: 2, name: 'User Two', email: 'user2@example.com' },
-    ],
-    listings: [
-      { id: 101, title: 'Old Chair', seller: 'User One' },
-      { id: 102, title: 'Classic Clock', seller: 'User Two' },
-    ],
+  useEffect(() => {
+    const fetchProfile = async () => {
+      try {
+        const response = await axios.get('/account');
+        setUser(response.data); // { username, email }
+      } catch (err) {
+        if (err.response && err.response.status === 401) {
+          setError('You must be logged in to view this page.');
+        } else {
+          setError('Failed to load profile.');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProfile();
+  }, []);
+
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
   };
-
-  const dummySellerListings = [
-    'Vintage Bag',
-    'Faded Jeans',
-    'Antique Watch',
-  ];
-  // Later:
-// useEffect(() => {
-//   axios.get('/profile').then(res => {
-//     update context with res.data
-//   });
-// }, []);
-
 
   return (
     <div className="profile-container">
-      <h1>Welcome, {name}</h1>
-      <p>Email: {email}</p>
-
-      {/* USER SECTION */}
-      {role === 'user' && (
+      {loading ? (
+        <p>Loading profile...</p>
+      ) : error ? (
+        <p style={{ color: 'red' }}>{error}</p>
+      ) : (
         <>
-          <h2>Your Wishlist</h2>
-          {wishlist.length === 0 ? (
-            <p>You have no items in your wishlist.</p>
-          ) : (
-            <ul>
-              {wishlist.map((item) => (
-                <li key={item.id}>{item.title}</li>
-              ))}
-            </ul>
-          )}
-        </>
-      )}
-
-      {/* SELLER SECTION */}
-      {role === 'seller' && (
-        <>
-          <h2>Your Store: {name}'s Shop</h2>
-          <h3>Your Listings</h3>
-          <ul>
-            {dummySellerListings.map((item, index) => (
-              <li key={index}>{item}</li>
-            ))}
-          </ul>
-        </>
-      )}
-
-      {/* ADMIN SECTION */}
-      {role === 'admin' && (
-        <>
-          <h2>Admin Panel</h2>
-
-          <h3>Manage Users</h3>
-          <ul className="admin-list">
-            {dummyAdminData.users.map((user) => (
-              <li key={user.id}>
-                <span>{user.name} ({user.email})</span>
-                <button
-                  className="ban-btn"
-                  onClick={() => alert(`User ${user.name} banned (simulated)`)}
-                >
-                  Ban
-                </button>
-              </li>
-            ))}
-          </ul>
-
-          <h3>Manage Listings</h3>
-          <ul className="admin-list">
-            {dummyAdminData.listings.map((listing) => (
-              <li key={listing.id}>
-                <span>{listing.title} by {listing.seller}</span>
-                <button
-                  className="delete-btn"
-                  onClick={() => alert(`Listing ${listing.title} removed (simulated)`)}
-                >
-                  Delete
-                </button>
-              </li>
-            ))}
-          </ul>
+          <h1>Welcome, {user.username}!</h1>
+          <p>Email: {user.email}</p>
+          <button className="logout-btn" onClick={handleLogout}>
+            Log Out
+          </button>
         </>
       )}
     </div>
