@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
+using Microsoft.AspNetCore.Identity.Data;
 
 //var databaseConnection = new DatabaseConnection("ReMarket", "root", "toor1234");
 
@@ -106,14 +107,15 @@ app.MapGet("/api/products", async (
 
 app.MapPost("/api/login", async (
     AppDbContext db,
-    string? email,
-    string? password) =>
+    LoginRequest request) =>
 {
+    var email = request.Email;
+    var password = request.Password;
     if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
         return Results.BadRequest("Email and password are required.");
 
     var user = await db.Accounts.FirstOrDefaultAsync(u => u.Email == email);
-    if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
+    if (user == null || !BCrypt.Net.BCrypt.Verify(password, user.Password))
         return Results.Unauthorized();
 
     var claims = new[]
@@ -146,7 +148,7 @@ app.MapGet("/api/account", async (
 
     var account = await db.Accounts
         .Where(a => a.Id == userId)
-        .Select(a => new { a.Id, a.Email, a.Name }) // don't return password
+        .Select(a => new { a.Id, a.Email, a.Username }) // don't return password
         .FirstOrDefaultAsync();
 
     return account is not null ? Results.Ok(account) : Results.NotFound();

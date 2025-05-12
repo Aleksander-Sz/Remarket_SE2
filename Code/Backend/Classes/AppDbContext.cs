@@ -29,7 +29,8 @@ namespace ReMarket.Services
                 .ToTable("category");
             modelBuilder.Entity<Description>()
                 .ToTable("description");
-
+            modelBuilder.Entity<Account>()
+                .ToTable("account");
         }
     }
 }

@@ -3,7 +3,9 @@ import './Login.css';
 import { useUser } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { dummyUsers } from '../data/dummyUsers';
+import axios from '../api/axiosInstance';
+
+
 
 function Login() {
   const { loginAs } = useUser();
@@ -13,20 +15,32 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+    const handleLogin = async (e) => {
+        e.preventDefault();
+        setError('');
 
-    const user = dummyUsers.find(
-      (u) => u.email === email && u.password === password
-    );
+        try {
+            const response = await axios.post('/login', {
+                email,
+                password
+            });
 
-    if (user) {
-      loginAs({ name: user.name, role: user.role, email: user.email });
-      navigate('/profile');
-    } else {
-      setError('Invalid email or password.');
-    }
-  };
+            const { token } = response.data;
+
+            // Optional: Decode token or fetch user details here
+            // For now we assume backend uses JWT and you’ll decode it later if needed
+
+            // Example user info (customize this based on your app's token or claims)
+            loginAs({ email });
+
+            // Store token (in localStorage or context)
+            localStorage.setItem('token', token);
+
+            navigate('/profile');
+        } catch (err) {
+            setError('Invalid email or password.');
+        }
+    };
 
   return (
     <div className="login-page">

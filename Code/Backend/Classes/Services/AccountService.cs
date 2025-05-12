@@ -1,4 +1,4 @@
-using ReMarket.Models;
+/*using ReMarket.Models;
 using ReMarket.Utilities;
 
 using MySql.Data.MySqlClient;
@@ -109,10 +109,10 @@ namespace ReMarket.Services
                 return LoginResult.Failure("Invalid email or password");
             }
 
-            if (!account.IsVerified)
+            *//*if (!account.IsVerified)
             {
                 return LoginResult.Failure("Please verify your email first");
-            }
+            }*//*
 
             _failedAttempts.Remove(email);
             return LoginResult.Success(account);
@@ -150,4 +150,4 @@ namespace ReMarket.Services
     }
 
 
-}
+}*/

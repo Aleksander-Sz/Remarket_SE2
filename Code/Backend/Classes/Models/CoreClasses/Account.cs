@@ -15,38 +15,30 @@ namespace ReMarket.Models
     {
         public string Username { get; private set; }
         public string Email { get; private set; }
-        public string PasswordHash { get; private set; }
-
-        public string Name { get; set; }
-        public bool IsVerified { get; private set; } = false;
-        public List<WebUser> WebUsers { get; set; } = new List<WebUser>();
+        public string Password { get; private set; }
         public int Id { get; private set; }
 
 
-        public Account(string name, string username, string email, string passwordHash)
+        public Account(string username, string email, string password)
         {
-            Name = name;
             Username = username;
             Email = email;
-            PasswordHash = passwordHash;
+            Password = password;
         }
-        public static Account Create(string name, string username, string email, string password)
+        public static Account Create(string username, string email, string password)
         {
-            ValidateInputs(name, username, password);
+            ValidateInputs(username, password);
 
-            return new Account(name, username, email, PasswordHasher.HashPassword(password))
+            return new Account(username, email, password)
             {
-                Name = name,
                 Username = username,
                 Email = email,
-                PasswordHash = PasswordHasher.HashPassword(password)
+                Password = password
             };
         }
 
-        private static void ValidateInputs(string name, string username, string password)
+        private static void ValidateInputs(string username, string password)
         {
-            if (string.IsNullOrWhiteSpace(name))
-                throw new ArgumentException("Name is required");
 
             if (string.IsNullOrWhiteSpace(username))
                 throw new ArgumentException("Username is required");
@@ -64,10 +56,8 @@ namespace ReMarket.Models
         }
         public bool VerifyPassword(string inputPassword)
         {
-            return PasswordHasher.VerifyPassword(inputPassword, PasswordHash);
+            return PasswordHasher.VerifyPassword(inputPassword, Password);
         }
-        //this is to be done after email is confirmed
-        public void MarkAsVerified() => IsVerified = true;
 
 
         public void SaveToDatabase(MySqlConnection connection)
@@ -79,9 +69,7 @@ namespace ReMarket.Models
 
             command.Parameters.AddWithValue("@Username", Username);
             command.Parameters.AddWithValue("@Email", Email);
-            command.Parameters.AddWithValue("@PasswordHash", PasswordHash);
-            command.Parameters.AddWithValue("@Name", Name);
-            command.Parameters.AddWithValue("@IsVerified", IsVerified);
+            command.Parameters.AddWithValue("@PasswordHash", Password);
 
             Id = Convert.ToInt32(command.ExecuteScalar());
         }
@@ -100,14 +88,12 @@ namespace ReMarket.Models
             if (!reader.Read()) return null;
 
             var account = new Account(
-                name: reader.GetString("Name"),
                 username: reader.GetString("Username"),
                 email: reader.GetString("Email"),
-                passwordHash: reader.GetString("PasswordHash")
+                password: reader.GetString("PasswordHash")
             )
             {
                 Id = reader.GetInt32("Id"),
-                IsVerified = reader.GetBoolean("IsVerified")
             };
 
             return account;
