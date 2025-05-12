@@ -68,7 +68,8 @@ app.MapGet("/api/products", async (
     string? min_price,
     string? max_price,
     string? page,
-    string? limit) =>
+    string? limit,
+    string? index) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -81,19 +82,27 @@ app.MapGet("/api/products", async (
         query = query.Where(l => l.Category.Name.ToLower() == category.ToLower());
     }
 
-    if (decimal.TryParse(min_price, out var minVal))
-        query = query.Where(l => l.Price >= minVal);
-
-    if (decimal.TryParse(max_price, out var maxVal))
-        query = query.Where(l => l.Price <= maxVal);
-
-    // page and limit
-
-    if (Int32.TryParse(page, out var pageVal) && Int32.TryParse(limit, out var limitVal))
+    if (Int32.TryParse(index, out var indexVal))
     {
-        int skip = (pageVal - 1) * limitVal;
-        query = query.Skip(skip).Take(limitVal);
+        query = query.Where(l => l.Id == indexVal);
     }
+    else
+    {
+        if (decimal.TryParse(min_price, out var minVal))
+            query = query.Where(l => l.Price >= minVal);
+
+        if (decimal.TryParse(max_price, out var maxVal))
+            query = query.Where(l => l.Price <= maxVal);
+
+        // page and limit
+
+        if (Int32.TryParse(page, out var pageVal) && Int32.TryParse(limit, out var limitVal))
+        {
+            int skip = (pageVal - 1) * limitVal;
+            query = query.Skip(skip).Take(limitVal);
+        }
+    }
+
 
     var listings = await query
         .Select(l => new
