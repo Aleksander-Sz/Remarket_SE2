@@ -25,6 +25,7 @@ export const UserProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('remarket-user');
+    localStorage.removeItem('token');
     setRole('');
     setName('');
     setEmail('');
