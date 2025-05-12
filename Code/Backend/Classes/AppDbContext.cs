@@ -24,9 +24,9 @@ namespace ReMarket.Services
         {
             base.OnModelCreating(modelBuilder);
 
-            // Ensure your Listing entity maps to the 'listing' table in the database
+            
             modelBuilder.Entity<Listing>()
-                .ToTable("listing");  // Specify the exact table name (singular 'listing')
+                .ToTable("listing");
             modelBuilder.Entity<Category>()
                 .ToTable("category");
             modelBuilder.Entity<Description>()
@@ -41,12 +41,12 @@ namespace ReMarket.Services
 
             modelBuilder.Entity<ListingPhoto>()
                 .HasOne(lp => lp.Listing)
-                .WithMany() // You can specify `.WithMany(l => l.ListingPhotos)` if you add that collection to `Listing`
+                .WithMany(l => l.ListingPhotos)
                 .HasForeignKey(lp => lp.ListingId);
 
             modelBuilder.Entity<ListingPhoto>()
                 .HasOne(lp => lp.Photo)
-                .WithMany() // Likewise, .WithMany(p => p.ListingPhotos) if you add the collection to `Photo`
+                .WithMany()
                 .HasForeignKey(lp => lp.PhotoId);
 
         }

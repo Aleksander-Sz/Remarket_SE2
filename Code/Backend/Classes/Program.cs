@@ -73,6 +73,8 @@ app.MapGet("/api/products", async (
     var query = db.Listings
         .Include(l => l.Category)
         .Include(l => l.Description)
+        .Include(l => l.ListingPhotos)
+        .ThenInclude(lp => lp.Photo)
         .AsQueryable();
     if (!string.IsNullOrEmpty(category))
     {
@@ -101,7 +103,8 @@ app.MapGet("/api/products", async (
             l.Price,
             Category = new { l.Category.Id, l.Category.Name },
             Description = new { l.Description.Id, l.Description.Header, l.Description.Paragraph },
-            Status = l.Status.ToString()
+            Status = l.Status.ToString(),
+            PhotoIds = l.ListingPhotos.Select(lp => lp.PhotoId).ToList()
         })
         .ToListAsync();
 
