@@ -1,3 +1,11 @@
+using System;
+using System.Collections.Generic;
+using ReMarket.Services;
+using MySql.Data.MySqlClient;
+using System.Data;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
+
 namespace ReMarket.Models
 {
     public class Photo
@@ -6,15 +14,17 @@ namespace ReMarket.Models
         //It contains attributes like name and bytes,representing the image data.
         //A listing can have zero or more photos (0..*), reflecting optional visual content for listings.
         public int Id { get; set; }
-        public string Name { get; set; }
-        public string Bytes { get; set; }
-        public bool IsThumbnail { get; set;} //added for the sake of user story 3.1.1
+        //public string Name { get; set; }
+        public byte[] Bytes { get; set; }
+        //public bool IsThumbnail { get; set;} //added for the sake of user story 3.1.1
+        public ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();
 
-        public Photo(string name, string bytes, bool isThumbnail = false)
+        public Photo(int id, byte[] bytes)
         {
-            Name = name;
+            //Name = name;
+            Id = id;
             Bytes = bytes;
-            IsThumbnail = isThumbnail;
+            //IsThumbnail = isThumbnail;
         }
     }
 }

@@ -60,15 +60,6 @@ app.Use(async (context, next) =>
     }
 });
 
-var clothesListings = new List<Listing>
-{
-    //new Listing(0,"Test Jacked",100,new Category(0,"Clothes"),new Description("Example desc", "more useful text")),
-    //new Listing(0,"Test Trousers",50,new Category(0,"Clothes"),new Description("Example desc", "more useful text lorem ipsum")),
-    //new Listing(0,"Test Blazer",70,new Category(0,"Clothes"),new Description("Example desc", "more useful text")),
-    //new Listing(0,"Test T-Shirt",20,new Category(0,"Clothes"),new Description("Example desc hello", "more useful text")),
-    //new Listing(0,"Test Coat",600,new Category(0,"Clothes"),new Description("Example desc 123", "more useful text"))
-};
-
 //clothesListings[0].Thumbnail = new Photo();
 //app.MapGet("/api/clothes", () => Results.Json(clothesListings));
 app.MapGet("/api/products", async (
@@ -115,6 +106,15 @@ app.MapGet("/api/products", async (
         .ToListAsync();
 
     return Results.Json(listings);
+});
+
+app.MapGet("/api/photo/{id}", async (int id, AppDbContext db) =>
+{
+    var photo = await db.Photos.FindAsync(id);
+    if (photo == null || photo.Bytes == null)
+        return Results.NotFound();
+
+    return Results.File(photo.Bytes, "image/jpeg"); // or image/png if needed
 });
 
 app.MapPost("/api/login", async (
@@ -178,40 +178,5 @@ app.MapGet("/api/info", () =>
     return Results.Json(new { time, userId });
 });
 
-/*app.MapPost("/api/login", async (HttpContext context, AppDbContext db) =>
-{
-    var loginRequest = await context.Request.ReadFromJsonAsync<LoginRequest>();
-    if (loginRequest == null) return Results.BadRequest();
-
-    var user = db.Accounts.FirstOrDefault(a => a.Username == loginRequest.Username);
-    if (user == null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.Password))
-        return Results.Unauthorized();
-
-    SessionManager.Login(user);
-    return Results.Ok(new { message = "Login successful" });
-});
-
-record LoginRequest(string Username, string Password);*/
-
-/*app.MapGet("/api/user", () =>
-{
-    var user = SessionManager.CurrentUser;
-    if (user == null)
-        return Results.Unauthorized();
-
-    return Results.Json(new
-    {
-        user.Id,
-        user.Username,
-        // inne pola je�li chcesz
-    });
-});
-
-
-app.MapPost("/api/logout", () =>
-{
-    SessionManager.Logout();
-    return Results.Ok(new { message = "Logged out" });
-});*/
 
 app.Run();

@@ -18,6 +18,8 @@ namespace ReMarket.Services
         public DbSet<Category> Categories { get; set; }
         public DbSet<Description> Descriptions { get; set; }
         public DbSet<Account> Accounts { get; set; }
+        public DbSet<Photo> Photos { get; set; }
+        public DbSet<ListingPhoto> ListingPhotos {  get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -31,6 +33,22 @@ namespace ReMarket.Services
                 .ToTable("description");
             modelBuilder.Entity<Account>()
                 .ToTable("account");
+            modelBuilder.Entity<Photo>()
+                .ToTable("photo");
+            modelBuilder.Entity<ListingPhoto>()
+                .ToTable("listingphoto")
+                .HasKey(lp => new { lp.ListingId, lp.PhotoId });
+
+            modelBuilder.Entity<ListingPhoto>()
+                .HasOne(lp => lp.Listing)
+                .WithMany() // You can specify `.WithMany(l => l.ListingPhotos)` if you add that collection to `Listing`
+                .HasForeignKey(lp => lp.ListingId);
+
+            modelBuilder.Entity<ListingPhoto>()
+                .HasOne(lp => lp.Photo)
+                .WithMany() // Likewise, .WithMany(p => p.ListingPhotos) if you add the collection to `Photo`
+                .HasForeignKey(lp => lp.PhotoId);
+
         }
     }
 }

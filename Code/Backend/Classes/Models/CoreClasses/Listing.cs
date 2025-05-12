@@ -31,7 +31,8 @@ namespace ReMarket.Models
         public int? ThumbnailId { get; set; }
         public Photo? Thumbnail { get; set; }
 
-        public List<Photo> Photos { get; set; } = new();
+        public ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();
+
 
     }
 }
