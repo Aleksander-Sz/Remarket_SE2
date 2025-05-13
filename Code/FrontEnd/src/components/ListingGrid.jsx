@@ -8,6 +8,7 @@ import axios from '../api/axiosInstance';
 
 function ListingGrid() {
   const [items, setItems] = useState([]);
+  const [categories, setCategories] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const { wishlist, toggleWishlist } = useWishlist();
 
@@ -20,6 +21,16 @@ function ListingGrid() {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true); // determines if next page exists
   const ITEMS_PER_PAGE = 40;
+
+  const fetchCategories = async () => {
+      try {
+          const response = await axios.get('/categories');
+          setCategories(response.data);
+      } catch (error) {
+          console.error('Failed to load categories', error);
+          setCategories([]); // fallback to empty list
+      }
+  };
 
   const fetchProducts = async () => {
     try {
@@ -37,7 +48,7 @@ function ListingGrid() {
         id: item.id,
         title: item.title,
         price: item.price,
-        imageUrl: getImageByCategory(item.category?.name || ''),
+        imageIds: item.photoIds
       }));
 
       setItems(mapped);
@@ -47,12 +58,15 @@ function ListingGrid() {
       setItems([]);
     }
   };
+  useEffect(() => {
+      fetchCategories();
+  },[])
 
   useEffect(() => {
     fetchProducts();
   }, [page]); // fetch when page changes
 
-  const getImageByCategory = (category) => {
+/*  const getImageByCategory = (category) => {
     switch (category.toLowerCase()) {
       case 'clothing': return require('../assets/clothes.jpg');
       case 'furniture': return require('../assets/accessories.jpg');
@@ -61,7 +75,7 @@ function ListingGrid() {
       case 'electronics': return require('../assets/men.jpg');
       default: return require('../assets/clothes.jpg');
     }
-  };
+  };*/
 
   const handleFilter = (e) => {
     e.preventDefault();
@@ -79,15 +93,11 @@ function ListingGrid() {
           onChange={(e) => setFilters({ ...filters, category: e.target.value })}
         >
           <option value="">All Categories</option>
-          <option value="clothing">Clothes</option>
-          <option value="accessories">Accessories</option>
-          <option value="jewelry">Jewelry</option>
-          <option value="toys">Toys</option>
-          <option value="kids">Kids</option>
-          <option value="women">Women</option>
-          <option value="men">Men</option>
-          <option value="electronics">Electronics</option>
-          <option value="furniture">Furniture</option>
+          {categories.map((cat) => (
+              <option key={cat.id} value={cat.name.toLowerCase()}>
+                  {cat.name}
+              </option>
+          ))}
         </select>
 
         <input
@@ -118,7 +128,7 @@ function ListingGrid() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
             >
-              <img src={item.imageUrl} alt={item.title} />
+              <img src={`/api/photo/${item.imageIds[0]}`} alt={item.title} />
               <h3>{item.title}</h3>
               <p>${item.price.toFixed(2)}</p>
               <button onClick={() => setSelectedItem(item)}>Buy Now</button>

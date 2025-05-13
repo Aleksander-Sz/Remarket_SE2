@@ -132,6 +132,12 @@ app.MapGet("/api/products", async (
     return Results.Json(listings);
 });
 
+app.MapGet("/api/categories", async (AppDbContext db) =>
+{
+    var categories = await db.Categories.ToListAsync();
+    return Results.Json(categories);
+});
+
 app.MapGet("/api/photo/{id}", async (int id, AppDbContext db) =>
 {
     var photo = await db.Photos.FindAsync(id);
