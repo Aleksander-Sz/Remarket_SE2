@@ -51,5 +51,5 @@ FInish 1 sprint within 2 weeks
     /photo/{id} [GET] - returns a photo with the specific id
     /login [POST] - is used for logging in
     /account [GET] - returns the account details of the logged in user
-
+    /categories [GET] - returns the list of all available categories
 
