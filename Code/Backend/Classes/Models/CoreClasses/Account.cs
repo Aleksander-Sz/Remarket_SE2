@@ -2,6 +2,7 @@ using System;
 using MySql.Data.MySqlClient;
 using System.Data;
 using ReMarket.Utilities;
+
 namespace ReMarket.Models
 {
     //"The Account class represents the user account details."
@@ -25,17 +26,15 @@ namespace ReMarket.Models
             Email = email;
             Password = password;
         }
+
+
         public static Account Create(string username, string email, string password)
         {
             ValidateInputs(username, password);
-
-            return new Account(username, email, password)
-            {
-                Username = username,
-                Email = email,
-                Password = password
-            };
+            string hashedPassword = PasswordHasher.HashPassword(password);
+            return new Account(username, email, hashedPassword);
         }
+
 
         private static void ValidateInputs(string username, string password)
         {
