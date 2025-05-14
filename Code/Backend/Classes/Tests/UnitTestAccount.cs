@@ -7,7 +7,7 @@ using ReMarket.Utilities;
 
 namespace Tests;
 
-public class UnitTest1
+public class UnitTestAccount
 {
     public class AccountTests
     {
