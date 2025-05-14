@@ -12,6 +12,14 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.Data;
 using Mysqlx.Crud;
 using System.Drawing;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity.Data;
+
+
+
 
 //var databaseConnection = new DatabaseConnection("ReMarket", "root", "toor1234");
 
@@ -204,3 +212,5 @@ app.MapGet("/api/info", () =>
 
 
 app.Run();
+
+public partial class Program { }
