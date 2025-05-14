@@ -5,11 +5,14 @@ import PaymentModal from '../components/PaymentModal';
 import { useWishlist } from '../context/WishlistContext';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import axios from '../api/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 
 function ListingGrid() {
   const [items, setItems] = useState([]);
   const [selectedItem, setSelectedItem] = useState(null);
   const { wishlist, toggleWishlist } = useWishlist();
+  const navigate = useNavigate();
+
 
   const [filters, setFilters] = useState({
     category: '',
@@ -121,7 +124,9 @@ function ListingGrid() {
               <img src={item.imageUrl} alt={item.title} />
               <h3>{item.title}</h3>
               <p>${item.price.toFixed(2)}</p>
-              <button onClick={() => setSelectedItem(item)}>Buy Now</button>
+             <button onClick={() => setSelectedItem(item)}>Buy Now</button>
+             <button onClick={() => navigate(`/product/${item.id}`)}>Learn More</button>
+
               <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
                 {isWished ? <FaHeart color="red" /> : <FaRegHeart />}
               </span>
