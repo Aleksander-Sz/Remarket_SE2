@@ -1,4 +1,4 @@
-// src/pages/ProductDetail.jsx
+﻿// src/pages/ProductDetail.jsx
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from '../api/axiosInstance';
@@ -19,12 +19,13 @@ function ProductDetail() {
   return (
     <div className="product-detail-page">
       <div className="image-section">
-        <img src={`data:image/jpeg;base64,${product.imageData}`} alt={product.title} />
+        <img src={`/api/photo/${product.photoIds[0]}`} alt={product.title} />
       </div>
       <div className="info-section">
         <h1>{product.title}</h1>
         <p><strong>Price:</strong> ${product.price}</p>
-        <p><strong>Description:</strong> {product.description?.paragraph}</p>
+        <p><strong>Description:</strong> {product.description?.header}</p>
+        <p>{product.description?.paragraph}</p>
         <p><strong>Status:</strong> {product.status}</p>
       </div>
     </div>
