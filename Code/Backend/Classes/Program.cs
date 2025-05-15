@@ -12,6 +12,14 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Identity.Data;
 using Mysqlx.Crud;
 using System.Drawing;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Identity.Data;
+
+
+
 
 //var databaseConnection = new DatabaseConnection("ReMarket", "root", "toor1234");
 
@@ -69,7 +77,7 @@ app.MapGet("/api/products", async (
     string? max_price,
     string? page,
     string? limit,
-    string? index) =>
+    string? id) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -82,25 +90,37 @@ app.MapGet("/api/products", async (
         query = query.Where(l => l.Category.Name.ToLower() == category.ToLower());
     }
 
-    if (Int32.TryParse(index, out var indexVal))
+    if (Int32.TryParse(id, out var idVal))
     {
-        query = query.Where(l => l.Id == indexVal);
+        var listing = await query
+            .Where(l => l.Id == idVal)
+            .Select(l => new
+            {
+                l.Id,
+                l.Title,
+                l.Price,
+                Category = new { l.Category.Id, l.Category.Name },
+                Description = new { l.Description.Id, l.Description.Header, l.Description.Paragraph },
+                Status = l.Status.ToString(),
+                PhotoIds = l.ListingPhotos.Select(lp => lp.PhotoId).ToList()
+            })
+            .FirstOrDefaultAsync();
+
+        return listing != null ? Results.Json(listing) : Results.NotFound();
     }
-    else
+    
+    if (decimal.TryParse(min_price, out var minVal))
+        query = query.Where(l => l.Price >= minVal);
+
+    if (decimal.TryParse(max_price, out var maxVal))
+        query = query.Where(l => l.Price <= maxVal);
+
+    // page and limit
+
+    if (Int32.TryParse(page, out var pageVal) && Int32.TryParse(limit, out var limitVal))
     {
-        if (decimal.TryParse(min_price, out var minVal))
-            query = query.Where(l => l.Price >= minVal);
-
-        if (decimal.TryParse(max_price, out var maxVal))
-            query = query.Where(l => l.Price <= maxVal);
-
-        // page and limit
-
-        if (Int32.TryParse(page, out var pageVal) && Int32.TryParse(limit, out var limitVal))
-        {
-            int skip = (pageVal - 1) * limitVal;
-            query = query.Skip(skip).Take(limitVal);
-        }
+        int skip = (pageVal - 1) * limitVal;
+        query = query.Skip(skip).Take(limitVal);
     }
 
 
@@ -118,6 +138,12 @@ app.MapGet("/api/products", async (
         .ToListAsync();
 
     return Results.Json(listings);
+});
+
+app.MapGet("/api/categories", async (AppDbContext db) =>
+{
+    var categories = await db.Categories.ToListAsync();
+    return Results.Json(categories);
 });
 
 app.MapGet("/api/photo/{id}", async (int id, AppDbContext db) =>
@@ -192,3 +218,5 @@ app.MapGet("/api/info", () =>
 
 
 app.Run();
+
+public partial class Program { }

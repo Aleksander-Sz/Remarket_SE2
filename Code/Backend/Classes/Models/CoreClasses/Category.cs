@@ -11,23 +11,10 @@ namespace ReMarket.Models
 
         [Required]
         public string Name { get; set; }
-    }
-}
-
-/*namespace ReMarket.Models
-
-{
-    //"The Category class organizes listings into logical groupings. 
-    //It includes an ID and a name, enabling the system to classify and filter listings. 
-    //Each category can have multiple associated listings (1..*)" 
-    public class Category
-    {
-        public int ID { get; set; }
-        public string Name { get; set; }
 
         public Category(int id, string name)
         {
-            ID = id;
+            Id = id;
             Name = name;
         }
         public static Category Create(string name)
@@ -42,14 +29,14 @@ namespace ReMarket.Models
                 connection);
 
             command.Parameters.AddWithValue("@Name", Name);
-            if (ID == 0)
+            if (Id == 0)
             {
-                ID = Convert.ToInt32(command.ExecuteScalar());
+                Id = Convert.ToInt32(command.ExecuteScalar());
             }
             else
             {
                 command.CommandText = "UPDATE Category SET name = @Name WHERE id = @Id";
-                command.Parameters.AddWithValue("@Id", ID);
+                command.Parameters.AddWithValue("@Id", Id);
                 command.ExecuteNonQuery();
             }
         }
@@ -102,4 +89,6 @@ namespace ReMarket.Models
             command.ExecuteNonQuery();
         }
     }
-}*/
+}
+
+

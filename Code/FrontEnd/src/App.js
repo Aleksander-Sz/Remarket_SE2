@@ -14,6 +14,7 @@ import ProfilePage from './pages/ProfilePage';
 import { WishlistProvider } from './context/WishlistContext';
 import { UserProvider } from './context/UserContext';
 import ListingGrid from './components/ListingGrid';
+import ProductDetail from './pages/ProductDetail';
 
 
 // Pages
@@ -83,6 +84,8 @@ function AnimatedRoutes() {
         <Route path="/dashboard" element={<><WipeTransition /><SellerDashboard /></>} />
         <Route path="/register" element={<><WipeTransition /><Register /></>} />
         <Route path="/about" element={<><WipeTransition /><AboutUs /></>} />
+        <Route path="/product/:productId" element={<><WipeTransition /><ProductDetail /></>} />
+
 
 
         
