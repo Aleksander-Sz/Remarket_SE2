@@ -15,6 +15,7 @@ import { WishlistProvider } from './context/WishlistContext';
 import { UserProvider } from './context/UserContext';
 import ListingGrid from './components/ListingGrid';
 import ProductDetail from './pages/ProductDetail';
+import CartPage from './pages/CartPage';
 
 
 // Pages
@@ -85,6 +86,7 @@ function AnimatedRoutes() {
         <Route path="/register" element={<><WipeTransition /><Register /></>} />
         <Route path="/about" element={<><WipeTransition /><AboutUs /></>} />
         <Route path="/product/:productId" element={<><WipeTransition /><ProductDetail /></>} />
+        <Route path="/cart" element={<><WipeTransition /><CartPage /></>} />
 
 
 
@@ -99,10 +101,12 @@ function App() {
   return (
     <UserProvider>
       <WishlistProvider>
+        <CartProvider>
         <Router>
           <Navbar />
           <AnimatedRoutes />
         </Router>
+        </CartProvider>
       </WishlistProvider>
     </UserProvider>
   );
