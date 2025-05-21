@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 function Navbar() {
-  const { email } = useUser(); // email is set on login, cleared on logout
+  const { email, role } = useUser(); // role = 'user' | 'seller' | 'admin'
 
   return (
     <nav className="navbar">
@@ -25,6 +25,9 @@ function Navbar() {
         {email ? (
           <>
             <Link to="/profile" className="login-link">Profile</Link>
+            {(role === 'seller' || role === 'admin') && (
+              <Link to="/mylistings"><i className="icon">📦</i></Link>
+            )}
             <Link to="/cart"><i className="icon">🛒</i></Link>
           </>
         ) : (
