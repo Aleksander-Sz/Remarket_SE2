@@ -1,11 +1,13 @@
 import './Navbar.css';
 import { Link } from 'react-router-dom';
+import { useUser } from '../context/UserContext';
 
 function Navbar() {
+  const { role } = useUser(); // check if logged in
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
-        {/* ✅ Make logo clickable */}
         <Link to="/" className="logo">ReMarket</Link>
       </div>
 
@@ -20,7 +22,9 @@ function Navbar() {
       <div className="navbar-right">
         <Link to="#"><i className="icon">🔍</i></Link>
         <Link to="/login" className="login-link">Login</Link>
-        <Link to="#"><i className="icon">🛒</i></Link>
+        {role && ( // ✅ only show cart when logged in
+          <Link to="/cart"><i className="icon">🛒</i></Link>
+        )}
       </div>
     </nav>
   );
