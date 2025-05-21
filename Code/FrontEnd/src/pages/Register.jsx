@@ -2,10 +2,19 @@
 import './Login.css';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { dummyUsers } from '../data/dummyUsers';
+import { useUser } from '../context/UserContext';
+import axios from '../api/axiosInstance';
+
+
 
 function Register() {
+  const { loginAs } = useUser();
   const navigate = useNavigate();
+
+  const [email, setEmail] = useState('');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
 
   const [form, setForm] = useState({
     name: '',
@@ -17,21 +26,46 @@ function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const exists = dummyUsers.find(u => u.email === form.email);
-    if (exists) {
-      setError('Email already registered.');
+    const handleSubmit = async (e) => {
+      e.preventDefault();
+      setError('');
       setSuccess('');
-      return;
-    }
 
-    dummyUsers.push(form);
-    setSuccess('Registered successfully. You can now log in.');
-    setError('');
-    setForm({ name: '', email: '', password: '', role: 'user' });
+      try {
+          const response = await axios.post('/register', {
+              email,
+              username,
+              password
+          });
 
-    setTimeout(() => navigate('/login'), 1500);
+          const { token } = response.data;
+
+          // Optional: Decode token or fetch user details here
+          // For now we assume backend uses JWT and you’ll decode it later if needed
+
+          // Example user info (customize this based on your app's token or claims)
+          loginAs({ email });
+
+          // Store token (in localStorage or context)
+          localStorage.setItem('token', token);
+
+          navigate('/profile');
+      } catch (err) {
+          if (err.response) {
+              const status = err.response.status;
+              const msg = err.response.data;
+
+              if (status === 400) {
+                  setError(typeof msg === 'string' ? msg : 'Missing or invalid input.');
+              } else if (status === 409) {
+                  setError('Email or username already exists.');
+              } else {
+                  setError('Something went wrong. Please try again.');
+              }
+          } else {
+              setError('Unable to connect to the server.');
+          }
+      }
   };
 
   return (

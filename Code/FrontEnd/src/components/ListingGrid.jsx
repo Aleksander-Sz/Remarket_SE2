@@ -6,6 +6,7 @@ import { useWishlist } from '../context/WishlistContext';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import axios from '../api/axiosInstance';
 import { useNavigate } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 function ListingGrid() {
   const [items, setItems] = useState([]);
@@ -123,6 +124,7 @@ function ListingGrid() {
       <div className="grid">
         {items.map((item) => {
           const isWished = wishlist.find((w) => w.id === item.id);
+          const { addToCart } = useCart();
           return (
             <motion.div
               className="listing-card"
@@ -136,6 +138,7 @@ function ListingGrid() {
               <p>${item.price.toFixed(2)}</p>
              <button onClick={() => setSelectedItem(item)}>Buy Now</button>
              <button onClick={() => navigate(`/product/${item.id}`)}>Learn More</button>
+             <button onClick={() => addToCart(item)}>Add to Cart</button>
 
               <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
                 {isWished ? <FaHeart color="red" /> : <FaRegHeart />}

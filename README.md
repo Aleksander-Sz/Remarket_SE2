@@ -52,4 +52,6 @@ FInish 1 sprint within 2 weeks
     /login [POST] - is used for logging in
     /account [GET] - returns the account details of the logged in user
     /categories [GET] - returns the list of all available categories
+    /register [POST] - used to create the user
+    /cart [GET] - returns the list of items in the cart
 
