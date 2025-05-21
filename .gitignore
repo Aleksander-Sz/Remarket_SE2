@@ -401,3 +401,4 @@ FodyWeavers.xsd
 
 #certificates
 *.pem
+Code/Backend/appsettings.json
