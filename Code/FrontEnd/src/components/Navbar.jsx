@@ -1,9 +1,24 @@
 import './Navbar.css';
-import { Link } from 'react-router-dom';
-import { useUser } from '../context/UserContext';
+import { Link, useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import axios from '../api/axiosInstance';
 
 function Navbar() {
-  const { role } = useUser(); // check if logged in
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkLogin = async () => {
+      try {
+        await axios.get('/account'); // backend will return 401 if not logged in
+        setIsLoggedIn(true);
+      } catch (err) {
+        setIsLoggedIn(false);
+      }
+    };
+
+    checkLogin();
+  }, []);
 
   return (
     <nav className="navbar">
@@ -21,9 +36,14 @@ function Navbar() {
 
       <div className="navbar-right">
         <Link to="#"><i className="icon">🔍</i></Link>
-        <Link to="/login" className="login-link">Login</Link>
-        {role && ( // ✅ only show cart when logged in
-          <Link to="/cart"><i className="icon">🛒</i></Link>
+
+        {isLoggedIn ? (
+          <>
+            <Link to="/profile" className="login-link">Profile</Link>
+            <Link to="/cart"><i className="icon">🛒</i></Link>
+          </>
+        ) : (
+          <Link to="/login" className="login-link">Login</Link>
         )}
       </div>
     </nav>
