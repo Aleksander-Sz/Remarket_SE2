@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 import ProfilePage from './pages/ProfilePage';
 import { WishlistProvider } from './context/WishlistContext';
 import { UserProvider } from './context/UserContext';
+import { CartProvider } from './context/CartContext';
 import ListingGrid from './components/ListingGrid';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
