@@ -32,7 +32,8 @@ import SuperDealsPage from './pages/SuperDealsPage';
 import SellerDashboard from './pages/SellerDashboard';
 import Register from './pages/Register';
 import AboutUs from './pages/AboutUs'; 
-import MyListingsPage from './pages/MyListingsPage';
+import MyListingPage from './pages/MyListingPage';
+
 
 
 
@@ -90,7 +91,7 @@ function AnimatedRoutes() {
         <Route path="/about" element={<><WipeTransition /><AboutUs /></>} />
         <Route path="/product/:productId" element={<><WipeTransition /><ProductDetail /></>} />
         <Route path="/cart" element={<><WipeTransition /><CartPage /></>} />
-        <Route path="/mylistings" element={<><WipeTransition /><MyListingsPage /></>} />
+        <Route path="/mylisting" element={<><WipeTransition /><MyListingPage /></>} />
 
 
 
