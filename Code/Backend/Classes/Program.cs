@@ -17,6 +17,9 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Identity.Data;
+using Microsoft.AspNetCore.Builder;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Hosting;
 
 
 
@@ -108,7 +111,7 @@ app.MapGet("/api/products", async (
 
         return listing != null ? Results.Json(listing) : Results.NotFound();
     }
-    
+
     if (decimal.TryParse(min_price, out var minVal))
         query = query.Where(l => l.Price >= minVal);
 
@@ -208,7 +211,7 @@ app.MapPost("/api/register", async (
         return Results.BadRequest("A user with this name already exists.");
 
     var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-    var newUser = new Account(username,email,password);
+    var newUser = new Account(username, email, password);
     db.Accounts.Add(newUser);
 
     var claims = new[]
@@ -257,6 +260,46 @@ app.MapGet("/api/info", () =>
 
     return Results.Json(new { time, userId });
 });
+
+/* payment system - not tested, not connected, hardcoded
+StripeConfiguration.ApiKey = //change here
+app.MapPost("/api/", async context => //change api call here
+{
+    var options = new Stripe.Checkout.SessionCreateOptions
+    {
+        PaymentMethodTypes = new List<string>
+        {
+            "card",
+        },
+        LineItems = new List<Stripe.Checkout.SessionLineItemOptions>
+        {
+            new Stripe.Checkout.SessionLineItemOptions
+            {
+                PriceData = new Stripe.Checkout.SessionLineItemPriceDataOptions
+                {
+                    UnitAmount = 1000, //this is 10zł, it is in smallest unit of the currency
+                    Currency = "pln",
+                    ProductData = new Stripe.Checkout.SessionLineItemPriceDataProductDataOptions
+                    {
+                        Name = "Mock Product",
+                        Description = "This is a fake product for demonstration purposes only"
+                    },
+                },
+                Quantity = 1,
+            },
+        },
+        Mode = "payment",
+        SuccessUrl = "https://example.com/success", //change here
+        CancelUrl = "https://example.com/cancel", //change here
+    };
+
+    var service = new Stripe.Checkout.SessionService();
+    var session = service.Create(options);
+
+    await context.Response.WriteAsJsonAsync(new { sessionId = session.Id });
+});
+});
+*/
 
 
 app.Run();
