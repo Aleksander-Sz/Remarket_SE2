@@ -1,35 +1,33 @@
+import axios from '.. /api/axiosInstance';
 import { createContext, useContext, useState, useEffect } from 'react';
-import axios from '../api/axiosInstance'; 
 
 const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
-  const [role, setRole] = useState(''); // '', 'user', 'seller', 'admin'
+  const [role, setRole] = useState(''); 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
 
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('remarket-user'));
     if (stored) {
-      setRole(stored.role || '');
-      setName(stored.name || '');
-      setEmail(stored.email || '');
+      setRole(stored.role || ' ');
+      setName(stored.name || ' ');
+      setEmail(stored.email || ' ');
     }
-
-    // ✅ Confirm session with backend
-    const verifySession = async () => {
-      try {
+    const verifySession = async() =>{
+      try{
         const res = await axios.get('/account');
-        setName(res.data.username);
-        setEmail(res.data.email);
-        // Optional: setRole(res.data.role) if backend sends it
-      } catch (err) {
-        if (err.response?.status === 401) {
-          logout(); // token invalid, clear context
+        setName(res.userData.name);
+        setEmail(res.userData.email);
+
+      }
+      catch(err){
+        if(err.response?.useState == 401){
+          logout();
         }
       }
-    };
-
+    }
     verifySession();
   }, []);
 
