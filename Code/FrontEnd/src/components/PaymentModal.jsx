@@ -1,24 +1,35 @@
-// src/components/PaymentModal.jsx
-import './PaymentModal.css';
+import { loadStripe } from '@stripe/stripe-js';
 import { useState } from 'react';
 
+const stripePromise = loadStripe('pk_test_YourPublicKeyHere'); // Replace with your Stripe public key
+
 function PaymentModal({ item, onClose }) {
-  const [formData, setFormData] = useState({
-    name: '',
-    cardNumber: '',
-    expiry: '',
-    cvc: '',
-  });
+  const [loading, setLoading] = useState(false);
 
-  const handleChange = (e) => {
-    setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
-  };
+  const handlePay = async () => {
+    setLoading(true);
+    const stripe = await stripePromise;
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Paid for:', item.title, formData);
-    alert(`Payment submitted for ${item.title} (simulated)`);
-    onClose(); // Close modal after fake payment
+    const response = await fetch('http://localhost:5000/api/payments/create-checkout-session', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        title: item.title,
+        price: item.price,
+      }),
+    });
+
+    const session = await response.json();
+
+    const result = await stripe.redirectToCheckout({
+      sessionId: session.id,
+    });
+
+    if (result.error) {
+      alert(result.error.message);
+    }
+
+    setLoading(false);
   };
 
   return (
@@ -26,15 +37,10 @@ function PaymentModal({ item, onClose }) {
       <div className="payment-modal">
         <button className="close-btn" onClick={onClose}>×</button>
         <h2>Pay for {item.title}</h2>
-        <form onSubmit={handleSubmit} className="payment-form">
-          <input type="text" name="name" placeholder="Name on Card" required value={formData.name} onChange={handleChange} />
-          <input type="text" name="cardNumber" placeholder="Card Number" required value={formData.cardNumber} onChange={handleChange} />
-          <div className="payment-row">
-            <input type="text" name="expiry" placeholder="MM/YY" required value={formData.expiry} onChange={handleChange} />
-            <input type="text" name="cvc" placeholder="CVC" required value={formData.cvc} onChange={handleChange} />
-          </div>
-          <button type="submit">Pay Now</button>
-        </form>
+        <p>Amount: ${item.price}</p>
+        <button onClick={handlePay} disabled={loading}>
+          {loading ? 'Redirecting…' : 'Pay with Stripe'}
+        </button>
       </div>
     </div>
   );

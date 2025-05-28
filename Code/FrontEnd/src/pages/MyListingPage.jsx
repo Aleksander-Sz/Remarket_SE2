@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import './ListingGrid.css'; // Reuse existing styles
+import '../components/ListingGrid.css'; // Reuse existing styles
 import { motion } from 'framer-motion';
 import { useUser } from '../context/UserContext';
 import { useWishlist } from '../context/WishlistContext';
