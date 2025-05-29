@@ -4,11 +4,10 @@ import { motion } from 'framer-motion';
 import { useUser } from '../context/UserContext';
 import { useWishlist } from '../context/WishlistContext';
 import axios from '../api/axiosInstance';
-
 function MyListingsPage() {
   const [items, setItems] = useState([]);
   const { wishlist, toggleWishlist } = useWishlist();
-  const { email } = useUser(); // Backend maps email → seller
+  const { email } = useUser();
   const ITEMS_PER_PAGE = 40;
 
   const fetchSellerListings = async () => {

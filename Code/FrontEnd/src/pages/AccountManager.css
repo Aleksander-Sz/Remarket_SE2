@@ -1,0 +1,24 @@
+.account-manager {
+  padding: 2rem;
+  color: white;
+}
+
+.account-manager table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+
+.account-manager th, .account-manager td {
+  padding: 10px;
+  border-bottom: 1px solid #333;
+  text-align: left;
+}
+
+.account-manager th {
+  background: #2c2c2c;
+}
+
+.account-manager tr:hover {
+  background-color: #1a1a1a;
+}
