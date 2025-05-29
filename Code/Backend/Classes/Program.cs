@@ -77,7 +77,8 @@ app.MapGet("/api/products", async (
     string? max_price,
     string? page,
     string? limit,
-    string? id) =>
+    string? id,
+    string? userId) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -227,6 +228,50 @@ app.MapPost("/api/register", async (
     var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
     return Results.Ok(new { token = tokenString });
+});
+
+app.MapPost("/api/addListing", async (
+    AppDbContext db,
+    string? title,
+    string? description,
+    string? description2,
+    int? category,
+    int? price) =>
+{
+    /*
+    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
+        return Results.BadRequest("Email, username and password are required.");
+
+    var user = await db.Accounts.FirstOrDefaultAsync(u => u.Email == email);
+    //return Results.Json(user);
+    if (user == null)
+        return Results.BadRequest("A user with this email already exists.");
+
+    user = await db.Accounts.FirstOrDefaultAsync(u => u.Username == username);
+    //return Results.Json(user);
+    if (user == null)
+        return Results.BadRequest("A user with this name already exists.");
+
+    var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
+    var newUser = new Account(username, email, password);
+    db.Accounts.Add(newUser);
+
+    var claims = new[]
+    {
+        new Claim(ClaimTypes.NameIdentifier, newUser.Id.ToString()),
+        new Claim(ClaimTypes.Email, newUser.Email)
+    };
+
+    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("p8ZfQsR2Xj6sDk93YtBLu7cV1gX9aEfM"));
+    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+    var token = new JwtSecurityToken(
+        claims: claims,
+        expires: DateTime.Now.AddHours(1),
+        signingCredentials: creds);
+
+    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
+
+    return Results.Ok(new { token = null });*/
 });
 
 app.MapGet("/api/account", async (
