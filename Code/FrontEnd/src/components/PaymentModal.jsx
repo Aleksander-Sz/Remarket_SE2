@@ -1,7 +1,7 @@
 import { loadStripe } from '@stripe/stripe-js';
 import { useState } from 'react';
 
-const stripePromise = loadStripe('pk_test_YourPublicKeyHere'); // Replace with your Stripe public key
+const stripePromise = loadStripe('pk_test_51RU8yxQO9jfbuQDDqUX46tXCJPhz6ZsVAqy7iMJwl2V2c3Jg84kj7lMpxjGIzIAyVIIbT0nm6jJWYjdQgKD3McA200JHNnGygV'); 
 
 function PaymentModal({ item, onClose }) {
   const [loading, setLoading] = useState(false);
@@ -18,7 +18,6 @@ function PaymentModal({ item, onClose }) {
         price: item.price,
       }),
     });
-
     const session = await response.json();
 
     const result = await stripe.redirectToCheckout({
