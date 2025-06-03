@@ -6,89 +6,129 @@ using ReMarket.Utilities;
 
 namespace Tests;
 
-public class UnitTestCategory
+public class CategoryTests : IDisposable
 {
-    public class CategoryTests
+    private MySqlConnection _connection;
+
+    public CategoryTests()
     {
-    //    [Fact]
-    //    public void CreateCategory_ValidData_ReturnsCategory()
-    //    {
-    //        string categoryName = "Electronics";
+        var connectionString = new MySqlConnectionStringBuilder()
+        {
+            Server = "remarket-se2project-ania-f1cd.j.aivencloud.com",
+            Port = 21633,
+            Database = "ReMarket",
+            UserID = "avnadmin",
+            Password = "test",
+            SslMode = MySqlSslMode.VerifyCA,
+            CertificateFile = "/Users/ola/desktop/ca.pem"
+        }.ConnectionString;
 
-    //        var category = Category.Create(categoryName);
+        _connection = new MySqlConnection(connectionString);
 
-    //        Assert.Equal(categoryName, category.Name);
-    //        Assert.Equal(0, category.Id); 
-    //    }
 
-    //    [Fact]
-    //    public void SaveToDatabase_NewCategory_SavesCategory()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        _connection.Open();
+    }
 
-    //        var category = Category.Create("Electronics");
+    public void Dispose()
+    {
+        _connection.Close();
+    }
 
-    //        category.SaveToDatabase(connection);
+    [Fact]
+    public void CreateCategory_ValidData_ReturnsCategory()
+    {
+        var category = Category.Create("Electronics");
+        Assert.Equal("Electronics", category.Name);
+        Assert.Equal(0, category.Id);
+    }
 
-    //        Assert.True(category.Id > 0);
+    [Fact]
+    public void SaveToDatabase_NewCategory_SetsId()
+    {
+        var category = Category.Create("Books");
+        category.SaveToDatabase(_connection);
+        Assert.True(category.Id > 0);
 
-    //        connection.Close();
-    //    }
 
-    //    [Fact]
-    //    public void LoadById_ValidId_ReturnsCategory()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        Category.Delete(_connection, category.Id);
+    }
 
-    //        var category = Category.LoadById(connection, 1);
+    [Fact]
+    public void SaveToDatabase_ExistingCategory_UpdatesName()
+    {
+        var category = Category.Create("TempCat");
+        category.SaveToDatabase(_connection);
+        int id = category.Id;
 
-    //        Assert.NotNull(category);
-    //        Assert.Equal(1, category.Id);
+        category.Name = "UpdatedCat";
+        category.SaveToDatabase(_connection);
 
-    //        connection.Close();
-    //    }
+        var updated = Category.LoadById(_connection, id);
+        Assert.Equal("UpdatedCat", updated?.Name);
 
-    //    [Fact]
-    //    public void LoadById_InvalidId_ReturnsNull()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        Category.Delete(_connection, id);
+    }
 
-    //        var category = Category.LoadById(connection, -1); 
+    [Fact]
+    public void LoadById_ValidId_ReturnsCategory()
+    {
+        var category = Category.Create("Gadgets");
+        category.SaveToDatabase(_connection);
 
-    //        Assert.Null(category);
+        var loaded = Category.LoadById(_connection, category.Id);
+        Assert.NotNull(loaded);
+        Assert.Equal(category.Id, loaded?.Id);
+        Assert.Equal("Gadgets", loaded?.Name);
 
-    //        connection.Close();
-    //    }
 
-    //    [Fact]
-    //    public void Delete_ValidId_RemovesCategory()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        Category.Delete(_connection, category.Id);
+    }
 
-    //        Category.Delete(connection, 1);
+    [Fact]
+    public void LoadById_InvalidId_ReturnsNull()
+    {
+        var category = Category.LoadById(_connection, -99);
+        Assert.Null(category);
+    }
 
-    //        var category = Category.LoadById(connection, 1);
+    [Fact]
+    public void Delete_ValidId_RemovesCategory()
+    {
+        var category = Category.Create("ToDelete");
+        category.SaveToDatabase(_connection);
+        int id = category.Id;
 
-    //        Assert.Null(category);
+        Category.Delete(_connection, id);
+        var deleted = Category.LoadById(_connection, id);
+        Assert.Null(deleted);
+    }
 
-    //        connection.Close();
-    //    }
+    [Fact]
+    public void LoadAll_ReflectsInsertAndDelete()
+    {
+        int beforeCount = Category.LoadAll(_connection).Count;
 
-    //    [Fact]
-    //    public void LoadAll_ReturnsListOfCategories()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        var category = Category.Create("CountTest");
+        category.SaveToDatabase(_connection);
 
-    //        var categories = Category.LoadAll(connection);
+        int afterInsert = Category.LoadAll(_connection).Count;
+        Assert.Equal(beforeCount + 1, afterInsert);
 
-    //        Assert.NotEmpty(categories);
+        Category.Delete(_connection, category.Id);
 
-    //        connection.Close();
-    //    }
+        int afterDelete = Category.LoadAll(_connection).Count;
+        Assert.Equal(beforeCount, afterDelete);
+    }
+
+    [Fact]
+    public void SaveToDatabase_EmptyName_AllowsInsertButShouldBeValidated()
+    {
+        var category = Category.Create("");
+        category.SaveToDatabase(_connection);
+
+        Assert.True(category.Id > 0);
+        Assert.Equal("", category.Name);
+
+        Category.Delete(_connection, category.Id);
     }
 }
