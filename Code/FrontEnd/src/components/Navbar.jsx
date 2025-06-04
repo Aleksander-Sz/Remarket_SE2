@@ -1,9 +1,12 @@
 import './Navbar.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 function Navbar() {
   const { email, role } = useUser(); // role = 'user' | 'seller' | 'admin'
+  const navigate = useNavigate();
+
+  const isLoggedIn = Boolean(email);
 
   return (
     <nav className="navbar">
@@ -22,7 +25,7 @@ function Navbar() {
       <div className="navbar-right">
         <Link to="#"><i className="icon">🔍</i></Link>
 
-        {email ? (
+        {isLoggedIn ? (
           <>
             <Link to="/profile" className="login-link">Profile</Link>
             {(role === 'seller' || role === 'admin') && (
@@ -31,7 +34,9 @@ function Navbar() {
             <Link to="/cart"><i className="icon">🛒</i></Link>
           </>
         ) : (
-          <Link to="/login" className="login-link">Login</Link>
+          <button onClick={() => navigate('/login')} className="login-link">
+            Login
+          </button>
         )}
       </div>
     </nav>
