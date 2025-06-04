@@ -54,4 +54,5 @@ FInish 1 sprint within 2 weeks
     /categories [GET] - returns the list of all available categories
     /register [POST] - used to create the user
     /cart [GET] - returns the list of items in the cart
+    /addListing [POST] - adds product to the database, arguments: title, header, paragraph, category, price
 
