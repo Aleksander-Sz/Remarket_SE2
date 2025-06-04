@@ -251,29 +251,46 @@ app.MapPost("/api/register", async (
     return Results.Ok(new { token = tokenString });
 });
 
-app.MapPost("/api/addListing", async (
-    AppDbContext db,
-    string? title,
-    string? header,
-    string? paragraph,
-    int? category,
-    int? price,
-    int? photoId) =>
+app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db) =>
 {
+    if (data.Title == null || data.Category == null || data.Price == null)
+        return Results.BadRequest("Missing required fields.");
+
+    var description = new Description
+    {
+        Header = data.Header ?? string.Empty,
+        Paragraph = data.Paragraph ?? string.Empty
+    };
+    db.Descriptions.Add(description);
+    await db.SaveChangesAsync();
+
     var listing = new Listing
     {
-        Title = title,
-        DescriptionId = 0,
-        CategoryId = category ?? 0,
-        Price = price ?? 0,
-        ThumbnailId = photoId
+        Title = data.Title,
+        Price = data.Price.Value,
+        Status = "available", // or some default string like "active"
+        DescriptionId = description.Id, // hardcoded for now
+        CategoryId = data.Category.Value
     };
 
     db.Listings.Add(listing);
-    await db.SaveChangesAsync();
+    await db.SaveChangesAsync(); // Save first to get the auto-incremented ID
 
-    return Results.Ok(listing.Id);
+    // Link the photo (if provided)
+    if (data.PhotoId != null)
+    {
+        var link = new ListingPhoto
+        {
+            ListingId = listing.Id,
+            PhotoId = data.PhotoId.Value
+        };
+        db.ListingPhotos.Add(link);
+        await db.SaveChangesAsync();
+    }
+
+    return Results.Ok(new { listingId = listing.Id });
 });
+
 
 app.MapGet("/api/account", async (
     ClaimsPrincipal user,
@@ -292,9 +309,6 @@ app.MapGet("/api/account", async (
 
     return account is not null ? Results.Ok(account) : Results.NotFound();
 }).RequireAuthorization();
-
-app.MapGet("/api/connection_string", () => builder.Configuration.GetConnectionString("DefaultConnection"));
-
 
 app.MapGet("/api/info", () =>
 {

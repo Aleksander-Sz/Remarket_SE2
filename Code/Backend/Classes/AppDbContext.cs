@@ -46,8 +46,9 @@ namespace ReMarket.Services
 
             modelBuilder.Entity<ListingPhoto>()
                 .HasOne(lp => lp.Photo)
-                .WithMany()
+                .WithMany(p => p.ListingPhotos)
                 .HasForeignKey(lp => lp.PhotoId);
+
 
         }
     }
