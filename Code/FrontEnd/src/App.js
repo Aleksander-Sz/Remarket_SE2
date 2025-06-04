@@ -37,6 +37,8 @@ import AddProductPage from './pages/AddProductPage';
 
 
 
+// Account Manager
+import AccountManager from './pages/accountmanager';
 
 
 function AnimatedRoutes() {
@@ -93,6 +95,8 @@ function AnimatedRoutes() {
         <Route path="/cart" element={<><WipeTransition /><CartPage /></>} />
         <Route path="/mylistings" element={<><WipeTransition /><MyListingPage /></>} />
         <Route path="/addproduct" element={<><WipeTransition /><AddProductPage /></>} />
+        <Route path="/accountmanager" element={<><WipeTransition /><AccountManager /></>} />
+
 
 
 
