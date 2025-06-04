@@ -257,12 +257,20 @@ app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db) =>
     if (data.Title == null || data.Category == null || data.Price == null)
         return Results.BadRequest("Missing required fields.");
 
+    var description = new Description
+    {
+        Header = data.Header ?? string.Empty,
+        Paragraph = data.Paragraph ?? string.Empty
+    };
+    db.Descriptions.Add(description);
+    await db.SaveChangesAsync();
+
     var listing = new Listing
     {
         Title = data.Title,
         Price = data.Price.Value,
         Status = "available", // or some default string like "active"
-        DescriptionId = 5, // hardcoded for now
+        DescriptionId = description.Id, // hardcoded for now
         CategoryId = data.Category.Value
     };
 
