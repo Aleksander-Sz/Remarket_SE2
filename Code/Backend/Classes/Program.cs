@@ -159,6 +159,25 @@ app.MapGet("/api/photo/{id}", async (int id, AppDbContext db) =>
     return Results.File(photo.Bytes, "image/jpeg"); // or image/png if needed
 });
 
+app.MapPost("/api/photo", async (HttpRequest request, AppDbContext db) =>
+{
+    var form = await request.ReadFormAsync();
+    var file = form.Files.GetFile("image");
+
+    if (file == null || file.Length == 0)
+        return Results.BadRequest("No image uploaded.");
+
+    using var memoryStream = new MemoryStream();
+    await file.CopyToAsync(memoryStream);
+    var photoBytes = memoryStream.ToArray();
+
+    var photo = new Photo("placeholder name",photoBytes);
+    db.Photos.Add(photo);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { id = photo.Id });
+});
+
 app.MapPost("/api/login", async (
     AppDbContext db,
     LoginRequest request) =>
@@ -236,45 +255,25 @@ app.MapPost("/api/register", async (
 app.MapPost("/api/addListing", async (
     AppDbContext db,
     string? title,
-    string? description,
-    string? description2,
+    string? header,
+    string? paragraph,
     int? category,
-    int? price) =>
+    int? price,
+    int? photoId) =>
 {
-    /*
-    if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(username) || string.IsNullOrWhiteSpace(password))
-        return Results.BadRequest("Email, username and password are required.");
-
-    var user = await db.Accounts.FirstOrDefaultAsync(u => u.Email == email);
-    //return Results.Json(user);
-    if (user == null)
-        return Results.BadRequest("A user with this email already exists.");
-
-    user = await db.Accounts.FirstOrDefaultAsync(u => u.Username == username);
-    //return Results.Json(user);
-    if (user == null)
-        return Results.BadRequest("A user with this name already exists.");
-
-    var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-    var newUser = new Account(username, email, password);
-    db.Accounts.Add(newUser);
-
-    var claims = new[]
+    var listing = new Listing
     {
-        new Claim(ClaimTypes.NameIdentifier, newUser.Id.ToString()),
-        new Claim(ClaimTypes.Email, newUser.Email)
+        Title = title,
+        DescriptionId = 0,
+        CategoryId = category ?? 0,
+        Price = price ?? 0,
+        ThumbnailId = photoId
     };
 
-    var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("p8ZfQsR2Xj6sDk93YtBLu7cV1gX9aEfM"));
-    var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
-    var token = new JwtSecurityToken(
-        claims: claims,
-        expires: DateTime.Now.AddHours(1),
-        signingCredentials: creds);
+    db.Listings.Add(listing);
+    await db.SaveChangesAsync();
 
-    var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
-
-    return Results.Ok(new { token = null });*/
+    return Results.Ok(listing.Id);
 });
 
 app.MapGet("/api/account", async (
