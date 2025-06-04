@@ -304,7 +304,7 @@ app.MapGet("/api/account", async (
 
     var account = await db.Accounts
         .Where(a => a.Id == userId)
-        .Select(a => new { a.Id, a.Email, a.Username }) // don't return password
+        .Select(a => new { a.Id, a.Email, a.Username, a.Role}) // don't return password
         .FirstOrDefaultAsync();
 
     return account is not null ? Results.Ok(account) : Results.NotFound();
