@@ -4,7 +4,10 @@ import { useUser } from '../context/UserContext';
 import './AccountManager.css';
 
 function AccountManager() {
-  const { user } = useUser();
+    const { user } = useUser();
+    console.log('user:', user); //added for testing
+
+
   const [users, setUsers] = useState([]);
 
   useEffect(() => {
