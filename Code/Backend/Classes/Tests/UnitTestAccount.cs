@@ -77,60 +77,55 @@ public class UnitTestAccount
 
             Assert.Equal(password, account.Password);
         }
+        //do NOT push the password or u will be crying like me just now
+        /*       private string connectionString = new MySqlConnectionStringBuilder()
+               {
+                   Server = "remarket-se2project-ania-f1cd.j.aivencloud.com",
+                   Port = 21633,
+                   Database = "ReMarket",
+                   UserID = "avnadmin",
+                   Password = "password,
+                   SslMode = MySqlSslMode.VerifyCA,
+                   CertificateFile = "/Users/ola/desktop/ca.pem"
+               }.ConnectionString;
 
 
+               [Fact]
+               public void SaveToDatabase_ValidAccount_SavesAccount()
+               {
+                   using var connection = new MySqlConnection(connectionString);
+                   connection.Open();
 
+                   var account = new Account("testuser", "testuser@example.com", "TestPassword123");
 
+                   account.SaveToDatabase(connection);
 
-        // DATA BASE TESTING, will be added later
-        //[Fact]
-        //public void SaveToDatabase_ValidAccount_SavesAccount()
-        //{
+                   Assert.True(account.Id > 0);
+               }
 
-        //    var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-        //    connection.Open();
+               [Fact]
+               public void LoadByEmail_ValidEmail_ReturnsAccount()
+               {
+                   using var connection = new MySqlConnection(connectionString);
+                   connection.Open();
 
-        //    var account = new Account("testuser", "testuser@example.com", "TestPassword123");
+                   var account = Account.LoadByEmail(connection, "testuser@example.com");
 
+                   Assert.NotNull(account);
+                   Assert.Equal("testuser@example.com", account.Email);
+               }
 
-        //    account.SaveToDatabase(connection);
+               [Fact]
+               public void LoadByEmail_InvalidEmail_ReturnsNull()
+               {
+                   using var connection = new MySqlConnection(connectionString);
+                   connection.Open();
 
-        //    Assert.True(account.Id > 0);
+                   var account = Account.LoadByEmail(connection, "nonexistentuser@example.com");
 
-        //    connection.Close();
-        //}
-
-        //    // Testowanie ładowania konta po emailu
-        //[Fact]
-        //public void LoadByEmail_ValidEmail_ReturnsAccount()
-        //{
-        //    // Arrange
-        //    var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-        //    connection.Open();
-
-        //    // Act
-        //    var account = Account.LoadByEmail(connection, "testuser@example.com");
-
-        //    // Assert
-        //    Assert.NotNull(account);
-
-        //    connection.Close();
-        //}
-
-        //    [Fact]
-        //    public void LoadByEmail_InvalidEmail_ReturnsNull()
-        //    {
-        //        // Arrange
-        //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-        //        connection.Open();
-
-        //        // Act
-        //        var account = Account.LoadByEmail(connection, "nonexistentuser@example.com");
-
-        //        // Assert
-        //        Assert.Null(account);
-
-        //        connection.Close();
-        //    }
+                   Assert.Null(account);
+               }
+           }*/
     }
 }
+

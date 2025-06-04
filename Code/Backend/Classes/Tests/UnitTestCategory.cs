@@ -3,36 +3,36 @@ using Xunit;
 using ReMarket.Models;
 using MySql.Data.MySqlClient;
 using ReMarket.Utilities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using ReMarket.Services;
 
 namespace Tests;
 
 public class CategoryTests : IDisposable
 {
-    private MySqlConnection _connection;
+    private readonly AppDbContext _db;
 
     public CategoryTests()
     {
-        var connectionString = new MySqlConnectionStringBuilder()
-        {
-            Server = "remarket-se2project-ania-f1cd.j.aivencloud.com",
-            Port = 21633,
-            Database = "ReMarket",
-            UserID = "avnadmin",
-            Password = "test",
-            SslMode = MySqlSslMode.VerifyCA,
-            CertificateFile = "/Users/ola/desktop/ca.pem"
-        }.ConnectionString;
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.Development.json")
+            .Build();
 
-        _connection = new MySqlConnection(connectionString);
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+            .Options;
 
-        _connection.Open();
+        _db = new AppDbContext(options);
     }
 
     public void Dispose()
     {
-        _connection.Close();
+        _db.Dispose();
     }
+
 
     [Fact]
     public void CreateCategory_ValidData_ReturnsCategory()
@@ -46,48 +46,54 @@ public class CategoryTests : IDisposable
     public void SaveToDatabase_NewCategory_SetsId()
     {
         var category = Category.Create("Books");
-        category.SaveToDatabase(_connection);
+        _db.Categories.Add(category);
+        _db.SaveChanges();
+
         Assert.True(category.Id > 0);
 
-
-        Category.Delete(_connection, category.Id);
+        _db.Categories.Remove(category);
+        _db.SaveChanges();
     }
 
     [Fact]
     public void SaveToDatabase_ExistingCategory_UpdatesName()
     {
         var category = Category.Create("TempCat");
-        category.SaveToDatabase(_connection);
-        int id = category.Id;
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
         category.Name = "UpdatedCat";
-        category.SaveToDatabase(_connection);
+        _db.Categories.Update(category);
+        _db.SaveChanges();
 
-        var updated = Category.LoadById(_connection, id);
-        Assert.Equal("UpdatedCat", updated?.Name);
+        var updated = _db.Categories.Find(category.Id);
+        Assert.NotNull(updated);
+        Assert.Equal("UpdatedCat", updated.Name);
 
-        Category.Delete(_connection, id);
+        _db.Categories.Remove(updated);
+        _db.SaveChanges();
     }
 
     [Fact]
     public void LoadById_ValidId_ReturnsCategory()
     {
         var category = Category.Create("Gadgets");
-        category.SaveToDatabase(_connection);
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
-        var loaded = Category.LoadById(_connection, category.Id);
+        var loaded = _db.Categories.Find(category.Id);
         Assert.NotNull(loaded);
-        Assert.Equal(category.Id, loaded?.Id);
-        Assert.Equal("Gadgets", loaded?.Name);
+        Assert.Equal(category.Id, loaded.Id);
+        Assert.Equal("Gadgets", loaded.Name);
 
-
-        Category.Delete(_connection, category.Id);
+        _db.Categories.Remove(loaded);
+        _db.SaveChanges();
     }
 
     [Fact]
     public void LoadById_InvalidId_ReturnsNull()
     {
-        var category = Category.LoadById(_connection, -99);
+        var category = _db.Categories.Find(-99);
         Assert.Null(category);
     }
 
@@ -95,28 +101,32 @@ public class CategoryTests : IDisposable
     public void Delete_ValidId_RemovesCategory()
     {
         var category = Category.Create("ToDelete");
-        category.SaveToDatabase(_connection);
-        int id = category.Id;
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
-        Category.Delete(_connection, id);
-        var deleted = Category.LoadById(_connection, id);
+        _db.Categories.Remove(category);
+        _db.SaveChanges();
+
+        var deleted = _db.Categories.Find(category.Id);
         Assert.Null(deleted);
     }
 
     [Fact]
     public void LoadAll_ReflectsInsertAndDelete()
     {
-        int beforeCount = Category.LoadAll(_connection).Count;
+        int beforeCount = _db.Categories.Count();
 
         var category = Category.Create("CountTest");
-        category.SaveToDatabase(_connection);
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
-        int afterInsert = Category.LoadAll(_connection).Count;
+        int afterInsert = _db.Categories.Count();
         Assert.Equal(beforeCount + 1, afterInsert);
 
-        Category.Delete(_connection, category.Id);
+        _db.Categories.Remove(category);
+        _db.SaveChanges();
 
-        int afterDelete = Category.LoadAll(_connection).Count;
+        int afterDelete = _db.Categories.Count();
         Assert.Equal(beforeCount, afterDelete);
     }
 
@@ -124,11 +134,13 @@ public class CategoryTests : IDisposable
     public void SaveToDatabase_EmptyName_AllowsInsertButShouldBeValidated()
     {
         var category = Category.Create("");
-        category.SaveToDatabase(_connection);
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
         Assert.True(category.Id > 0);
         Assert.Equal("", category.Name);
 
-        Category.Delete(_connection, category.Id);
+        _db.Categories.Remove(category);
+        _db.SaveChanges();
     }
 }
