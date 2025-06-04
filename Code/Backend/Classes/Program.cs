@@ -170,8 +170,7 @@ app.MapPost("/api/photo", async (HttpRequest request, AppDbContext db) =>
     using var memoryStream = new MemoryStream();
     await file.CopyToAsync(memoryStream);
     var photoBytes = memoryStream.ToArray();
-
-    var photo = new Photo("placeholder name",photoBytes);
+    var photo = new Photo("placeholder name", photoBytes);
     db.Photos.Add(photo);
     await db.SaveChangesAsync();
 
