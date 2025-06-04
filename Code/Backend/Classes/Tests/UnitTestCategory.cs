@@ -16,7 +16,7 @@ public class CategoryTests : IDisposable
     public CategoryTests()
     {
         var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Development.json")
+            .AddJsonFile("appsettings.Development.json") //this might not be good file
             .Build();
 
         var connectionString = configuration.GetConnectionString("DefaultConnection");
