@@ -80,7 +80,8 @@ app.MapGet("/api/products", async (
     string? max_price,
     string? page,
     string? limit,
-    string? id) =>
+    string? id,
+    string? userId) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -158,6 +159,25 @@ app.MapGet("/api/photo/{id}", async (int id, AppDbContext db) =>
     return Results.File(photo.Bytes, "image/jpeg"); // or image/png if needed
 });
 
+app.MapPost("/api/photo", async (HttpRequest request, AppDbContext db) =>
+{
+    var form = await request.ReadFormAsync();
+    var file = form.Files.GetFile("image");
+
+    if (file == null || file.Length == 0)
+        return Results.BadRequest("No image uploaded.");
+
+    using var memoryStream = new MemoryStream();
+    await file.CopyToAsync(memoryStream);
+    var photoBytes = memoryStream.ToArray();
+
+    var photo = new Photo("placeholder name", photoBytes);
+    db.Photos.Add(photo);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { id = photo.Id });
+});
+
 app.MapPost("/api/login", async (
     AppDbContext db,
     LoginRequest request) =>
@@ -230,6 +250,30 @@ app.MapPost("/api/register", async (
     var tokenString = new JwtSecurityTokenHandler().WriteToken(token);
 
     return Results.Ok(new { token = tokenString });
+});
+
+app.MapPost("/api/addListing", async (
+    AppDbContext db,
+    string? title,
+    string? header,
+    string? paragraph,
+    int? category,
+    int? price,
+    int? photoId) =>
+{
+    var listing = new Listing
+    {
+        Title = title,
+        DescriptionId = 0,
+        CategoryId = category ?? 0,
+        Price = price ?? 0,
+        ThumbnailId = photoId
+    };
+
+    db.Listings.Add(listing);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(listing.Id);
 });
 
 app.MapGet("/api/account", async (
