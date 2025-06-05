@@ -63,7 +63,7 @@ namespace ReMarket.Models
         public void SaveToDatabase(MySqlConnection connection)
         {
             using var command = new MySqlCommand(@"
-                INSERT INTO Accounts (Username, Email, PasswordHash, Name, IsVerified)
+                INSERT INTO accounts (Username, Email, PasswordHash, Name, IsVerified)
                 VALUES (@Username, @Email, @PasswordHash, @Name, @IsVerified);
                 SELECT LAST_INSERT_ID();", connection);
 
