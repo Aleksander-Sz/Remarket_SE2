@@ -71,8 +71,6 @@ app.Use(async (context, next) =>
     }
 });
 
-//clothesListings[0].Thumbnail = new Photo();
-//app.MapGet("/api/clothes", () => Results.Json(clothesListings));
 app.MapGet("/api/products", async (
     AppDbContext db,
     string? category,
@@ -81,7 +79,7 @@ app.MapGet("/api/products", async (
     string? page,
     string? limit,
     string? id,
-    string? userId) =>
+    string? ownerId) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -118,6 +116,10 @@ app.MapGet("/api/products", async (
 
     if (decimal.TryParse(max_price, out var maxVal))
         query = query.Where(l => l.Price <= maxVal);
+
+    //ownerId:
+    if (decimal.TryParse(ownerId, out var ownerIdVal))
+        query = query.Where(l => l.OwnerId == ownerIdVal);
 
     // page and limit
 
@@ -221,17 +223,18 @@ app.MapPost("/api/register", async (
 
     var user = await db.Accounts.FirstOrDefaultAsync(u => u.Email == email);
     //return Results.Json(user);
-    if (user == null)
+    if (user != null)
         return Results.BadRequest("A user with this email already exists.");
 
     user = await db.Accounts.FirstOrDefaultAsync(u => u.Username == username);
     //return Results.Json(user);
-    if (user == null)
+    if (user != null)
         return Results.BadRequest("A user with this name already exists.");
 
     var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-    var newUser = new Account(username, email, password);
+    var newUser = new Account(username, email, hashedPassword);
     db.Accounts.Add(newUser);
+    await db.SaveChangesAsync();
 
     var claims = new[]
     {
@@ -251,10 +254,16 @@ app.MapPost("/api/register", async (
     return Results.Ok(new { token = tokenString });
 });
 
-app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db) =>
+app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db, ClaimsPrincipal user) =>
 {
     if (data.Title == null || data.Category == null || data.Price == null)
         return Results.BadRequest("Missing required fields.");
+
+    var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    var ownerId = int.Parse(userIdClaim.Value);
 
     var description = new Description
     {
@@ -270,7 +279,8 @@ app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db) =>
         Price = data.Price.Value,
         Status = "available", // or some default string like "active"
         DescriptionId = description.Id, // hardcoded for now
-        CategoryId = data.Category.Value
+        CategoryId = data.Category.Value,
+        OwnerId = ownerId
     };
 
     db.Listings.Add(listing);
