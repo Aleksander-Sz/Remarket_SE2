@@ -11,13 +11,13 @@ function Register() {
   const { loginAs } = useUser();
   const navigate = useNavigate();
 
-  const [email, setEmail] = useState('');
+  /*const [email, setEmail] = useState('');
   const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState('');*/
 
 
   const [form, setForm] = useState({
-    name: '',
+    username: '',
     email: '',
     password: '',
     role: 'user'
@@ -31,12 +31,16 @@ function Register() {
       setError('');
       setSuccess('');
 
+      //console.log('Submitting form:', form);
+
       try {
           const response = await axios.post('/register', {
-              email,
-              username,
-              password
+              email: form.email,
+              username: form.username,
+              password: form.password,
+              role: form.role
           });
+
 
           const { token } = response.data;
 
@@ -44,7 +48,7 @@ function Register() {
           // For now we assume backend uses JWT and you’ll decode it later if needed
 
           // Example user info (customize this based on your app's token or claims)
-          loginAs({ email });
+          loginAs({ email: form.email });
 
           // Store token (in localStorage or context)
           localStorage.setItem('token', token);
@@ -76,8 +80,8 @@ function Register() {
           <input
             type="text"
             placeholder="Full Name"
-            value={form.name}
-            onChange={(e) => setForm({ ...form, name: e.target.value })}
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
             required
           />
           <input

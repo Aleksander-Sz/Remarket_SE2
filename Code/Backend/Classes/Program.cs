@@ -223,17 +223,18 @@ app.MapPost("/api/register", async (
 
     var user = await db.Accounts.FirstOrDefaultAsync(u => u.Email == email);
     //return Results.Json(user);
-    if (user == null)
+    if (user != null)
         return Results.BadRequest("A user with this email already exists.");
 
     user = await db.Accounts.FirstOrDefaultAsync(u => u.Username == username);
     //return Results.Json(user);
-    if (user == null)
+    if (user != null)
         return Results.BadRequest("A user with this name already exists.");
 
     var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-    var newUser = new Account(username, email, password);
+    var newUser = new Account(username, email, hashedPassword);
     db.Accounts.Add(newUser);
+    await db.SaveChangesAsync();
 
     var claims = new[]
     {

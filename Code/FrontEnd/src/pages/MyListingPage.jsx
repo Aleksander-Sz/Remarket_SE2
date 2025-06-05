@@ -31,7 +31,7 @@ function MyListingsPage() {
   };
 
     useEffect(() => {
-        console.log('User ID:', userId);
+        //console.log('User ID:', userId);
     if (userId) fetchSellerListings();
   }, [userId]);
 
