@@ -41,6 +41,10 @@ import AddProductPage from './pages/AddProductPage';
 import AccountManager from './pages/accountmanager';
 
 
+//PurchaseForm
+import PurchaseForm from './pages/PurchaseForm';
+
+
 function AnimatedRoutes() {
   const location = useLocation();
 
@@ -96,6 +100,7 @@ function AnimatedRoutes() {
         <Route path="/mylistings" element={<><WipeTransition /><MyListingPage /></>} />
         <Route path="/addproduct" element={<><WipeTransition /><AddProductPage /></>} />
         <Route path="/accountmanager" element={<><WipeTransition /><AccountManager /></>} />
+        <Route path="/purchase/:productId" element={<><WipeTransition /><PurchaseForm /></>} />
 
 
 
