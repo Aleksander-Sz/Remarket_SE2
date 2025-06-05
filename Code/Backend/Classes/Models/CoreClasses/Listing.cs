@@ -42,14 +42,16 @@ namespace ReMarket.Models
         public int DescriptionId { get; set; }
         public Description Description { get; set; } = null!;
 
-        public int OwnerId { get; set; }
+
         [NotMapped]
         public int? ThumbnailId { get; set; }
         [NotMapped]
         public Photo? Thumbnail { get; set; }
-
-
+        [NotMapped]
         public int OwnerId { get; set; }
+
+
+
 
         //public int? ThumbnailId { get; set; }
         //public Photo? Thumbnail { get; set; }
