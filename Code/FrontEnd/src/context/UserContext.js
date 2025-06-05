@@ -11,13 +11,15 @@ export const UserProvider = ({ children }) => {
   useEffect(() => {
     const stored = JSON.parse(localStorage.getItem('remarket-user'));
     if (stored) {
-      setRole(stored.role || ' ');
-      setName(stored.name || ' ');
-      setEmail(stored.email || ' ');
+        setRole(stored.role ?? '');
+        setName(stored.name ?? '');
+        setEmail(stored.email ?? '');
+
     }
     const verifySession = async() =>{
       try{
         const res = await axios.get('/account');
+        setRole(res.data.role);
         setName(res.userData.name);
         setEmail(res.userData.email);
 
