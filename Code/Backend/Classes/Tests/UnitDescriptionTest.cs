@@ -70,13 +70,13 @@ public class DescriptionTests : IDisposable
 
         Assert.NotNull(exception);
 
-        _db.ChangeTracker.Clear(); // Avoids tracking failed insert
+        _db.ChangeTracker.Clear();
     }
 
     [Fact]
     public void SaveToDatabase_TooLongHeader_ThrowsException()
     {
-        string longHeader = new string('A', 300); // exceeds 255
+        string longHeader = new string('A', 300);
         var description = Description.Create(longHeader, "Valid paragraph");
 
         _db.Descriptions.Add(description);
@@ -126,7 +126,7 @@ public class DescriptionTests : IDisposable
         Assert.Equal("Updated", loaded?.Header);
         Assert.Equal("New paragraph", loaded?.Paragraph);
 
-        _db.Descriptions.Remove(loaded);
+        _db.Descriptions.Remove(loaded!);
         _db.SaveChanges();
     }
 

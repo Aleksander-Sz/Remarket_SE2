@@ -41,8 +41,9 @@ namespace ReMarket.Models
 
         public int DescriptionId { get; set; }
         public Description Description { get; set; } = null!;
-
+        [NotMapped]
         public int? ThumbnailId { get; set; }
+        [NotMapped]
         public Photo? Thumbnail { get; set; }
 
         public ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();

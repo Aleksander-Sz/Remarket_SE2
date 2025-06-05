@@ -8,9 +8,20 @@ namespace ReMarket.Models
     {
         [Key]
         public int Id { get; set; }
-
+        [Required]
+        [MaxLength(255)]
         public string Header { get; set; }
-        public string Paragraph { get; set; }
+        public string? Paragraph { get; set; }
+
+
+        public static Description Create(string header, string? paragraph = null)
+        {
+            return new Description
+            {
+                Header = header,
+                Paragraph = paragraph
+            };
+        }
     }
 }
 /*namespace ReMarket.Models
