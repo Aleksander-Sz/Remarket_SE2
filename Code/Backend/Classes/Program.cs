@@ -179,6 +179,10 @@ app.MapPost("/api/photo", async (HttpRequest request, AppDbContext db) =>
     return Results.Ok(new { id = photo.Id });
 });
 
+
+
+
+
 app.MapPost("/api/login", async (
     AppDbContext db,
     LoginRequest request) =>
@@ -196,7 +200,9 @@ app.MapPost("/api/login", async (
     var claims = new[]
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email)
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Role, user.Role == 'A' ? "admin" : "user")
+
     };
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("p8ZfQsR2Xj6sDk93YtBLu7cV1gX9aEfM"));
@@ -367,6 +373,47 @@ app.MapPost("/api/", async context => //change api call here
 });
 });
 */
+
+
+
+app.MapGet("/api/accounts", async (ClaimsPrincipal user, AppDbContext db) =>
+{
+    var roleClaim = user.FindFirst(ClaimTypes.Role);
+    if (roleClaim == null || roleClaim.Value != "admin")
+        return Results.Forbid();
+
+    var users = await db.Accounts
+        .Select(a => new
+        {
+            a.Id,
+            a.Username,
+            a.Email,
+            a.Role
+        })
+        .ToListAsync();
+
+    return Results.Ok(users);
+}).RequireAuthorization();
+
+app.MapDelete("/api/accounts/{id}", async (int id, ClaimsPrincipal user, AppDbContext db) =>
+{
+    var roleClaim = user.FindFirst(ClaimTypes.Role);
+    if (roleClaim == null || roleClaim.Value != "admin")
+        return Results.Forbid();
+
+    var userToDelete = await db.Accounts.FindAsync(id);
+    if (userToDelete == null)
+        return Results.NotFound();
+
+    db.Accounts.Remove(userToDelete);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { message = $"User {id} deleted" });
+}).RequireAuthorization();
+
+
+
+
 
 
 app.Run();
