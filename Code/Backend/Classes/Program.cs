@@ -253,10 +253,16 @@ app.MapPost("/api/register", async (
     return Results.Ok(new { token = tokenString });
 });
 
-app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db) =>
+app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db, ClaimsPrincipal user) =>
 {
     if (data.Title == null || data.Category == null || data.Price == null)
         return Results.BadRequest("Missing required fields.");
+
+    var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    var ownerId = int.Parse(userIdClaim.Value);
 
     var description = new Description
     {
@@ -272,7 +278,8 @@ app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db) =>
         Price = data.Price.Value,
         Status = "available", // or some default string like "active"
         DescriptionId = description.Id, // hardcoded for now
-        CategoryId = data.Category.Value
+        CategoryId = data.Category.Value,
+        OwnerId = ownerId
     };
 
     db.Listings.Add(listing);

@@ -45,6 +45,7 @@ namespace ReMarket.Models
         public int? Category { get; set; }
         public int? Price { get; set; }
         public int? PhotoId { get; set; }
+        public int? OwnerId { get; set; }
     }
 }
 
