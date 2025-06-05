@@ -71,8 +71,6 @@ app.Use(async (context, next) =>
     }
 });
 
-//clothesListings[0].Thumbnail = new Photo();
-//app.MapGet("/api/clothes", () => Results.Json(clothesListings));
 app.MapGet("/api/products", async (
     AppDbContext db,
     string? category,
@@ -81,7 +79,7 @@ app.MapGet("/api/products", async (
     string? page,
     string? limit,
     string? id,
-    string? userId) =>
+    string? ownerId) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -118,6 +116,10 @@ app.MapGet("/api/products", async (
 
     if (decimal.TryParse(max_price, out var maxVal))
         query = query.Where(l => l.Price <= maxVal);
+
+    //ownerId:
+    if (decimal.TryParse(ownerId, out var ownerIdVal))
+        query = query.Where(l => l.OwnerId == ownerIdVal);
 
     // page and limit
 

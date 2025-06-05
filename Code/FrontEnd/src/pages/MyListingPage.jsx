@@ -7,17 +7,15 @@ import axios from '../api/axiosInstance';
 function MyListingsPage() {
   const [items, setItems] = useState([]);
   const { wishlist, toggleWishlist } = useWishlist();
-  const { email } = useUser();
+  const { id: userId } = useUser();
   const ITEMS_PER_PAGE = 40;
 
   const fetchSellerListings = async () => {
     try {
-      const response = await axios.get('/products', {
-        params: {
-          seller: email,
-          limit: ITEMS_PER_PAGE
-        }
-      });
+        const response = await axios.get('/products', {
+            params: { ownerId: userId }
+        });
+
 
       const mapped = response.data.map((item) => ({
         id: item.id,
@@ -32,9 +30,10 @@ function MyListingsPage() {
     }
   };
 
-  useEffect(() => {
-    if (email) fetchSellerListings();
-  }, [email]);
+    useEffect(() => {
+        console.log('User ID:', userId);
+    if (userId) fetchSellerListings();
+  }, [userId]);
 
   return (
     <section className="listing-grid">
