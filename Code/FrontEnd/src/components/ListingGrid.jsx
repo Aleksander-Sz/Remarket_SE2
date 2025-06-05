@@ -14,7 +14,7 @@ function ListingGrid() {
   const [selectedItem, setSelectedItem] = useState(null);
   const { wishlist, toggleWishlist } = useWishlist();
   const navigate = useNavigate();
-
+  const { addToCart } = useCart();
 
   const [filters, setFilters] = useState({
     category: '',
@@ -124,7 +124,6 @@ function ListingGrid() {
       <div className="grid">
         {items.map((item) => {
           const isWished = wishlist.find((w) => w.id === item.id);
-          const { addToCart } = useCart();
           return (
             <motion.div
               className="listing-card"

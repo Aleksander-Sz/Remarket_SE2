@@ -1,76 +1,48 @@
 .seller-dashboard {
-    padding: 2rem;
-    color: white;
-    max-width: 1000px;
-    margin: 0 auto;
-  }
-  
-  .seller-dashboard h1 {
-    font-size: 2.2rem;
-    margin-bottom: 1rem;
-  }
-  
-  .seller-dashboard h2 {
-    font-size: 1.4rem;
-    margin-bottom: 1rem;
-  }
-  
-  .add-btn {
-    padding: 10px 16px;
-    background-color: #4bb869;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    margin-bottom: 2rem;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .seller-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 20px;
-  }
-  
-  .seller-card {
-    background: #222;
-    padding: 1rem;
-    border-radius: 10px;
-    width: 220px;
-    text-align: center;
-    box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-  }
-  
-  .seller-card img {
-    width: 100%;
-    border-radius: 6px;
-    margin-bottom: 10px;
-  }
-  
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 10px;
-  }
-  
-  .edit-btn,
-  .delete-btn {
-    flex: 1;
-    padding: 8px;
-    border: none;
-    border-radius: 5px;
-    margin: 0 5px;
-    font-weight: bold;
-    cursor: pointer;
-  }
-  
-  .edit-btn {
-    background-color: #4b7db8;
-    color: white;
-  }
-  
-  .delete-btn {
-    background-color: #c62828;
-    color: white;
-  }
-  
+  padding: 2rem;
+}
+
+.dashboard-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+
+.dashboard-card {
+  background: #1f1f1f;
+  color: white;
+  padding: 1rem;
+  border-radius: 10px;
+  text-align: center;
+}
+
+.dashboard-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-radius: 6px;
+}
+
+.actions {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.actions button {
+  padding: 6px 10px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.actions .danger {
+  background: #ff5252;
+  color: white;
+}
+
+.upload-link {
+  color: #4bb869;
+  font-weight: bold;
+  text-decoration: underline;
+}

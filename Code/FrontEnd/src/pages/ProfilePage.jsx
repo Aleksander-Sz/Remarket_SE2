@@ -46,6 +46,8 @@ function ProfilePage() {
         <>
           <h1>Welcome, {user.username}!</h1>
           <p>Email: {user.email}</p>
+          <button onClick={() => navigate('/mylistings')}>My listings</button><br />
+          <button onClick={() => navigate('/addproduct')}>Add product</button><br/>
           <button className="logout-btn" onClick={handleLogout}>
             Log Out
           </button>

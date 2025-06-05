@@ -1,9 +1,12 @@
 import './Navbar.css';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useUser } from '../context/UserContext';
 
 function Navbar() {
-  const { role } = useUser(); // check if logged in
+  const { email, role } = useUser(); // role = 'user' | 'seller' | 'admin'
+  const navigate = useNavigate();
+
+  const isLoggedIn = Boolean(email);
 
   return (
     <nav className="navbar">
@@ -21,9 +24,19 @@ function Navbar() {
 
       <div className="navbar-right">
         <Link to="#"><i className="icon">🔍</i></Link>
-        <Link to="/login" className="login-link">Login</Link>
-        {role && ( // ✅ only show cart when logged in
-          <Link to="/cart"><i className="icon">🛒</i></Link>
+
+        {isLoggedIn ? (
+          <>
+            <Link to="/profile" className="login-link">Profile</Link>
+            {(role === 'seller' || role === 'admin') && (
+              <Link to="/mylistings"><i className="icon">📦</i></Link>
+            )}
+            <Link to="/cart"><i className="icon">🛒</i></Link>
+          </>
+        ) : (
+          <button onClick={() => navigate('/login')} className="login-link">
+            Login
+          </button>
         )}
       </div>
     </nav>

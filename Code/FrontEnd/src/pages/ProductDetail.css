@@ -32,3 +32,28 @@
   margin: 0.5rem 0;
   font-size: 1.1rem;
 }
+.reviews-section {
+  margin-top: 3rem;
+  padding: 1rem 2rem;
+  background-color: #1f1f1f;
+  border-radius: 10px;
+  color: white;
+}
+
+.reviews-section h2 {
+  margin-bottom: 1rem;
+  color: #4bb869;
+}
+
+.review-card {
+  padding: 1rem;
+  border-bottom: 1px solid #333;
+}
+
+.review-card:last-child {
+  border-bottom: none;
+}
+
+.review-card .stars {
+  color: gold;
+}

@@ -18,6 +18,7 @@ namespace ReMarket.Models
         public string Email { get; private set; }
         public string Password { get; private set; }
         public int Id { get; private set; }
+        public char Role { get; private set; } = 'U';
 
 
         public Account(string username, string email, string password)

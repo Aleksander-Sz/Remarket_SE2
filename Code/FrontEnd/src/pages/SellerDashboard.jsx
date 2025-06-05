@@ -1,62 +1,70 @@
-// src/pages/SellerDashboard.jsx
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useUser } from '../context/UserContext';
+import axios from '../api/axiosInstance';
 import './SellerDashboard.css';
 
-const dummySeller = {
-  storeName: "Esbol's Vintage Finds",
-  listings: [
-    {
-      id: 1,
-      title: 'Leather Messenger Bag',
-      price: 45.0,
-      imageUrl: require('../assets/accessories.jpg'),
-    },
-    {
-      id: 2,
-      title: 'Retro Denim Jacket',
-      price: 60.0,
-      imageUrl: require('../assets/clothes.jpg'),
-    },
-  ],
-};
-
 function SellerDashboard() {
-  const [listings, setListings] = useState(dummySeller.listings);
+  const { email } = useUser();
+  const [listings, setListings] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const handleDelete = (id) => {
-    const confirmed = window.confirm('Are you sure you want to delete this listing?');
-    if (confirmed) {
-      setListings(prev => prev.filter(item => item.id !== id));
+  useEffect(() => {
+    const fetchListings = async () => {
+      try {
+        const res = await axios.get('/products', {
+          params: { seller: email }
+        });
+        setListings(res.data);
+      } catch (err) {
+        console.error('Failed to fetch listings:', err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    if (email) fetchListings();
+  }, [email]);
+
+  const handleDelete = async (id) => {
+    if (!window.confirm('Delete this listing?')) return;
+    try {
+      await axios.delete(`/products/${id}`);
+      setListings((prev) => prev.filter((item) => item.id !== id));
+    } catch (err) {
+      alert('Failed to delete listing');
+      console.error(err);
     }
   };
 
   const handleEdit = (id) => {
-    alert(`Editing listing with ID ${id} (not yet implemented)`);
-  };
-
-  const handleAdd = () => {
-    alert('Add new listing (not yet implemented)');
+    window.location.href = `/edit/${id}`;
   };
 
   return (
     <div className="seller-dashboard">
-      <h1>Seller Dashboard</h1>
-      <h2>Store: {dummySeller.storeName}</h2>
-      <button className="add-btn" onClick={handleAdd}>+ Add New Listing</button>
-
-      <div className="seller-grid">
-        {listings.map(item => (
-          <div key={item.id} className="seller-card">
-            <img src={item.imageUrl} alt={item.title} />
-            <h3>{item.title}</h3>
-            <p>${item.price.toFixed(2)}</p>
-            <div className="actions">
-              <button className="edit-btn" onClick={() => handleEdit(item.id)}>Edit</button>
-              <button className="delete-btn" onClick={() => handleDelete(item.id)}>Delete</button>
+      <h2>My Project Listings</h2>
+      {loading ? (
+        <p>Loading...</p>
+      ) : listings.length === 0 ? (
+        <p>
+          You haven’t uploaded anything yet.{' '}
+          <a href="/upload" className="upload-link">Upload your first project</a>
+        </p>
+      ) : (
+        <div className="dashboard-grid">
+          {listings.map((item) => (
+            <div className="dashboard-card" key={item.id}>
+              <img src={`/api/photo/${item.photoIds?.[0]}`} alt={item.title} />
+              <h3>{item.title}</h3>
+              <p>${item.price}</p>
+              <div className="actions">
+                <button onClick={() => handleEdit(item.id)}>Edit</button>
+                <button className="danger" onClick={() => handleDelete(item.id)}>Delete</button>
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
