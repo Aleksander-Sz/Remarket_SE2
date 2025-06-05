@@ -18,22 +18,8 @@ namespace ReMarket.Models
         [Column(TypeName = "decimal(10,2)")]
         public decimal Price { get; set; }
 
-        private string _status = "Draft";
-
         [Required]
-        public string Status
-        {
-            get => _status;
-            set
-            {
-                if (_status == "Draft" && value == "Archived")
-                {
-                    throw new InvalidOperationException(
-                        "Cannot change status directly from Draft to Archived");
-                }
-                _status = value;
-            }
-        }
+        public string Status { get; set; }
 
         // Navigation properties
         public int CategoryId { get; set; }
@@ -42,20 +28,10 @@ namespace ReMarket.Models
         public int DescriptionId { get; set; }
         public Description Description { get; set; } = null!;
 
-
-        [NotMapped]
-        public int? ThumbnailId { get; set; }
-        [NotMapped]
-        public Photo? Thumbnail { get; set; }
-        [NotMapped]
         public int OwnerId { get; set; }
-
-
-
 
         //public int? ThumbnailId { get; set; }
         //public Photo? Thumbnail { get; set; }
-
 
         public ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();
 

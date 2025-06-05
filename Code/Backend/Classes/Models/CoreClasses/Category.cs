@@ -25,7 +25,7 @@ namespace ReMarket.Models
         public void SaveToDatabase(MySqlConnection connection)
         {
             using var command = new MySqlCommand(
-                "INSERT INTO category (name) VALUES (@Name); SELECT LAST_INSERT_ID();",
+                "INSERT INTO Category (name) VALUES (@Name); SELECT LAST_INSERT_ID();",
                 connection);
 
             command.Parameters.AddWithValue("@Name", Name);
@@ -35,7 +35,7 @@ namespace ReMarket.Models
             }
             else
             {
-                command.CommandText = "UPDATE category SET name = @Name WHERE id = @Id";
+                command.CommandText = "UPDATE Category SET name = @Name WHERE id = @Id";
                 command.Parameters.AddWithValue("@Id", Id);
                 command.ExecuteNonQuery();
             }
@@ -44,7 +44,7 @@ namespace ReMarket.Models
         public static Category? LoadById(MySqlConnection connection, int id)
         {
             using var command = new MySqlCommand(
-                "SELECT id, name FROM category WHERE id = @Id",
+                "SELECT id, name FROM Category WHERE id = @Id",
                 connection);
 
             command.Parameters.AddWithValue("@Id", id);
@@ -64,7 +64,7 @@ namespace ReMarket.Models
             var categories = new List<Category>();
 
             using var command = new MySqlCommand(
-                "SELECT id, name FROM category",
+                "SELECT id, name FROM Category",
                 connection);
 
             using var reader = command.ExecuteReader();
@@ -82,7 +82,7 @@ namespace ReMarket.Models
         public static void Delete(MySqlConnection connection, int id)
         {
             using var command = new MySqlCommand(
-                "DELETE FROM category WHERE id = @Id",
+                "DELETE FROM Category WHERE id = @Id",
                 connection);
 
             command.Parameters.AddWithValue("@Id", id);
