@@ -33,9 +33,12 @@ import SellerDashboard from './pages/SellerDashboard';
 import Register from './pages/Register';
 import AboutUs from './pages/AboutUs'; 
 import MyListingPage from './pages/MyListingPage';
+import AddProductPage from './pages/AddProductPage';
 
 
 
+// Account Manager
+import AccountManager from './pages/accountmanager';
 
 
 function AnimatedRoutes() {
@@ -91,6 +94,9 @@ function AnimatedRoutes() {
         <Route path="/product/:productId" element={<><WipeTransition /><ProductDetail /></>} />
         <Route path="/cart" element={<><WipeTransition /><CartPage /></>} />
         <Route path="/mylistings" element={<><WipeTransition /><MyListingPage /></>} />
+        <Route path="/addproduct" element={<><WipeTransition /><AddProductPage /></>} />
+        <Route path="/accountmanager" element={<><WipeTransition /><AccountManager /></>} />
+
 
 
 

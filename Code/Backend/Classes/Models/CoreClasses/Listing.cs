@@ -41,14 +41,33 @@ namespace ReMarket.Models
 
         public int DescriptionId { get; set; }
         public Description Description { get; set; } = null!;
+
+        public int OwnerId { get; set; }
         [NotMapped]
         public int? ThumbnailId { get; set; }
         [NotMapped]
         public Photo? Thumbnail { get; set; }
 
+
+        public int OwnerId { get; set; }
+
+        //public int? ThumbnailId { get; set; }
+        //public Photo? Thumbnail { get; set; }
+
+
         public ICollection<ListingPhoto> ListingPhotos { get; set; } = new List<ListingPhoto>();
 
 
+    }
+    public class ListingDto
+    {
+        public string? Title { get; set; }
+        public string? Header { get; set; }
+        public string? Paragraph { get; set; }
+        public int? Category { get; set; }
+        public int? Price { get; set; }
+        public int? PhotoId { get; set; }
+        public int? OwnerId { get; set; }
     }
 }
 

@@ -71,8 +71,6 @@ app.Use(async (context, next) =>
     }
 });
 
-//clothesListings[0].Thumbnail = new Photo();
-//app.MapGet("/api/clothes", () => Results.Json(clothesListings));
 app.MapGet("/api/products", async (
     AppDbContext db,
     string? category,
@@ -80,7 +78,8 @@ app.MapGet("/api/products", async (
     string? max_price,
     string? page,
     string? limit,
-    string? id) =>
+    string? id,
+    string? ownerId) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -117,6 +116,10 @@ app.MapGet("/api/products", async (
 
     if (decimal.TryParse(max_price, out var maxVal))
         query = query.Where(l => l.Price <= maxVal);
+
+    //ownerId:
+    if (decimal.TryParse(ownerId, out var ownerIdVal))
+        query = query.Where(l => l.OwnerId == ownerIdVal);
 
     // page and limit
 
@@ -158,6 +161,28 @@ app.MapGet("/api/photo/{id}", async (int id, AppDbContext db) =>
     return Results.File(photo.Bytes, "image/jpeg"); // or image/png if needed
 });
 
+app.MapPost("/api/photo", async (HttpRequest request, AppDbContext db) =>
+{
+    var form = await request.ReadFormAsync();
+    var file = form.Files.GetFile("image");
+
+    if (file == null || file.Length == 0)
+        return Results.BadRequest("No image uploaded.");
+
+    using var memoryStream = new MemoryStream();
+    await file.CopyToAsync(memoryStream);
+    var photoBytes = memoryStream.ToArray();
+    var photo = new Photo("placeholder name", photoBytes);
+    db.Photos.Add(photo);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { id = photo.Id });
+});
+
+
+
+
+
 app.MapPost("/api/login", async (
     AppDbContext db,
     LoginRequest request) =>
@@ -175,7 +200,9 @@ app.MapPost("/api/login", async (
     var claims = new[]
     {
         new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-        new Claim(ClaimTypes.Email, user.Email)
+        new Claim(ClaimTypes.Email, user.Email),
+        new Claim(ClaimTypes.Role, user.Role == 'A' ? "admin" : "user")
+
     };
 
     var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("p8ZfQsR2Xj6sDk93YtBLu7cV1gX9aEfM"));
@@ -202,17 +229,18 @@ app.MapPost("/api/register", async (
 
     var user = await db.Accounts.FirstOrDefaultAsync(u => u.Email == email);
     //return Results.Json(user);
-    if (user == null)
+    if (user != null)
         return Results.BadRequest("A user with this email already exists.");
 
     user = await db.Accounts.FirstOrDefaultAsync(u => u.Username == username);
     //return Results.Json(user);
-    if (user == null)
+    if (user != null)
         return Results.BadRequest("A user with this name already exists.");
 
     var hashedPassword = BCrypt.Net.BCrypt.HashPassword(password);
-    var newUser = new Account(username, email, password);
+    var newUser = new Account(username, email, hashedPassword);
     db.Accounts.Add(newUser);
+    await db.SaveChangesAsync();
 
     var claims = new[]
     {
@@ -232,6 +260,54 @@ app.MapPost("/api/register", async (
     return Results.Ok(new { token = tokenString });
 });
 
+app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db, ClaimsPrincipal user) =>
+{
+    if (data.Title == null || data.Category == null || data.Price == null)
+        return Results.BadRequest("Missing required fields.");
+
+    var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    var ownerId = int.Parse(userIdClaim.Value);
+
+    var description = new Description
+    {
+        Header = data.Header ?? string.Empty,
+        Paragraph = data.Paragraph ?? string.Empty
+    };
+    db.Descriptions.Add(description);
+    await db.SaveChangesAsync();
+
+    var listing = new Listing
+    {
+        Title = data.Title,
+        Price = data.Price.Value,
+        Status = "available", // or some default string like "active"
+        DescriptionId = description.Id, // hardcoded for now
+        CategoryId = data.Category.Value,
+        OwnerId = ownerId
+    };
+
+    db.Listings.Add(listing);
+    await db.SaveChangesAsync(); // Save first to get the auto-incremented ID
+
+    // Link the photo (if provided)
+    if (data.PhotoId != null)
+    {
+        var link = new ListingPhoto
+        {
+            ListingId = listing.Id,
+            PhotoId = data.PhotoId.Value
+        };
+        db.ListingPhotos.Add(link);
+        await db.SaveChangesAsync();
+    }
+
+    return Results.Ok(new { listingId = listing.Id });
+});
+
+
 app.MapGet("/api/account", async (
     ClaimsPrincipal user,
     AppDbContext db) =>
@@ -244,14 +320,11 @@ app.MapGet("/api/account", async (
 
     var account = await db.Accounts
         .Where(a => a.Id == userId)
-        .Select(a => new { a.Id, a.Email, a.Username }) // don't return password
+        .Select(a => new { a.Id, a.Email, a.Username, a.Role}) // don't return password
         .FirstOrDefaultAsync();
 
     return account is not null ? Results.Ok(account) : Results.NotFound();
 }).RequireAuthorization();
-
-app.MapGet("/api/connection_string", () => builder.Configuration.GetConnectionString("DefaultConnection"));
-
 
 app.MapGet("/api/info", () =>
 {
@@ -300,6 +373,47 @@ app.MapPost("/api/", async context => //change api call here
 });
 });
 */
+
+
+
+app.MapGet("/api/accounts", async (ClaimsPrincipal user, AppDbContext db) =>
+{
+    var roleClaim = user.FindFirst(ClaimTypes.Role);
+    if (roleClaim == null || roleClaim.Value != "admin")
+        return Results.Forbid();
+
+    var users = await db.Accounts
+        .Select(a => new
+        {
+            a.Id,
+            a.Username,
+            a.Email,
+            a.Role
+        })
+        .ToListAsync();
+
+    return Results.Ok(users);
+}).RequireAuthorization();
+
+app.MapDelete("/api/accounts/{id}", async (int id, ClaimsPrincipal user, AppDbContext db) =>
+{
+    var roleClaim = user.FindFirst(ClaimTypes.Role);
+    if (roleClaim == null || roleClaim.Value != "admin")
+        return Results.Forbid();
+
+    var userToDelete = await db.Accounts.FindAsync(id);
+    if (userToDelete == null)
+        return Results.NotFound();
+
+    db.Accounts.Remove(userToDelete);
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { message = $"User {id} deleted" });
+}).RequireAuthorization();
+
+
+
+
 
 
 app.Run();
