@@ -13,7 +13,7 @@ function AccountManager() {
         try {
             setLoading(true);
             console.log('Fetching users...');
-            const res = await axios.get('/users');
+            const res = await axios.get('/accounts');
             console.log('Users fetched:', res.data);
             setUsers(res.data);
             setError(null);
@@ -40,7 +40,7 @@ function AccountManager() {
             return;
         }
         try {
-            await axios.delete(`/users/${userId}`);
+            await axios.delete(`/accounts/${userId}`);
             setUsers(users.filter(u => u.id !== userId));
         } catch (err) {
             console.error('Failed to delete user:', err);
@@ -60,12 +60,6 @@ function AccountManager() {
         <div className="account-manager">
             <h2>Account Manager</h2>
             {error && <p className="error">{error}</p>}
-
-            <p><strong>Debug users array (JSON):</strong></p>
-            <pre style={{ backgroundColor: '#eee', padding: '10px' }}>
-                {JSON.stringify(users, null, 2)}
-            </pre>
-
             <table>
                 <thead>
                     <tr>
