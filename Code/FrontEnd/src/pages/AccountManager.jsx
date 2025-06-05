@@ -52,7 +52,7 @@ function AccountManager() {
         return <p>Loading user data...</p>;
     }
 
-    if (role !== 'A') {
+    if (role != 'A') {
         return <p>⛔ Access denied. Admins only.</p>;
     }
 
