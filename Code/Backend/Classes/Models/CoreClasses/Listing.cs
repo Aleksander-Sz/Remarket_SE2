@@ -28,6 +28,8 @@ namespace ReMarket.Models
         public int DescriptionId { get; set; }
         public Description Description { get; set; } = null!;
 
+        public int OwnerId { get; set; }
+
         //public int? ThumbnailId { get; set; }
         //public Photo? Thumbnail { get; set; }
 
@@ -43,6 +45,7 @@ namespace ReMarket.Models
         public int? Category { get; set; }
         public int? Price { get; set; }
         public int? PhotoId { get; set; }
+        public int? OwnerId { get; set; }
     }
 }
 
