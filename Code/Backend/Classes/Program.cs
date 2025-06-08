@@ -104,6 +104,7 @@ app.MapGet("/api/products", async (
                 Category = new { l.Category.Id, l.Category.Name },
                 Description = new { l.Description.Id, l.Description.Header, l.Description.Paragraph },
                 Status = l.Status.ToString(),
+                Owner = new { l.Owner.Id, l.Owner.Username },
                 PhotoIds = l.ListingPhotos.Select(lp => lp.PhotoId).ToList()
             })
             .FirstOrDefaultAsync();
@@ -118,7 +119,7 @@ app.MapGet("/api/products", async (
         query = query.Where(l => l.Price <= maxVal);
 
     //ownerId:
-    if (decimal.TryParse(ownerId, out var ownerIdVal))
+    if (int.TryParse(ownerId, out var ownerIdVal))
         query = query.Where(l => l.OwnerId == ownerIdVal);
 
     // page and limit
