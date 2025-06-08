@@ -25,9 +25,10 @@ function ProductDetail() {
   <div className="info-section">
     <h1>{product.title}</h1>
     <p><strong>Price:</strong> ${product.price}</p>
+    <p><strong>Status:</strong> {product.status}</p>
+    <p><strong>Seller:</strong> {product.owner?.username}</p>
     <p><strong>Description:</strong> {product.description?.header}</p>
     <p>{product.description?.paragraph}</p>
-    <p><strong>Status:</strong> {product.status}</p>
   </div>
 
   <div className="reviews-section">

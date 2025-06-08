@@ -3,7 +3,7 @@ using Xunit;
 using ReMarket.Models;
 using MySql.Data.MySqlClient;
 using System.Data;
-using ReMarket.Utilities;  
+using ReMarket.Utilities;
 
 namespace Tests;
 
@@ -25,24 +25,13 @@ public class UnitTestAccount
             Assert.True(PasswordHasher.VerifyPassword(password, account.Password));
         }
 
-        [Theory]
-        [InlineData("", "TestPassword123", "Username is required")]
-        public void CreateAccount_InvalidData_ThrowsArgumentException(string username, string password, string expectedErrorMessage)
-        {
-            var exception = Assert.Throws<ArgumentException>(() => Account.Create(username, "test@example.com", password));
-            Assert.Contains(expectedErrorMessage, exception.Message);
-        }
-
         [Fact]
-        public void VerifyPassword_ValidPassword_ReturnsTrue()
+        public void VerifyPassword_CorrectPassword_ReturnsTrue()
         {
-
             string plainPassword = "Test123!";
-            string hashedPassword = PasswordHasher.HashPassword(plainPassword);
+            var account = Account.Create("user", "user@example.com", plainPassword);
 
-            bool result = PasswordHasher.VerifyPassword(plainPassword, hashedPassword);
-
-            Assert.True(result);
+            Assert.True(account.VerifyPassword(plainPassword));
         }
 
         [Fact]
@@ -56,57 +45,87 @@ public class UnitTestAccount
             Assert.False(result);
         }
 
+        //invalid create account fail
+        [Theory]
+        [InlineData("", "TestPassword123", "Username is required")]
+        [InlineData("user", "", "Password must be at least 8 characters")]
+        [InlineData("user", "short1", "Password must be at least 8 characters")]
+        [InlineData("user", "alllowercase1", "Password must contain uppercase and lowercase letters")]
+        [InlineData("user", "ALLUPPERCASE1", "Password must contain uppercase and lowercase letters")]
+        [InlineData("user", "NoNumberPassword", "Password must contain at least one number")]
+        public void CreateAccount_InvalidData_ThrowsArgumentException(string username, string password, string expectedErrorMessage)
+        {
+            var ex = Assert.Throws<ArgumentException>(() => Account.Create(username, "test@example.com", password));
+            Assert.Contains(expectedErrorMessage, ex.Message);
+        }
+
+        //is password auto hashed
+        [Fact]
+        public void Create_ShouldHashPassword()
+        {
+            string password = "TestPass123";
+            var account = Account.Create("user", "user@example.com", password);
+
+            Assert.NotEqual(password, account.Password);
+        }
+
+        [Fact]
+        public void Constructor_StoresPlainPassword_Dangerous()
+        {
+            string password = "PlainPass123";
+            var account = new Account("user", "user@example.com", password);
+
+            Assert.Equal(password, account.Password);
+        }
+        //do NOT push the password or u will be crying like me just now
+        /*       private string connectionString = new MySqlConnectionStringBuilder()
+               {
+                   Server = "remarket-se2project-ania-f1cd.j.aivencloud.com",
+                   Port = 21633,
+                   Database = "ReMarket",
+                   UserID = "avnadmin",
+                   Password = "password,
+                   SslMode = MySqlSslMode.VerifyCA,
+                   CertificateFile = "/Users/ola/desktop/ca.pem"
+               }.ConnectionString;
 
 
-        // DATA BASE TESTING, will be added later
-        //[Fact]
-        //public void SaveToDatabase_ValidAccount_SavesAccount()
-        //{
+               [Fact]
+               public void SaveToDatabase_ValidAccount_SavesAccount()
+               {
+                   using var connection = new MySqlConnection(connectionString);
+                   connection.Open();
 
-        //    var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-        //    connection.Open();
+                   var account = new Account("testuser", "testuser@example.com", "TestPassword123");
 
-        //    var account = new Account("testuser", "testuser@example.com", "TestPassword123");
+                   account.SaveToDatabase(connection);
 
+                   Assert.True(account.Id > 0);
+               }
 
-        //    account.SaveToDatabase(connection);
+               [Fact]
+               public void LoadByEmail_ValidEmail_ReturnsAccount()
+               {
+                   using var connection = new MySqlConnection(connectionString);
+                   connection.Open();
 
-        //    Assert.True(account.Id > 0);
+                   var account = Account.LoadByEmail(connection, "testuser@example.com");
 
-        //    connection.Close();
-        //}
+                   Assert.NotNull(account);
+                   Assert.Equal("testuser@example.com", account.Email);
+               }
 
-        //    // Testowanie ładowania konta po emailu
-        //[Fact]
-        //public void LoadByEmail_ValidEmail_ReturnsAccount()
-        //{
-        //    // Arrange
-        //    var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-        //    connection.Open();
+               [Fact]
+               public void LoadByEmail_InvalidEmail_ReturnsNull()
+               {
+                   using var connection = new MySqlConnection(connectionString);
+                   connection.Open();
 
-        //    // Act
-        //    var account = Account.LoadByEmail(connection, "testuser@example.com");
+                   var account = Account.LoadByEmail(connection, "nonexistentuser@example.com");
 
-        //    // Assert
-        //    Assert.NotNull(account);
-
-        //    connection.Close();
-        //}
-
-        //    [Fact]
-        //    public void LoadByEmail_InvalidEmail_ReturnsNull()
-        //    {
-        //        // Arrange
-        //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-        //        connection.Open();
-
-        //        // Act
-        //        var account = Account.LoadByEmail(connection, "nonexistentuser@example.com");
-
-        //        // Assert
-        //        Assert.Null(account);
-
-        //        connection.Close();
-        //    }
+                   Assert.Null(account);
+               }
+           }*/
     }
 }
+

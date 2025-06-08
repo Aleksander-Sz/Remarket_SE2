@@ -3,92 +3,144 @@ using Xunit;
 using ReMarket.Models;
 using MySql.Data.MySqlClient;
 using ReMarket.Utilities;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using ReMarket.Services;
 
 namespace Tests;
 
-public class UnitTestCategory
+public class CategoryTests : IDisposable
 {
-    public class CategoryTests
+    private readonly AppDbContext _db;
+
+    public CategoryTests()
     {
-    //    [Fact]
-    //    public void CreateCategory_ValidData_ReturnsCategory()
-    //    {
-    //        string categoryName = "Electronics";
+        var configuration = new ConfigurationBuilder()
+            .AddJsonFile("appsettings.Development.json") //this might not be good file
+            .Build();
 
-    //        var category = Category.Create(categoryName);
+        var connectionString = configuration.GetConnectionString("DefaultConnection");
 
-    //        Assert.Equal(categoryName, category.Name);
-    //        Assert.Equal(0, category.Id); 
-    //    }
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+            .Options;
 
-    //    [Fact]
-    //    public void SaveToDatabase_NewCategory_SavesCategory()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        _db = new AppDbContext(options);
+    }
 
-    //        var category = Category.Create("Electronics");
+    public void Dispose()
+    {
+        _db.Dispose();
+    }
 
-    //        category.SaveToDatabase(connection);
 
-    //        Assert.True(category.Id > 0);
+    [Fact]
+    public void CreateCategory_ValidData_ReturnsCategory()
+    {
+        var category = Category.Create("Electronics");
+        Assert.Equal("Electronics", category.Name);
+        Assert.Equal(0, category.Id);
+    }
 
-    //        connection.Close();
-    //    }
+    [Fact]
+    public void SaveToDatabase_NewCategory_SetsId()
+    {
+        var category = Category.Create("Books");
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
-    //    [Fact]
-    //    public void LoadById_ValidId_ReturnsCategory()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        Assert.True(category.Id > 0);
 
-    //        var category = Category.LoadById(connection, 1);
+        _db.Categories.Remove(category);
+        _db.SaveChanges();
+    }
 
-    //        Assert.NotNull(category);
-    //        Assert.Equal(1, category.Id);
+    [Fact]
+    public void SaveToDatabase_ExistingCategory_UpdatesName()
+    {
+        var category = Category.Create("TempCat");
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
-    //        connection.Close();
-    //    }
+        category.Name = "UpdatedCat";
+        _db.Categories.Update(category);
+        _db.SaveChanges();
 
-    //    [Fact]
-    //    public void LoadById_InvalidId_ReturnsNull()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        var updated = _db.Categories.Find(category.Id);
+        Assert.NotNull(updated);
+        Assert.Equal("UpdatedCat", updated.Name);
 
-    //        var category = Category.LoadById(connection, -1); 
+        _db.Categories.Remove(updated);
+        _db.SaveChanges();
+    }
 
-    //        Assert.Null(category);
+    [Fact]
+    public void LoadById_ValidId_ReturnsCategory()
+    {
+        var category = Category.Create("Gadgets");
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
-    //        connection.Close();
-    //    }
+        var loaded = _db.Categories.Find(category.Id);
+        Assert.NotNull(loaded);
+        Assert.Equal(category.Id, loaded.Id);
+        Assert.Equal("Gadgets", loaded.Name);
 
-    //    [Fact]
-    //    public void Delete_ValidId_RemovesCategory()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+        _db.Categories.Remove(loaded);
+        _db.SaveChanges();
+    }
 
-    //        Category.Delete(connection, 1);
+    [Fact]
+    public void LoadById_InvalidId_ReturnsNull()
+    {
+        var category = _db.Categories.Find(-99);
+        Assert.Null(category);
+    }
 
-    //        var category = Category.LoadById(connection, 1);
+    [Fact]
+    public void Delete_ValidId_RemovesCategory()
+    {
+        var category = Category.Create("ToDelete");
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
-    //        Assert.Null(category);
+        _db.Categories.Remove(category);
+        _db.SaveChanges();
 
-    //        connection.Close();
-    //    }
+        var deleted = _db.Categories.Find(category.Id);
+        Assert.Null(deleted);
+    }
 
-    //    [Fact]
-    //    public void LoadAll_ReturnsListOfCategories()
-    //    {
-    //        var connection = new MySqlConnection("server=localhost;port=3306;database=ReMarket;user=root;password=toor1234");
-    //        connection.Open();
+    [Fact]
+    public void LoadAll_ReflectsInsertAndDelete()
+    {
+        int beforeCount = _db.Categories.Count();
 
-    //        var categories = Category.LoadAll(connection);
+        var category = Category.Create("CountTest");
+        _db.Categories.Add(category);
+        _db.SaveChanges();
 
-    //        Assert.NotEmpty(categories);
+        int afterInsert = _db.Categories.Count();
+        Assert.Equal(beforeCount + 1, afterInsert);
 
-    //        connection.Close();
-    //    }
+        _db.Categories.Remove(category);
+        _db.SaveChanges();
+
+        int afterDelete = _db.Categories.Count();
+        Assert.Equal(beforeCount, afterDelete);
+    }
+
+    [Fact]
+    public void SaveToDatabase_EmptyName_AllowsInsertButShouldBeValidated()
+    {
+        var category = Category.Create("");
+        _db.Categories.Add(category);
+        _db.SaveChanges();
+
+        Assert.True(category.Id > 0);
+        Assert.Equal("", category.Name);
+
+        _db.Categories.Remove(category);
+        _db.SaveChanges();
     }
 }

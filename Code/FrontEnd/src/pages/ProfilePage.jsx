@@ -9,7 +9,7 @@ function ProfilePage() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { logout } = useUser();
+  const { logout, role } = useUser();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -48,6 +48,12 @@ function ProfilePage() {
           <p>Email: {user.email}</p>
           <button onClick={() => navigate('/mylistings')}>My listings</button><br />
           <button onClick={() => navigate('/addproduct')}>Add product</button><br/>
+          {role === 'A' ? (
+            <button onClick={() => navigate('/accountmanager')}>
+              Account Manager
+            </button>
+          ) : (<br/>)}
+          <br/>
           <button className="logout-btn" onClick={handleLogout}>
             Log Out
           </button>
