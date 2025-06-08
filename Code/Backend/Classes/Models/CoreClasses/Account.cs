@@ -18,7 +18,7 @@ namespace ReMarket.Models
         public string Email { get; private set; }
         public string Password { get; private set; }
         public int Id { get; private set; }
-        public char Role { get; private set; } = 'U';
+        public char Role { get; set; } = 'U';
 
 
         public Account(string username, string email, string password)
@@ -99,7 +99,7 @@ namespace ReMarket.Models
             return account;
         }
     }
-
+    public record RoleChangeRequest(char NewRole);
 
 }
 

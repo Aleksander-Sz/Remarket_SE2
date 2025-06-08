@@ -412,7 +412,19 @@ app.MapDelete("/api/accounts/{id}", async (int id, ClaimsPrincipal user, AppDbCo
     return Results.Ok(new { message = $"User {id} deleted" });
 }).RequireAuthorization();
 
+app.MapPost("/api/changeRole/{UserId}", async (int UserId, RoleChangeRequest data, AppDbContext db, ClaimsPrincipal user) =>
+{
+    var roleClaim = user.FindFirst(ClaimTypes.Role);
+    if (roleClaim == null || roleClaim.Value != "admin")
+        return Results.Forbid();
+    var userToUpdate = await db.Accounts.FindAsync(UserId);
+    if (userToUpdate == null)
+        return Results.NotFound();
+    userToUpdate.Role = data.NewRole;
+    await db.SaveChangesAsync();
 
+    return Results.Ok(new { message = $"User {UserId} role changed to '{data.NewRole}'" });
+}).RequireAuthorization();
 
 
 
