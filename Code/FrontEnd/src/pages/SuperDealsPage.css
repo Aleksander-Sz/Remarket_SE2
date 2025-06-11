@@ -4,7 +4,10 @@
     max-width: 1200px;
     margin: 0 auto;
   }
-  
+  body {
+  background-color: #444; /* Makes entire screen black */
+}
+
   .deals-title {
     font-size: 2rem;
     margin-bottom: 2rem;
