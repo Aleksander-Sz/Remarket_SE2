@@ -1,34 +1,35 @@
 .our-stories {
-    background-color: #111;
-    color: white;
-    padding: 4rem 2rem;
-    text-align: center;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  .our-stories h1 {
-    font-size: 2.5rem;
-    margin-bottom: 2rem;
-  }
-  
-  .story-image {
-    width: 80%;
-    max-width: 600px;
-    border-radius: 15px;
-    margin-bottom: 1rem;
-  }
-  
-  .img-caption {
-    font-size: 0.9rem;
-    color: #ccc;
-    margin-bottom: 3rem;
-  }
-  
-  .story-content {
-    text-align: left;
-    max-width: 800px;
-    margin: 0 auto;
-    line-height: 1.8;
-    font-size: 1rem;
-  }
-  
+  background-color: #f8f8f8;
+  color: #111;
+  padding: 4rem 2rem;
+  text-align: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.our-stories h1 {
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+}
+
+.story-image {
+  width: 80%;
+  max-width: 600px;
+  border-radius: 15px;
+  margin-bottom: 1rem;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.img-caption {
+  font-size: 0.9rem;
+  color: #666;
+  margin-bottom: 3rem;
+}
+
+.story-content {
+  text-align: left;
+  max-width: 800px;
+  margin: 0 auto;
+  line-height: 1.8;
+  font-size: 1rem;
+  color: #333;
+}

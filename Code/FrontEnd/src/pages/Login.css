@@ -1,6 +1,6 @@
 .login-page {
-  background-color: #111;
-  color: white;
+  background-color: #f9f9f9;
+  color: #111;
   height: 100vh;
   display: flex;
   justify-content: center;
@@ -8,42 +8,47 @@
 }
 
 .login-box {
-  background-color: #1e1e1e;
+  background-color: #ffffff;
   padding: 3rem;
   border-radius: 12px;
   width: 100%;
   max-width: 400px;
   text-align: center;
-  box-shadow: 0 0 10px rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.06);
 }
 
 .login-box h2 {
   margin-bottom: 2rem;
+  color: #111;
 }
 
 form input {
   width: 100%;
   padding: 0.8rem;
   margin-bottom: 1rem;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+  background-color: #fff;
+  color: #111;
 }
 
 form select {
   width: 100%;
   padding: 0.8rem;
   margin-bottom: 1rem;
-  border: none;
+  border: 1px solid #ccc;
   border-radius: 8px;
   font-size: 1rem;
+  background-color: #fff;
+  color: #111;
 }
 
 form button {
   width: 100%;
   padding: 0.8rem;
-  background-color: white;
-  color: black;
+  background-color: #4bb869;
+  color: white;
   font-weight: bold;
   border: none;
   border-radius: 8px;
