@@ -480,6 +480,11 @@ app.MapPost("/api/changeProfile/{UserId}", async (int UserId, ProfileChangeReque
         return Results.Unauthorized();
 
     string message = "";
+    if (!string.IsNullOrWhiteSpace(data.NewUsername))
+    {
+        userToUpdate.Username = data.NewUsername;
+        message += "username, ";
+    }
     if (!string.IsNullOrWhiteSpace(data.NewDescription))
     {
         userToUpdate.Description = data.NewDescription;
@@ -489,6 +494,12 @@ app.MapPost("/api/changeProfile/{UserId}", async (int UserId, ProfileChangeReque
     {
         userToUpdate.PhotoId = data.NewPhotoId.Value;
         message += "photo";
+    }
+    if (!string.IsNullOrWhiteSpace(data.NewPassword))
+    {
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(data.NewPassword);
+        userToUpdate.Password = hashedPassword;
+        message += "password, ";
     }
     await db.SaveChangesAsync();
 

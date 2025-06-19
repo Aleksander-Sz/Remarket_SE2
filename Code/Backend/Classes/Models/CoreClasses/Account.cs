@@ -14,9 +14,9 @@ namespace ReMarket.Models
 
     public class Account
     {
-        public string Username { get; private set; }
+        public string Username { get; set; }
         public string Email { get; private set; }
-        public string Password { get; private set; }
+        public string Password { get; set; }
         public int Id { get; private set; }
         public char Role { get; set; } = 'U';
         public int PhotoId { get; set; }
