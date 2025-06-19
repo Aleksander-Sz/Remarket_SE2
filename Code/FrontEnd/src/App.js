@@ -34,6 +34,7 @@ import Register from './pages/Register';
 import AboutUs from './pages/AboutUs'; 
 import MyListingPage from './pages/MyListingPage';
 import AddProductPage from './pages/AddProductPage';
+import PublicProfile from './pages/PublicProfile';
 
 
 
@@ -101,6 +102,7 @@ function AnimatedRoutes() {
         <Route path="/addproduct" element={<><WipeTransition /><AddProductPage /></>} />
         <Route path="/accountmanager" element={<><WipeTransition /><AccountManager /></>} />
         <Route path="/purchase/:productId" element={<><WipeTransition /><PurchaseForm /></>} />
+        <Route path="/user/:profileId" element={<><WipeTransition /><PublicProfile /></>} />
 
 
 
