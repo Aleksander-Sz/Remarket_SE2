@@ -147,6 +147,37 @@ app.MapGet("/api/products", async (
     return Results.Json(listings);
 });
 
+app.MapGet("/api/reviews", async (
+    AppDbContext db,
+    int? userId,
+    int? listingId) =>
+{
+    var query = db.Reviews
+        .Include(r => r.Listing)     // Assuming a navigation property exists
+        .Include(r => r.Account)     // Assuming a navigation property exists
+        .AsQueryable();
+
+    if (userId.HasValue)
+        query = query.Where(r => r.AccountId == userId.Value);
+
+    if (listingId.HasValue)
+        query = query.Where(r => r.ListingId == listingId.Value);
+
+    var reviews = await query
+        .Select(r => new
+        {
+            r.Id,
+            r.Title,
+            r.Score,
+            r.Description,
+            Account = new { r.AccountId, r.Account.Username },
+            Listing = new { r.ListingId, r.Listing.Title }
+        })
+        .ToListAsync();
+
+    return Results.Json(reviews);
+});
+
 app.MapGet("/api/categories", async (AppDbContext db) =>
 {
     var categories = await db.Categories.ToListAsync();
@@ -179,10 +210,6 @@ app.MapPost("/api/photo", async (HttpRequest request, AppDbContext db) =>
 
     return Results.Ok(new { id = photo.Id });
 });
-
-
-
-
 
 app.MapPost("/api/login", async (
     AppDbContext db,
