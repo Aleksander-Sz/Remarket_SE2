@@ -43,7 +43,6 @@ import PurchaseForm from './pages/PurchaseForm';
 
 // User profile pages
 import ProfilePage from './pages/ProfilePage';
-import UserProfileView from './pages/UserProfileView';
 import EditProfilePage from './pages/EditProfilePage'; // ✅ nowa strona
 
 function AnimatedRoutes() {
@@ -103,6 +102,7 @@ function AnimatedRoutes() {
         <Route path="/accountmanager" element={<><WipeTransition /><AccountManager /></>} />
         <Route path="/purchase/:productId" element={<><WipeTransition /><PurchaseForm /></>} />
         <Route path="/user/:profileId" element={<><WipeTransition /><PublicProfile /></>} />
+        <Route path="/editprofile" element={<><WipeTransition /><EditProfilePage /></>} />
 
 
 
