@@ -62,3 +62,16 @@
     text-decoration: none;
     color: inherit;
 }
+
+.review-form {
+  margin-top: 2rem;
+  padding: 1rem;
+  border-top: 1px solid #ccc;
+}
+
+.review-form input,
+.review-form textarea,
+.review-form select {
+  width: 100%;
+  margin-bottom: 1rem;
+}

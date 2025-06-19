@@ -102,6 +102,6 @@ namespace ReMarket.Models
         }
     }
     public record RoleChangeRequest(char NewRole);
-    public record ProfileChangeRequest(string? NewDescription, int? NewPhotoId);
+    public record ProfileChangeRequest(string? NewUsername, string? NewDescription, int? NewPhotoId, string? NewPassword);
 }
 

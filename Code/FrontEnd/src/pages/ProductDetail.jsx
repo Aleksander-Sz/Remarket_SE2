@@ -3,11 +3,20 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from '../api/axiosInstance';
 import './ProductDetail.css';
+import { Link } from 'react-router-dom';
 
 function ProductDetail() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
+
+  const [newReview, setNewReview] = useState({
+    title: '',
+    score: 5,
+    description: ''
+  });
+
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
     // Fetch product
@@ -19,6 +28,35 @@ function ProductDetail() {
       .then(res => setReviews(res.data))
       .catch(err => console.error('Failed to load reviews', err));
   }, [productId]);
+
+  const handleReviewChange = (e) => {
+    const { name, value } = e.target;
+    setNewReview(prev => ({ ...prev, [name]: value }));
+    };
+
+  const handleReviewSubmit = async (e) => {
+    e.preventDefault();
+    setSubmitting(true);
+    try {
+      const response = await axios.post('/api/addReview', {
+        listingId: parseInt(productId),
+        title: newReview.title,
+        score: parseInt(newReview.score),
+        description: newReview.description
+      });
+
+      // Optional: prepend the new review to the list (assumes response returns the full review)
+      setReviews(prev => [response.data, ...prev]);
+
+      // Reset form
+      setNewReview({ title: '', score: 5, description: '' });
+    } catch (err) {
+      console.error('Failed to submit review', err);
+      alert('You must be logged in to submit a review.');
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   if (!product) return <p>Loading...</p>;
 
@@ -44,7 +82,10 @@ function ProductDetail() {
         ) : (
           reviews.map((review, idx) => (
             <div className="review-card" key={idx}>
-              <strong>{review.account.username}</strong> –{' '}
+              <Link to={`/user/${review.account.id}`} className="plain-link">
+                <strong>{review.account.username}</strong>
+              </Link>{' '}
+              –{' '}
               <span className="stars">
                 {'★'.repeat(review.score)}
                 {'☆'.repeat(5 - review.score)}
@@ -54,6 +95,49 @@ function ProductDetail() {
             </div>
           ))
         )}
+
+        {/* Review submission form */}
+        <form className="review-form" onSubmit={handleReviewSubmit}>
+          <h3>Add a Review</h3>
+          <label>
+            Title:
+            <input
+              type="text"
+              name="title"
+              value={newReview.title}
+              onChange={handleReviewChange}
+              required
+            />
+          </label>
+          <br />
+          <label>
+            Score:
+            <select
+              name="score"
+              value={newReview.score}
+              onChange={handleReviewChange}
+            >
+              {[5, 4, 3, 2, 1].map(n => (
+                <option key={n} value={n}>{n}</option>
+              ))}
+            </select>
+          </label>
+          <br />
+          <label>
+            Description:
+            <textarea
+              name="description"
+              value={newReview.description}
+              onChange={handleReviewChange}
+              rows="4"
+              required
+            />
+          </label>
+          <br />
+          <button type="submit" disabled={submitting}>
+            {submitting ? 'Submitting...' : 'Submit Review'}
+          </button>
+        </form>
   </div>
 </div>
 
