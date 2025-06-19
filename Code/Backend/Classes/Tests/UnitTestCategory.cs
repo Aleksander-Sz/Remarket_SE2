@@ -15,11 +15,7 @@ public class CategoryTests : IDisposable
 
     public CategoryTests()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Development.json") //this might not be good file
-            .Build();
-
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
