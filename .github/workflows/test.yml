@@ -31,7 +31,7 @@ jobs:
           echo "$DB_CA_PEM_B64" | base64 --decode > ca.pem
 
       - name: Restore dependencies
-        run: dotnet restore
+        run: dotnet restore ./code/backend 
 
       - name: Run tests
-        run: dotnet test --logger "console;verbosity=detailed"
+        run: dotnet test ./code/backend --logger "console;verbosity=detailed"
