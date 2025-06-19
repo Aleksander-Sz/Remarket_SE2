@@ -465,7 +465,10 @@ app.MapPost("/api/changeProfile/{UserId}", async (int UserId, ProfileChangeReque
     }
     await db.SaveChangesAsync();
 
-    return Results.Ok(new { message = $"User {UserId} profile updated, things changed: " + message + "." });
+    if(message=="")
+        return Results.Ok(new { message = $"Nothing to change" });
+    else
+        return Results.Ok(new { message = $"User {UserId} profile updated, things changed: " + message + "." });
 }).RequireAuthorization();
 
 

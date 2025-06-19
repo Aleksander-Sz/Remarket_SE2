@@ -60,8 +60,8 @@ function EditProfilePage() {
             }
 
             await axios.post(`/changeProfile/${user.id}`, {
-                bio: formData.bio,
-                photoId,
+                NewDescription: formData.bio,
+                NewPhotoId: photoId,
             });
 
             alert('Profile updated!');
