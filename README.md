@@ -57,4 +57,6 @@ FInish 1 sprint within 2 weeks
     /cart [GET] - returns the list of items in the cart
     /addListing [POST] - adds product to the database, arguments: title, header, paragraph, category, price
     /user/{id} [GET] - returns the id, username and photoId of the selected user
-
+    /reviews [GET] - returns reviews from the database, arguments: userId, listingId
+    /changeRole/{id} [POST] - updates the role of a user
+    /changeProfile/{id} - updates the description and photoId of a user
