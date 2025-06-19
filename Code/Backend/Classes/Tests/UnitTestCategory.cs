@@ -110,20 +110,18 @@ public class CategoryTests : IDisposable
     [Fact]
     public void LoadAll_ReflectsInsertAndDelete()
     {
-        int beforeCount = _db.Categories.Count();
-
-        var category = Category.Create("CountTest");
+        var category = Category.Create("CountTest-" + Guid.NewGuid());
         _db.Categories.Add(category);
         _db.SaveChanges();
 
-        int afterInsert = _db.Categories.Count();
-        Assert.Equal(beforeCount + 1, afterInsert);
+        var inserted = _db.Categories.FirstOrDefault(c => c.Id == category.Id);
+        Assert.NotNull(inserted);
 
         _db.Categories.Remove(category);
         _db.SaveChanges();
 
-        int afterDelete = _db.Categories.Count();
-        Assert.Equal(beforeCount, afterDelete);
+        var deleted = _db.Categories.FirstOrDefault(c => c.Id == category.Id);
+        Assert.Null(deleted);
     }
 
     [Fact]
