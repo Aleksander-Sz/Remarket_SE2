@@ -7,11 +7,17 @@ import './ProductDetail.css';
 function ProductDetail() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
+    // Fetch product
     axios.get(`/products?id=${productId}`)
       .then(res => setProduct(res.data))
       .catch(err => console.error('Failed to load product detail', err));
+    // Fetch reviews
+    axios.get(`/reviews?listingId=${productId}`)
+      .then(res => setReviews(res.data))
+      .catch(err => console.error('Failed to load reviews', err));
   }, [productId]);
 
   if (!product) return <p>Loading...</p>;
@@ -32,17 +38,22 @@ function ProductDetail() {
   </div>
 
   <div className="reviews-section">
-    <h2>Reviews</h2>
-    {[
-      { name: 'Alice', rating: 5, text: 'Absolutely love it!' },
-      { name: 'Bob', rating: 4, text: 'Very useful, fast delivery.' },
-      { name: 'Charlie', rating: 3, text: 'It’s okay, but has minor flaws.' },
-    ].map((review, idx) => (
-      <div className="review-card" key={idx}>
-        <strong>{review.name}</strong> – <span className="stars">{'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}</span>
-        <p>{review.text}</p>
-      </div>
-    ))}
+        <h2>Reviews</h2>
+        {reviews.length === 0 ? (
+          <p>No reviews yet.</p>
+        ) : (
+          reviews.map((review, idx) => (
+            <div className="review-card" key={idx}>
+              <strong>{review.account.username}</strong> –{' '}
+              <span className="stars">
+                {'★'.repeat(review.score)}
+                {'☆'.repeat(5 - review.score)}
+              </span>
+              <p><strong>{review.title}</strong></p>
+              <p>{review.description}</p>
+            </div>
+          ))
+        )}
   </div>
 </div>
 
