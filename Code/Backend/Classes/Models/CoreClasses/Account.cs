@@ -20,6 +20,7 @@ namespace ReMarket.Models
         public int Id { get; private set; }
         public char Role { get; set; } = 'U';
         public int PhotoId { get; set; }
+        public string Description { get; set; }
 
 
         public Account(string username, string email, string password)

@@ -35,6 +35,7 @@ function ProductDetail() {
   <br/>
   <div className="info-section">
     <p><strong>{profile.username}</strong></p>
+    <p>{profile.description}</p>
   </div>
 </div>
 
