@@ -327,6 +327,18 @@ app.MapGet("/api/account", async (
     return account is not null ? Results.Ok(account) : Results.NotFound();
 }).RequireAuthorization();
 
+app.MapGet("/api/user/{id}", async (
+    int id,
+    AppDbContext db) =>
+{
+    var account = await db.Accounts
+        .Where(a => a.Id == id)
+        .Select(a => new { a.Id, a.Username, PhotoId = (int?)a.PhotoId, a.Description }) // don't return password
+        .FirstOrDefaultAsync();
+
+    return account is not null ? Results.Ok(account) : Results.NotFound();
+});
+
 app.MapGet("/api/info", () =>
 {
     var time = DateTime.Now.ToString("HH:mm:ss");

@@ -56,5 +56,5 @@ FInish 1 sprint within 2 weeks
     /register [POST] - used to create the user
     /cart [GET] - returns the list of items in the cart
     /addListing [POST] - adds product to the database, arguments: title, header, paragraph, category, price
-
+    /user/{id} [GET] - returns the id, username and photoId of the selected user
 

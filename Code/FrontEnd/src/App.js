@@ -33,6 +33,11 @@ import Register from './pages/Register';
 import AboutUs from './pages/AboutUs';
 import MyListingPage from './pages/MyListingPage';
 import AddProductPage from './pages/AddProductPage';
+import PublicProfile from './pages/PublicProfile';
+
+
+
+// Account Manager
 import AccountManager from './pages/AccountManager';
 import PurchaseForm from './pages/PurchaseForm';
 
@@ -42,72 +47,72 @@ import UserProfileView from './pages/UserProfileView';
 import EditProfilePage from './pages/EditProfilePage'; // ✅ nowa strona
 
 function AnimatedRoutes() {
-    const location = useLocation();
+  const location = useLocation();
 
-    return (
-        <AnimatePresence mode="wait">
-            <Routes location={location} key={location.pathname}>
-                {/* Homepage */}
-                <Route
-                    path="/"
-                    element={
-                        <>
-                            <WipeTransition />
-                            <HeroBanner />
-                            <QuoteSection />
-                            <GalleryShowcase />
-                            <Footer />
-                        </>
-                    }
-                />
+  return (
+    <AnimatePresence mode="wait">
+      <Routes location={location} key={location.pathname}>
+        {/* Homepage */}
+        <Route
+          path="/"
+          element={
+            <>
+              <WipeTransition />
+              <HeroBanner />
+              <QuoteSection />
+              <GalleryShowcase />
+              <Footer />
+            </>
+          }
+        />
 
-                {/* Listings */}
-                <Route
-                    path="/products"
-                    element={
-                        <>
-                            <WipeTransition />
-                            <ListingGrid />
-                            <QuoteSection />
-                            <GalleryShowcase />
-                            <Footer />
-                        </>
-                    }
-                />
+        {/* Categories Page */}
+        <Route
+  path="/products"
+  element={
+    <>
+      <WipeTransition />
+      <ListingGrid /> 
+      <QuoteSection />
+      <GalleryShowcase />
+      <Footer />
+    </>
+  }
+/>
 
-                {/* Category pages */}
-                <Route path="/category/clothes" element={<><WipeTransition /><ClothesPage /></>} />
-                <Route path="/category/accessories" element={<><WipeTransition /><AccessoriesPage /></>} />
-                <Route path="/category/toys" element={<><WipeTransition /><ToysPage /></>} />
-                <Route path="/category/kids" element={<><WipeTransition /><KidsPage /></>} />
-                <Route path="/category/women" element={<><WipeTransition /><WomenPage /></>} />
-                <Route path="/category/men" element={<><WipeTransition /><MenPage /></>} />
+        {/* Dynamic Category Listings */}
+        <Route path="/category/clothes" element={<><WipeTransition /><ClothesPage /></>} />
+        <Route path="/category/accessories" element={<><WipeTransition /><AccessoriesPage /></>} />
+        <Route path="/category/toys" element={<><WipeTransition /><ToysPage /></>} />
+        <Route path="/category/kids" element={<><WipeTransition /><KidsPage /></>} />
+        <Route path="/category/women" element={<><WipeTransition /><WomenPage /></>} />
+        <Route path="/category/men" element={<><WipeTransition /><MenPage /></>} />
 
-                {/* Auth */}
-                <Route path="/login" element={<><WipeTransition /><Login /></>} />
-                <Route path="/register" element={<><WipeTransition /><Register /></>} />
+        {/* Other Pages */}
+        <Route path="/our-stories" element={<><WipeTransition /><OurStories /></>} />
+        <Route path="/login" element={<><WipeTransition /><Login /></>} />
+        <Route path="/profile" element={<><WipeTransition /><ProfilePage /></>} />
+        <Route path="/super-deals" element={<><WipeTransition /><SuperDealsPage /></>} />
+        <Route path="/dashboard" element={<><WipeTransition /><SellerDashboard /></>} />
+        <Route path="/register" element={<><WipeTransition /><Register /></>} />
+        <Route path="/about" element={<><WipeTransition /><AboutUs /></>} />
+        <Route path="/product/:productId" element={<><WipeTransition /><ProductDetail /></>} />
+        <Route path="/cart" element={<><WipeTransition /><CartPage /></>} />
+        <Route path="/mylistings" element={<><WipeTransition /><MyListingPage /></>} />
+        <Route path="/addproduct" element={<><WipeTransition /><AddProductPage /></>} />
+        <Route path="/accountmanager" element={<><WipeTransition /><AccountManager /></>} />
+        <Route path="/purchase/:productId" element={<><WipeTransition /><PurchaseForm /></>} />
+        <Route path="/user/:profileId" element={<><WipeTransition /><PublicProfile /></>} />
 
-                {/* User profile */}
-                <Route path="/profile" element={<><WipeTransition /><ProfilePage /></>} />
-                <Route path="/editprofile" element={<><WipeTransition /><EditProfilePage /></>} /> {/* ✅ nowa trasa */}
-                <Route path="/user/:userId" element={<><WipeTransition /><UserProfileView /></>} />
 
-                {/* Listing management */}
-                <Route path="/product/:productId" element={<><WipeTransition /><ProductDetail /></>} />
-                <Route path="/mylistings" element={<><WipeTransition /><MyListingPage /></>} />
-                <Route path="/addproduct" element={<><WipeTransition /><AddProductPage /></>} />
 
-                {/* Other pages */}
-                <Route path="/super-deals" element={<><WipeTransition /><SuperDealsPage /></>} />
-                <Route path="/our-stories" element={<><WipeTransition /><OurStories /></>} />
-                <Route path="/about" element={<><WipeTransition /><AboutUs /></>} />
-                <Route path="/dashboard" element={<><WipeTransition /><SellerDashboard /></>} />
-                <Route path="/accountmanager" element={<><WipeTransition /><AccountManager /></>} />
-                <Route path="/cart" element={<><WipeTransition /><CartPage /></>} />
-                <Route path="/purchase/:productId" element={<><WipeTransition /><PurchaseForm /></>} />
-            </Routes>
-        </AnimatePresence>
-    );
+
+
+        
+
+      </Routes>
+    </AnimatePresence>
+  );
 }
 
 function App() {
