@@ -49,6 +49,7 @@ function ProfilePage() {
 
                     <button onClick={() => navigate('/mylistings')}>My listings</button><br />
                     <button onClick={() => navigate('/addproduct')}>Add product</button><br />
+                    <button onClick={() => navigate(`/user/${user.id}`)}>Show my profile</button><br />
                     <button onClick={() => navigate('/editprofile')}>Edit my profile</button><br />
 
                     {role === 'A' ? (

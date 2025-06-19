@@ -438,7 +438,35 @@ app.MapPost("/api/changeRole/{UserId}", async (int UserId, RoleChangeRequest dat
     return Results.Ok(new { message = $"User {UserId} role changed to '{data.NewRole}'" });
 }).RequireAuthorization();
 
+app.MapPost("/api/changeProfile/{UserId}", async (int UserId, ProfileChangeRequest data, AppDbContext db, ClaimsPrincipal user) =>
+{
+    var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
 
+    int loggedInUserId = int.Parse(userIdClaim.Value);
+    if (loggedInUserId != UserId)
+        return Results.Forbid();
+
+    var userToUpdate = await db.Accounts.FindAsync(UserId);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    string message = "";
+    if (!string.IsNullOrWhiteSpace(data.NewDescription))
+    {
+        userToUpdate.Description = data.NewDescription;
+        message += "description, ";
+    }
+    if (data.NewPhotoId.HasValue)
+    {
+        userToUpdate.PhotoId = data.NewPhotoId.Value;
+        message += "photo";
+    }
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { message = $"User {UserId} profile updated, things changed: " + message + "." });
+}).RequireAuthorization();
 
 
 app.Run();

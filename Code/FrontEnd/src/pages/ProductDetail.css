@@ -57,3 +57,8 @@
 .review-card .stars {
   color: gold;
 }
+
+.plain-link {
+    text-decoration: none;
+    color: inherit;
+}

@@ -26,7 +26,7 @@ function ProductDetail() {
     <h1>{product.title}</h1>
     <p><strong>Price:</strong> ${product.price}</p>
     <p><strong>Status:</strong> {product.status}</p>
-    <p><strong>Seller:</strong> {product.owner?.username}</p>
+    <a href={`/user/${product.owner.id}`} class="plain-link"><p><strong>Seller:</strong> {product.owner?.username}</p></a>
     <p><strong>Description:</strong> {product.description?.header}</p>
     <p>{product.description?.paragraph}</p>
   </div>

@@ -9,22 +9,25 @@ function EditProfilePage() {
     });
 
     const [loading, setLoading] = useState(true);
-    const userId = 1; // <- podmieñ na aktualnego u¿ytkownika z kontekstu/autoryzacji
+    const [user, setUser] = useState(null);
+    const [error, setError] = useState('');
 
     useEffect(() => {
         const fetchProfile = async () => {
             try {
-                const response = await axios.get(`/profile/${userId}`);
-                setFormData({
-                    bio: response.data.bio || '',
-                    avatar: null, // nie ustawiamy pliku, tylko pozwalamy nadpisaæ
-                });
+                const response = await axios.get('/account');
+                setUser(response.data); // { username, email }
             } catch (err) {
-                console.error('Error fetching profile:', err);
+                if (err.response && err.response.status === 401) {
+                    setError('You must be logged in to view this page.');
+                } else {
+                    setError('Failed to load profile.');
+                }
             } finally {
                 setLoading(false);
             }
         };
+
         fetchProfile();
     }, []);
 
@@ -56,7 +59,7 @@ function EditProfilePage() {
                 photoId = await handleImageUpload();
             }
 
-            await axios.post(`/profile/${userId}`, {
+            await axios.post(`/changeProfile/${user.id}`, {
                 bio: formData.bio,
                 photoId,
             });
