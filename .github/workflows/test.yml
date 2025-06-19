@@ -1,0 +1,42 @@
+name: .NET Tests
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    env:
+      DB_HOST: ${{ secrets.DB_HOST }}
+      DB_PORT: ${{ secrets.DB_PORT }}
+      DB_USER: ${{ secrets.DB_USER }}
+      DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      DB_NAME: ${{ secrets.DB_NAME }}
+      DB_CA_PEM_B64: ${{ secrets.DB_CA_PEM_B64 }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Create and configure CA certificate
+        run: |
+          echo "$DB_CA_PEM_B64" | base64 --decode > ca.pem
+          sudo mkdir -p /etc/ssl/certs/
+          sudo cp ca.pem /etc/ssl/certs/aiven-ca.pem
+          sudo chmod 644 /etc/ssl/certs/aiven-ca.pem
+
+      - name: Restore dependencies
+        run: dotnet restore ./Code/Backend/ReMarket.csproj
+
+      - name: Run tests
+        run: dotnet test ./Code/Backend/ReMarket.csproj --logger "console;verbosity=detailed"
+        env:
+          ConnectionStrings__DefaultConnection: "Server=${{ secrets.DB_HOST }};Port=${{ secrets.DB_PORT }};Database=${{ secrets.DB_NAME }};User=${{ secrets.DB_USER }};Password=${{ secrets.DB_PASSWORD }};SslMode=VerifyCA;SslCa=/etc/ssl/certs/aiven-ca.pem"
