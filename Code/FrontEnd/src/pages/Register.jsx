@@ -5,16 +5,9 @@ import { useState } from 'react';
 import { useUser } from '../context/UserContext';
 import axios from '../api/axiosInstance';
 
-
-
 function Register() {
   const { loginAs } = useUser();
   const navigate = useNavigate();
-
-  /*const [email, setEmail] = useState('');
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');*/
-
 
   const [form, setForm] = useState({
     username: '',
@@ -26,50 +19,48 @@ function Register() {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      setError('');
-      setSuccess('');
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setSuccess('');
 
-      //console.log('Submitting form:', form);
+    try {
+      const response = await axios.post('/register', {
+        email: form.email,
+        username: form.username,
+        password: form.password,
+        role: form.role
+      });
 
-      try {
-          const response = await axios.post('/register', {
-              email: form.email,
-              username: form.username,
-              password: form.password,
-              role: form.role
-          });
+      const { token } = response.data;
+      loginAs({ email: form.email });
+      localStorage.setItem('token', token);
+      navigate('/profile');
+    } catch (err) {
+      if (err.response) {
+        const status = err.response.status;
+        const msg = err.response.data;
 
-
-          const { token } = response.data;
-
-          // Optional: Decode token or fetch user details here
-          // For now we assume backend uses JWT and you�ll decode it later if needed
-
-          // Example user info (customize this based on your app's token or claims)
-          loginAs({ email: form.email });
-
-          // Store token (in localStorage or context)
-          localStorage.setItem('token', token);
-
-          navigate('/profile');
-      } catch (err) {
-          if (err.response) {
-              const status = err.response.status;
-              const msg = err.response.data;
-
-              if (status === 400) {
-                  setError(typeof msg === 'string' ? msg : 'Missing or invalid input.');
-              } else if (status === 409) {
-                  setError('Email or username already exists.');
-              } else {
-                  setError('Something went wrong. Please try again.');
-              }
-          } else {
-              setError('Unable to connect to the server.');
-          }
+        if (status === 400) {
+          setError(typeof msg === 'string' ? msg : 'Missing or invalid input.');
+        } else if (status === 409) {
+          setError('Email or username already exists.');
+        } else {
+          setError('Something went wrong. Please try again.');
+        }
+      } else {
+        setError('Unable to connect to the server.');
       }
+    }
+  };
+
+  // ✅ Google and GitHub auth
+  const handleGoogleRegister = () => {
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL || ''}/auth/google`;
+  };
+
+  const handleGithubRegister = () => {
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL || ''}/auth/github`;
   };
 
   return (
@@ -110,6 +101,15 @@ function Register() {
           {error && <p style={{ color: 'red' }}>{error}</p>}
           {success && <p style={{ color: 'green' }}>{success}</p>}
         </form>
+
+        {/* Divider */}
+        <div className="divider">or</div>
+
+        {/* ✅ External Register Options */}
+        <div className="login-options">
+          <button className="google" onClick={handleGoogleRegister}>Register with Google</button>
+          <button className="github" onClick={handleGithubRegister}>Register with GitHub</button>
+        </div>
       </div>
     </div>
   );

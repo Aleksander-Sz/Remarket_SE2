@@ -38,7 +38,7 @@ import AddProductPage from './pages/AddProductPage';
 
 
 // Account Manager
-import AccountManager from './pages/accountmanager';
+import AccountManager from './pages/AccountManager';
 
 
 //PurchaseForm

@@ -5,8 +5,6 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import axios from '../api/axiosInstance';
 
-
-
 function Login() {
   const { loginAs } = useUser();
   const navigate = useNavigate();
@@ -15,32 +13,35 @@ function Login() {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
 
-    const handleLogin = async (e) => {
-        e.preventDefault();
-        setError('');
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setError('');
 
-        try {
-            const response = await axios.post('/login', {
-                email,
-                password
-            });
+    try {
+      const response = await axios.post('/login', {
+        email,
+        password
+      });
 
-            const { token } = response.data;
+      const { token } = response.data;
 
-            // Optional: Decode token or fetch user details here
-            // For now we assume backend uses JWT and you’ll decode it later if needed
+      loginAs({ email });
+      localStorage.setItem('token', token);
+      navigate('/profile');
+    } catch (err) {
+      setError('Invalid email or password.');
+    }
+  };
 
-            // Example user info (customize this based on your app's token or claims)
-            loginAs({ email });
+  // ✅ Google login method
+  const handleGoogleLogin = () => {
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL || ''}/auth/google`;
+  };
 
-            // Store token (in localStorage or context)
-            localStorage.setItem('token', token);
-
-            navigate('/profile');
-        } catch (err) {
-            setError('Invalid email or password.');
-        }
-    };
+  // ✅ GitHub login method
+  const handleGithubLogin = () => {
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL || ''}/auth/github`;
+  };
 
   return (
     <div className="login-page">
@@ -65,7 +66,15 @@ function Login() {
           {error && <p style={{ color: 'red' }}>{error}</p>}
         </form>
 
-        {/* Register button below the form */}
+        {/* Divider */}
+        <div className="divider">or</div>
+
+        {/* ✅ Login Options */}
+        <div className="login-options">
+          <button className="google" onClick={handleGoogleLogin}>Login with Google</button>
+          <button className="github" onClick={handleGithubLogin}>Login with GitHub</button>
+        </div>
+
         <p style={{ marginTop: '1rem' }}>
           Don’t have an account?{' '}
           <button
