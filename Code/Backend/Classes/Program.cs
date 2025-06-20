@@ -661,7 +661,7 @@ app.MapPost("/api/createOrder", async (
         SellerId = data.SellerId,
         BuyerId = buyerId,
         PaymentId = null,
-        Shipped = null
+        Shipped = DateTime.UtcNow
     };
 
     db.Orders.Add(newOrder);
