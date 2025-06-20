@@ -596,12 +596,20 @@ app.MapGet("/api/orders", async (AppDbContext db, string? sellerId, string? buye
             o.Description,
             o.SellerId,
             o.BuyerId,
-            o.PaymentId
+            o.PaymentId,
+            Product = db.OrderListings
+                .Where(ol => ol.OrderId == o.Id)
+                .Select(ol => new {
+                    ProductId = ol.Listing.Id,
+                    ProductName = ol.Listing.Title
+                })
+                .FirstOrDefault()
         })
         .ToListAsync();
 
     return Results.Json(orders);
 });
+
 
 app.MapPost("/api/createOrder", async (
     CreateOrderRequest data,

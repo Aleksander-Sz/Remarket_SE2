@@ -23,6 +23,7 @@ namespace ReMarket.Services
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Order> Orders { get; set; }
         public DbSet<Payment> Payments { get; set; }
+        public DbSet<OrderListing> OrderListings { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -105,6 +106,20 @@ namespace ReMarket.Services
                 .WithMany() 
                 .HasForeignKey(p => p.AccountId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderListing>()
+                .ToTable("orderlisting")
+                .HasKey(ol => new { ol.OrderId, ol.ListingId });
+
+            modelBuilder.Entity<OrderListing>()
+                .HasOne(ol => ol.Order)
+                .WithMany()
+                .HasForeignKey(ol => ol.OrderId);
+
+            modelBuilder.Entity<OrderListing>()
+                .HasOne(ol => ol.Listing)
+                .WithMany()
+                .HasForeignKey(ol => ol.ListingId);
 
         }
     }
