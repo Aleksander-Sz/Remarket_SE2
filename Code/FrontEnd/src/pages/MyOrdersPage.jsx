@@ -15,13 +15,12 @@ function MyOrdersPage() {
         const fetchOrders = async () => {
             try {
                 const response = await axios.get('/orders');
-                setOrders(response.data); // Array of orders
+                setOrders(response.data);
 
-                // Get unique user IDs (both buyers and sellers)
                 const userIds = Array.from(new Set(
                     response.data.flatMap(order => [order.buyerId, order.sellerId])
                 ));
-                // Fetch usernames
+
                 const userResponses = await Promise.all(
                     userIds.map(id =>
                         axios.get(`/user/${id}`)
@@ -30,7 +29,6 @@ function MyOrdersPage() {
                     )
                 );
 
-                // Build a map of id -> username
                 const usernameMap = {};
                 userResponses.forEach(user => {
                     usernameMap[user.id] = user.username;
@@ -78,6 +76,8 @@ function MyOrdersPage() {
                                     <th>Seller</th>
                                     <th>Ship To</th>
                                     <th>Description</th>
+                                    <th>Product</th>
+                                    <th>Product Name</th>
                                     <th>Payment</th>
                                 </tr>
                             </thead>
@@ -86,9 +86,19 @@ function MyOrdersPage() {
                                     <tr key={order.id}>
                                         <td>{order.id}</td>
                                         <td>{formatDate(order.shipped)}</td>
-                                        <td><Link to={`/user/${order.sellerId}`} className="plain-link">{usernames[order.sellerId] || order.sellerId}</Link></td>
+                                        <td>
+                                            <Link to={`/user/${order.sellerId}`} className="plain-link">
+                                                {usernames[order.sellerId] || order.sellerId}
+                                            </Link>
+                                        </td>
                                         <td>{order.shipTo}</td>
                                         <td>{order.description}</td>
+                                        <td>
+                                            <Link to={`/products/${order.listingId}`} className="plain-link">
+                                                View
+                                            </Link>
+                                        </td>
+                                        <td>{order.title}</td>
                                         <td>
                                             <Link to={order.paymentId
                                                 ? `/payment/${order.paymentId}`
@@ -116,6 +126,8 @@ function MyOrdersPage() {
                                     <th>Buyer</th>
                                     <th>Ship To</th>
                                     <th>Description</th>
+                                    <th>Product</th>
+                                    <th>Product Name</th>
                                     <th>Payment</th>
                                 </tr>
                             </thead>
@@ -124,12 +136,24 @@ function MyOrdersPage() {
                                     <tr key={order.id}>
                                         <td>{order.id}</td>
                                         <td>{formatDate(order.shipped)}</td>
-                                        <td><Link to={`/user/${order.buyerId}`} className="plain-link">{usernames[order.buyerId] || order.buyerId}</Link></td>
+                                        <td>
+                                            <Link to={`/user/${order.buyerId}`} className="plain-link">
+                                                {usernames[order.buyerId] || order.buyerId}
+                                            </Link>
+                                        </td>
                                         <td>{order.shipTo}</td>
                                         <td>{order.description}</td>
                                         <td>
+                                            <Link to={`/products/${order.listingId}`} className="plain-link">
+                                                View
+                                            </Link>
+                                        </td>
+                                        <td>{order.title}</td>
+                                        <td>
                                             {order.paymentId ? (
-                                                <Link to={`/payment/${order.paymentId}`}>#{order.paymentId}</Link>
+                                                <Link to={`/payment/${order.paymentId}`}>
+                                                    #{order.paymentId}
+                                                </Link>
                                             ) : (
                                                 <span style={{ color: 'gray', fontStyle: 'italic' }}>
                                                     Waiting for payment
