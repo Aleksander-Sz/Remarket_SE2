@@ -77,7 +77,6 @@ function MyOrdersPage() {
                                     <th>Ship To</th>
                                     <th>Description</th>
                                     <th>Product</th>
-                                    <th>Product Name</th>
                                     <th>Payment</th>
                                 </tr>
                             </thead>
@@ -94,11 +93,14 @@ function MyOrdersPage() {
                                         <td>{order.shipTo}</td>
                                         <td>{order.description}</td>
                                         <td>
-                                            <Link to={`/products/${order.listingId}`} className="plain-link">
-                                                View
-                                            </Link>
+                                            {order.product ? (
+                                                <Link to={`/product/${order.product.productId}`} className="plain-link">
+                                                    {order.product.productName}
+                                                </Link>
+                                            ) : (
+                                                <span style={{ color: 'gray', fontStyle: 'italic' }}>Unknown</span>
+                                            )}
                                         </td>
-                                        <td>{order.title}</td>
                                         <td>
                                             <Link to={order.paymentId
                                                 ? `/payment/${order.paymentId}`
@@ -127,7 +129,6 @@ function MyOrdersPage() {
                                     <th>Ship To</th>
                                     <th>Description</th>
                                     <th>Product</th>
-                                    <th>Product Name</th>
                                     <th>Payment</th>
                                 </tr>
                             </thead>
@@ -144,11 +145,14 @@ function MyOrdersPage() {
                                         <td>{order.shipTo}</td>
                                         <td>{order.description}</td>
                                         <td>
-                                            <Link to={`/products/${order.listingId}`} className="plain-link">
-                                                View
-                                            </Link>
+                                            {order.product ? (
+                                                <Link to={`/product/${order.product.productId}`} className="plain-link">
+                                                    {order.product.productName}
+                                                </Link>
+                                            ) : (
+                                                <span style={{ color: 'gray', fontStyle: 'italic' }}>Unknown</span>
+                                            )}
                                         </td>
-                                        <td>{order.title}</td>
                                         <td>
                                             {order.paymentId ? (
                                                 <Link to={`/payment/${order.paymentId}`}>
