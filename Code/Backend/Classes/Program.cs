@@ -573,6 +573,36 @@ app.MapGet("/api/reviews/forUser/{userId}", async (
     return Results.Json(reviews);
 });
 
+app.MapGet("/api/orders", async (AppDbContext db, string? sellerId, string? buyerId) =>
+{
+    var query = db.Orders.AsQueryable();
+
+    if (int.TryParse(sellerId, out var sellerIdVal))
+    {
+        query = query.Where(o => o.SellerId == sellerIdVal);
+    }
+
+    if (int.TryParse(buyerId, out var buyerIdVal))
+    {
+        query = query.Where(o => o.BuyerId == buyerIdVal);
+    }
+
+    var orders = await query
+        .Select(o => new
+        {
+            o.Id,
+            o.ShipTo,
+            o.Shipped,
+            o.Description,
+            o.SellerId,
+            o.BuyerId
+            //o.PaymentId
+        })
+        .ToListAsync();
+
+    return Results.Json(orders);
+});
+
 
 app.Run();
 
