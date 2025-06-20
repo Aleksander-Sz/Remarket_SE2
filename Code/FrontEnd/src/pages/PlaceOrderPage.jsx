@@ -39,7 +39,7 @@ function EditProfilePage() {
         }));
     };
 
-    const handleSubmit = async (e, redirectTo) => {
+    const handleSubmit = async (e, redirectTo, includeOrderId = false) => {
         e.preventDefault();
 
         if (!product || !product.owner?.id) {
@@ -54,14 +54,22 @@ function EditProfilePage() {
         };
 
         try {
-            await axios.post('/createOrder', payload);
+            const response = await axios.post('/createOrder', payload);
+            const orderId = response.data.id;
+
             alert('Order placed successfully!');
-            navigate(redirectTo);
+
+            if (includeOrderId) {
+                navigate(`${redirectTo}/${orderId}`);
+            } else {
+                navigate(redirectTo);
+            }
         } catch (err) {
             console.error('Error placing order:', err);
             alert('You must be logged in to place an order.');
         }
     };
+
 
     return (
         <div className="profile-container">
@@ -91,8 +99,9 @@ function EditProfilePage() {
                         />
                     </label><br />
 
-                    <button type="button" onClick={(e) => handleSubmit(e, '/purchase')}>Pay now</button>
-                    <button type="button" onClick={(e) => handleSubmit(e, '/profile')}>Pay later</button>
+                    <button type="button" onClick={(e) => handleSubmit(e, '/purchase', true)}>Pay now</button>
+                    <button type="button" onClick={(e) => handleSubmit(e, '/profile', false)}>Pay later</button>
+
                 </form>
             )}
         </div>
