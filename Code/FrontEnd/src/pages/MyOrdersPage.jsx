@@ -23,7 +23,11 @@ function MyOrdersPage() {
                 ));
                 // Fetch usernames
                 const userResponses = await Promise.all(
-                    userIds.map(id => axios.get(`/user/${id}`).then(res => ({ id, username: res.data.username })))
+                    userIds.map(id =>
+                        axios.get(`/user/${id}`)
+                            .then(res => ({ id, username: res.data.username }))
+                            .catch(() => ({ id, username: 'Inexistent user' }))
+                    )
                 );
 
                 // Build a map of id -> username
