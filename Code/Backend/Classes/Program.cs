@@ -640,6 +640,25 @@ app.MapPost("/api/createOrder", async (
     });
 }).RequireAuthorization();
 
+app.MapGet("/api/payment/{paymentId:int}", async (
+    int paymentId,
+    AppDbContext db
+) =>
+{
+    var payment = await db.Payments
+        .Where(p => p.Id == paymentId)
+        .Select(p => new
+        {
+            p.Id,
+            p.PaidOn,
+            p.Total,
+            p.AccountId
+        })
+        .FirstOrDefaultAsync();
+
+    return payment is not null ? Results.Ok(payment) : Results.NotFound();
+});
+
 app.Run();
 
 public partial class Program { }

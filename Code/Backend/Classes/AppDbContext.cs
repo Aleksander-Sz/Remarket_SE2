@@ -22,6 +22,7 @@ namespace ReMarket.Services
         public DbSet<ListingPhoto> ListingPhotos {  get; set; }
         public DbSet<Review> Reviews { get; set; }
         public DbSet<Order> Orders { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -83,6 +84,27 @@ namespace ReMarket.Services
                 .HasForeignKey(o => o.BuyerId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Payment>()
+                .ToTable("payment")
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.PaidOn)
+                .HasColumnName("paidOn");
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.Total)
+                .HasColumnName("total");
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.AccountId)
+                .HasColumnName("accountId");
+
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Account)
+                .WithMany() 
+                .HasForeignKey(p => p.AccountId)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
     }
