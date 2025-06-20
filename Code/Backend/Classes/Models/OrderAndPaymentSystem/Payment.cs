@@ -8,16 +8,26 @@ namespace ReMarket.Models
 
     public class Payment
     {
-        public string ID { get; set; }
-        public DateTime paidOn { get; set; }
-        public decimal total { get; set; }
+        public int Id { get; set; }
+        public DateTime PaidOn { get; set; }
+        public decimal Total { get; set; }
+        public int AccountId { get; set; }
+        public Account Account { get; set; }
 
-        public Payment(string ID, DateTime paidOn, decimal total)
+        public Payment() { }
+
+        public Payment(int ID, DateTime paidOn, decimal total)
         {
-            this.ID=ID;
-            this.paidOn=paidOn;
-            this.total=total;
+            this.Id=ID;
+            this.PaidOn=paidOn;
+            this.Total=total;
         }
 
     }
+    public record PaymentRequest(
+        int OrderId,
+        string CardNumber,
+        string CardCVC,
+        string CardExpirationMonth,
+        string CardExpirationYear);
 }

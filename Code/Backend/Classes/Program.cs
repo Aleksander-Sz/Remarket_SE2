@@ -573,6 +573,196 @@ app.MapGet("/api/reviews/forUser/{userId}", async (
     return Results.Json(reviews);
 });
 
+app.MapGet("/api/orders", async (AppDbContext db, string? sellerId, string? buyerId, string? orderId) =>
+{
+    // Try parse single orderId
+    if (int.TryParse(orderId, out var orderIdVal))
+    {
+        var singleOrder = await db.Orders
+            .Where(o => o.Id == orderIdVal)
+            .Select(o => new
+            {
+                o.Id,
+                o.ShipTo,
+                o.Shipped,
+                o.Description,
+                o.SellerId,
+                o.BuyerId,
+                o.PaymentId,
+                Product = db.OrderListings
+                    .Where(ol => ol.OrderId == o.Id)
+                    .Select(ol => new
+                    {
+                        ProductId = ol.Listing.Id,
+                        ProductName = ol.Listing.Title,
+                        ProductPrice = ol.Listing.Price
+                    })
+                    .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+
+        return singleOrder != null ? Results.Json(singleOrder) : Results.NotFound();
+    }
+
+    // Multiple orders
+    var query = db.Orders.AsQueryable();
+
+    if (int.TryParse(sellerId, out var sellerIdVal))
+    {
+        query = query.Where(o => o.SellerId == sellerIdVal);
+    }
+
+    if (int.TryParse(buyerId, out var buyerIdVal))
+    {
+        query = query.Where(o => o.BuyerId == buyerIdVal);
+    }
+
+    var orders = await query
+        .Select(o => new
+        {
+            o.Id,
+            o.ShipTo,
+            o.Shipped,
+            o.Description,
+            o.SellerId,
+            o.BuyerId,
+            o.PaymentId,
+            Product = db.OrderListings
+                .Where(ol => ol.OrderId == o.Id)
+                .Select(ol => new {
+                    ProductId = ol.Listing.Id,
+                    ProductName = ol.Listing.Title
+                })
+                .FirstOrDefault()
+        })
+        .ToListAsync();
+
+    return Results.Json(orders);
+});
+
+
+app.MapPost("/api/createOrder", async (
+    CreateOrderRequest data,
+    AppDbContext db,
+    ClaimsPrincipal user) =>
+{
+    // Check if user is logged in
+    var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    int buyerId = int.Parse(userIdClaim.Value);
+
+    // Create order
+    var newOrder = new ReMarket.Models.Order
+    {
+        ShipTo = data.ShipTo,
+        Description = data.Description,
+        SellerId = data.SellerId,
+        BuyerId = buyerId,
+        PaymentId = null,
+        Shipped = DateTime.UtcNow
+    };
+
+    db.Orders.Add(newOrder);
+    await db.SaveChangesAsync(); // Generates newOrder.Id
+
+    // Add entry to orderlisting
+    var orderListing = new OrderListing
+    {
+        OrderId = newOrder.Id,
+        ListingId = data.ProductId
+    };
+    db.OrderListings.Add(orderListing);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/api/orders/{newOrder.Id}", new
+    {
+        newOrder.Id,
+        newOrder.ShipTo,
+        newOrder.Description,
+        newOrder.SellerId,
+        newOrder.BuyerId,
+        newOrder.PaymentId,
+        newOrder.Shipped
+    });
+}).RequireAuthorization();
+
+app.MapGet("/api/payment/{paymentId:int}", async (
+    int paymentId,
+    AppDbContext db
+) =>
+{
+    var payment = await db.Payments
+        .Where(p => p.Id == paymentId)
+        .Select(p => new
+        {
+            p.Id,
+            p.PaidOn,
+            p.Total,
+            p.AccountId
+        })
+        .FirstOrDefaultAsync();
+
+    return payment is not null ? Results.Ok(payment) : Results.NotFound();
+});
+
+app.MapPost("/api/makePayment", async (
+    PaymentRequest request,
+    HttpContext http,
+    AppDbContext db) =>
+{
+    // 1. check authentication
+    if (!http.User.Identity?.IsAuthenticated ?? true)
+        return Results.Unauthorized();
+
+    var userIdClaim = http.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+    if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var accountId))
+        return Results.Unauthorized();
+
+    // 2. Validate payment fields
+    if (string.IsNullOrWhiteSpace(request.CardNumber) ||
+        string.IsNullOrWhiteSpace(request.CardCVC) ||
+        string.IsNullOrWhiteSpace(request.CardExpirationMonth) ||
+        string.IsNullOrWhiteSpace(request.CardExpirationYear))
+    {
+        return Results.BadRequest("All card details must be provided.");
+    }
+
+    // 3. Find the order
+    var order = await db.Orders.FindAsync(request.OrderId);
+    if (order == null)
+        return Results.NotFound("Order not found.");
+
+    //  4. Get listing price ( assuming 1 product per order)
+    var listing = await db.OrderListings
+        .Where(ol => ol.OrderId == request.OrderId)
+        .Select(ol => ol.Listing)
+        .FirstOrDefaultAsync();
+
+    if (listing == null)
+        return Results.BadRequest("Associated listing not found.");
+
+    var amount = listing.Price;
+
+    // 5. Create new payment
+    var payment = new Payment
+    {
+        AccountId = accountId,
+        Total = amount,
+        PaidOn = DateTime.UtcNow
+    };
+
+    db.Payments.Add(payment);
+    await db.SaveChangesAsync(); // save to get payment ID
+
+    // 6. Update orrder with paymentId
+    order.PaymentId = payment.Id;
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { payment.Id, payment.Total, payment.PaidOn });
+});
+
 
 app.Run();
 

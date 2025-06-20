@@ -21,6 +21,9 @@ namespace ReMarket.Services
         public DbSet<Photo> Photos { get; set; }
         public DbSet<ListingPhoto> ListingPhotos {  get; set; }
         public DbSet<Review> Reviews { get; set; }
+        public DbSet<Order> Orders { get; set; }
+        public DbSet<Payment> Payments { get; set; }
+        public DbSet<OrderListing> OrderListings { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -56,16 +59,67 @@ namespace ReMarket.Services
 
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.Account)
-                .WithMany() // or `.WithMany(a => a.Reviews)` if you define a `List<Review>` in `Account`
+                .WithMany() 
                 .HasForeignKey(r => r.AccountId)
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Review>()
                 .HasOne(r => r.Listing)
-                .WithMany() // or `.WithMany(l => l.Reviews)` if you define a `List<Review>` in `Listing`
+                .WithMany() 
                 .HasForeignKey(r => r.ListingId)
                 .OnDelete(DeleteBehavior.Cascade);
 
+            modelBuilder.Entity<Order>()
+                .ToTable("order")
+                .HasKey(o => o.Id);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Seller)          
+                .WithMany()                    
+                .HasForeignKey(o => o.SellerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Order>()
+                .HasOne(o => o.Buyer)           
+                .WithMany()                    
+                .HasForeignKey(o => o.BuyerId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Payment>()
+                .ToTable("payment")
+                .HasKey(p => p.Id);
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.PaidOn)
+                .HasColumnName("paidOn");
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.Total)
+                .HasColumnName("total");
+
+            modelBuilder.Entity<Payment>()
+                .Property(p => p.AccountId)
+                .HasColumnName("accountId");
+
+            modelBuilder.Entity<Payment>()
+                .HasOne(p => p.Account)
+                .WithMany() 
+                .HasForeignKey(p => p.AccountId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<OrderListing>()
+                .ToTable("orderlisting")
+                .HasKey(ol => new { ol.OrderId, ol.ListingId });
+
+            modelBuilder.Entity<OrderListing>()
+                .HasOne(ol => ol.Order)
+                .WithMany()
+                .HasForeignKey(ol => ol.OrderId);
+
+            modelBuilder.Entity<OrderListing>()
+                .HasOne(ol => ol.Listing)
+                .WithMany()
+                .HasForeignKey(ol => ol.ListingId);
 
         }
     }

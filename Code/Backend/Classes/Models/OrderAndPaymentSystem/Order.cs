@@ -10,18 +10,31 @@ namespace ReMarket.Models
 //indicating that orders can encompass multiple items.
     public class Order
     {
-        public string ID { get; set; }
-        public Address shipTo { get; set; }
-        public DateTime shipped { get; set; } //date when shipped
-        public string description { get; set; } //this can be wrong, on figure 1 it says it should be of type ListingDescription
+        public int Id { get; set; }
+        public string ShipTo { get; set; }
+        public DateTime? Shipped { get; set; } //date when shipped
+        public string Description { get; set; } //this can be wrong, on figure 1 it says it should be of type ListingDescription
+        public int SellerId { get; set; }
+        public Account Seller {  get; set; }
+        public int BuyerId { get; set; }
+        public Account Buyer { get; set; }
+        public int? PaymentId { get; set; }
+        
+        public Order() { }
 
-
-        public Order(string ID, Address shipTo, DateTime shipped, string description)
+        public Order(int Id, string shipTo, DateTime shipped, string description)
         {
-            this.ID = ID;
-            this.shipped=shipped;
-            this.description=description;
-            this.shipTo=shipTo;
+            this.Id = Id;
+            this.Shipped=shipped;
+            this.Description=description;
+            this.ShipTo=shipTo;
         }
     }
+    public record CreateOrderRequest(
+        int SellerId,
+        string ShipTo,
+        string Description,
+        int ProductId
+    );
+
 }
