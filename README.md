@@ -58,5 +58,6 @@ FInish 1 sprint within 2 weeks
     /addListing [POST] - adds product to the database, arguments: title, header, paragraph, category, price
     /user/{id} [GET] - returns the id, username and photoId of the selected user
     /reviews [GET] - returns reviews from the database, arguments: userId, listingId
+    /reviews/forUser/{id} - returns reviews given to the products sold by a specific user
     /changeRole/{id} [POST] - updates the role of a user
     /changeProfile/{id} [POST] - updates the user profile, attributes: NewUsername, NewDescription, NewPhotoId, NewPassword

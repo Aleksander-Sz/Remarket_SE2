@@ -551,6 +551,28 @@ app.MapPost("/api/addReview", async (
     });
 }).RequireAuthorization();
 
+app.MapGet("/api/reviews/forUser/{userId}", async (
+    int userId,
+    AppDbContext db) =>
+{
+    var reviews = await db.Reviews
+        .Include(r => r.Account) // the person who wrote the review
+        .Include(r => r.Listing)
+        .Where(r => r.Listing.OwnerId == userId)
+        .Select(r => new
+        {
+            r.Id,
+            r.Title,
+            r.Score,
+            r.Description,
+            Reviewer = new { r.Account.Id, r.Account.Username },
+            Listing = new { r.Listing.Id, r.Listing.Title }
+        })
+        .ToListAsync();
+
+    return Results.Json(reviews);
+});
+
 
 app.Run();
 
