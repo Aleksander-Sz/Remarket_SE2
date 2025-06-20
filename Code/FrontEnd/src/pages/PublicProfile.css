@@ -46,8 +46,13 @@
 }
 
 .review-card {
-  padding: 1rem;
-  border-bottom: 1px solid #333;
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: normal;
+  padding-bottom: 1rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
 }
 
 .review-card:last-child {

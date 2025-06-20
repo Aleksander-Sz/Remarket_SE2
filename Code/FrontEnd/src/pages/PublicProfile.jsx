@@ -72,7 +72,12 @@ function ProductDetail() {
                                 {review.reviewer.username}
                             </a>
                         </strong>{' '}
-                        on listing <strong>{review.listing.title}</strong>
+                        on listing{' '}
+                        <strong>
+                            <a href={`/product/${review.listing.id}`} className="plain-link">
+                                {review.listing.title}
+                            </a>
+                        </strong>
                     </p>
                     <span className="stars">
                         {'★'.repeat(review.score)}
