@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from '../api/axiosInstance';
 import './ProfilePage.css';
 
 function EditProfilePage() {
     const { productId } = useParams();
+    const navigate = useNavigate();
 
     const [product, setProduct] = useState(null);
     const [formData, setFormData] = useState({
@@ -38,7 +39,7 @@ function EditProfilePage() {
         }));
     };
 
-    const handleSubmit = async (e) => {
+    const handleSubmit = async (e, redirectTo) => {
         e.preventDefault();
 
         if (!product || !product.owner?.id) {
@@ -55,6 +56,7 @@ function EditProfilePage() {
         try {
             await axios.post('/createOrder', payload);
             alert('Order placed successfully!');
+            navigate(redirectTo);
         } catch (err) {
             console.error('Error placing order:', err);
             alert('You must be logged in to place an order.');
@@ -63,7 +65,7 @@ function EditProfilePage() {
 
     return (
         <div className="profile-container">
-            <h1>Edit Your Profile</h1>
+            <h1>Place an order for the product</h1>
             {loading ? (
                 <p>Loading...</p>
             ) : error ? (
@@ -89,7 +91,8 @@ function EditProfilePage() {
                         />
                     </label><br />
 
-                    <button type="Place Order">Save</button>
+                    <button type="button" onClick={(e) => handleSubmit(e, '/purchase')}>Pay now</button>
+                    <button type="button" onClick={(e) => handleSubmit(e, '/profile')}>Pay later</button>
                 </form>
             )}
         </div>

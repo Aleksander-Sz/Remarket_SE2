@@ -9,12 +9,34 @@ function MyOrdersPage() {
     const [orders, setOrders] = useState([]);
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(true);
+    const [usernames, setUsernames] = useState({});
 
     useEffect(() => {
         const fetchOrders = async () => {
             try {
                 const response = await axios.get('/orders');
                 setOrders(response.data); // Array of orders
+
+                // Get unique user IDs (both buyers and sellers)
+                const userIds = Array.from(new Set(
+                    response.data.flatMap(order => [order.buyerId, order.sellerId])
+                ));
+                // Fetch usernames
+                const userResponses = await Promise.all(
+                    userIds.map(id =>
+                        axios.get(`/user/${id}`)
+                            .then(res => ({ id, username: res.data.username }))
+                            .catch(() => ({ id, username: 'Inexistent user' }))
+                    )
+                );
+
+                // Build a map of id -> username
+                const usernameMap = {};
+                userResponses.forEach(user => {
+                    usernameMap[user.id] = user.username;
+                });
+
+                setUsernames(usernameMap);
             } catch (err) {
                 console.error(err);
                 setError('Failed to load orders.');
@@ -63,7 +85,7 @@ function MyOrdersPage() {
                                     <tr key={order.id}>
                                         <td>{order.id}</td>
                                         <td>{formatDate(order.shipped)}</td>
-                                        <td><Link to={`/user/${order.sellerId}`}>{order.sellerId}</Link></td>
+                                        <td><Link to={`/user/${order.sellerId}`} className="plain-link">{usernames[order.sellerId] || order.sellerId}</Link></td>
                                         <td>{order.shipTo}</td>
                                         <td>{order.description}</td>
                                     </tr>
@@ -91,7 +113,7 @@ function MyOrdersPage() {
                                     <tr key={order.id}>
                                         <td>{order.id}</td>
                                         <td>{formatDate(order.shipped)}</td>
-                                        <td><Link to={`/user/${order.buyerId}`}>{order.buyerId}</Link></td>
+                                        <td><Link to={`/user/${order.buyerId}`} className="plain-link">{usernames[order.buyerId] || order.buyerId}</Link></td>
                                         <td>{order.shipTo}</td>
                                         <td>{order.description}</td>
                                     </tr>
