@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import axios from '../api/axiosInstance';
-import './ProfilePage.css'; // Mo¿esz u¿yæ tej samej klasy co wczeœniej
+import './ProfilePage.css';
 
 function EditProfilePage() {
     const [formData, setFormData] = useState({

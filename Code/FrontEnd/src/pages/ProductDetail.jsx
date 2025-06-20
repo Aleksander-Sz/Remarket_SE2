@@ -38,7 +38,7 @@ function ProductDetail() {
     e.preventDefault();
     setSubmitting(true);
     try {
-      const response = await axios.post('/api/addReview', {
+      const response = await axios.post('/addReview', {
         listingId: parseInt(productId),
         title: newReview.title,
         score: parseInt(newReview.score),
@@ -82,7 +82,7 @@ function ProductDetail() {
         ) : (
           reviews.map((review, idx) => (
             <div className="review-card" key={idx}>
-              <Link to={`/user/${review.account.id}`} className="plain-link">
+              <Link to={`/user/${review.account.accountId}`} className="plain-link">
                 <strong>{review.account.username}</strong>
               </Link>{' '}
               –{' '}

@@ -509,6 +509,70 @@ app.MapPost("/api/changeProfile/{UserId}", async (int UserId, ProfileChangeReque
         return Results.Ok(new { message = $"User {UserId} profile updated, things changed: " + message + "." });
 }).RequireAuthorization();
 
+app.MapPost("/api/addReview", async (
+    ReviewRequest data,
+    AppDbContext db,
+    ClaimsPrincipal user) =>
+{
+    var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    int accountId = int.Parse(userIdClaim.Value);
+
+    // Prevent duplicate reviews per user per listing
+    var existing = await db.Reviews.FirstOrDefaultAsync(r => r.AccountId == accountId && r.ListingId == data.ListingId);
+    if (existing != null)
+        return Results.BadRequest("You have already submitted a review for this listing.");
+
+    var review = new Review
+    {
+        Title = data.Title,
+        Score = data.Score,
+        Description = data.Description,
+        ListingId = data.ListingId,
+        AccountId = accountId
+    };
+
+    db.Reviews.Add(review);
+    await db.SaveChangesAsync();
+
+    // include username in response
+    var account = await db.Accounts.FindAsync(accountId);
+
+    return Results.Ok(new
+    {
+        review.Id,
+        review.Title,
+        review.Score,
+        review.Description,
+        Account = new { account.Id, account.Username },
+        Listing = new { Id = data.ListingId }
+    });
+}).RequireAuthorization();
+
+app.MapGet("/api/reviews/forUser/{userId}", async (
+    int userId,
+    AppDbContext db) =>
+{
+    var reviews = await db.Reviews
+        .Include(r => r.Account) // the person who wrote the review
+        .Include(r => r.Listing)
+        .Where(r => r.Listing.OwnerId == userId)
+        .Select(r => new
+        {
+            r.Id,
+            r.Title,
+            r.Score,
+            r.Description,
+            Reviewer = new { r.Account.Id, r.Account.Username },
+            Listing = new { r.Listing.Id, r.Listing.Title }
+        })
+        .ToListAsync();
+
+    return Results.Json(reviews);
+});
+
 
 app.Run();
 
