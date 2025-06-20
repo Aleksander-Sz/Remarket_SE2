@@ -573,8 +573,37 @@ app.MapGet("/api/reviews/forUser/{userId}", async (
     return Results.Json(reviews);
 });
 
-app.MapGet("/api/orders", async (AppDbContext db, string? sellerId, string? buyerId) =>
+app.MapGet("/api/orders", async (AppDbContext db, string? sellerId, string? buyerId, string? orderId) =>
 {
+    // Try parse single orderId
+    if (int.TryParse(orderId, out var orderIdVal))
+    {
+        var singleOrder = await db.Orders
+            .Where(o => o.Id == orderIdVal)
+            .Select(o => new
+            {
+                o.Id,
+                o.ShipTo,
+                o.Shipped,
+                o.Description,
+                o.SellerId,
+                o.BuyerId,
+                o.PaymentId,
+                Product = db.OrderListings
+                    .Where(ol => ol.OrderId == o.Id)
+                    .Select(ol => new
+                    {
+                        ProductId = ol.Listing.Id,
+                        ProductName = ol.Listing.Title
+                    })
+                    .FirstOrDefault()
+            })
+            .FirstOrDefaultAsync();
+
+        return singleOrder != null ? Results.Json(singleOrder) : Results.NotFound();
+    }
+
+    // Multiple orders
     var query = db.Orders.AsQueryable();
 
     if (int.TryParse(sellerId, out var sellerIdVal))
