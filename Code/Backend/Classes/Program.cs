@@ -697,6 +697,63 @@ app.MapGet("/api/payment/{paymentId:int}", async (
     return payment is not null ? Results.Ok(payment) : Results.NotFound();
 });
 
+app.MapPost("/api/makePayment", async (
+    PaymentRequest request,
+    HttpContext http,
+    AppDbContext db) =>
+{
+    // 1. check authentication
+    if (!http.User.Identity?.IsAuthenticated ?? true)
+        return Results.Unauthorized();
+
+    var userIdClaim = http.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier");
+    if (userIdClaim == null || !int.TryParse(userIdClaim.Value, out var accountId))
+        return Results.Unauthorized();
+
+    // 2. Validate payment fields
+    if (string.IsNullOrWhiteSpace(request.CardNumber) ||
+        string.IsNullOrWhiteSpace(request.CardCVC) ||
+        string.IsNullOrWhiteSpace(request.CardExpirationMonth) ||
+        string.IsNullOrWhiteSpace(request.CardExpirationYear))
+    {
+        return Results.BadRequest("All card details must be provided.");
+    }
+
+    // 3. Find the order
+    var order = await db.Orders.FindAsync(request.OrderId);
+    if (order == null)
+        return Results.NotFound("Order not found.");
+
+    //  4. Get listing price ( assuming 1 product per order)
+    var listing = await db.OrderListings
+        .Where(ol => ol.OrderId == request.OrderId)
+        .Select(ol => ol.Listing)
+        .FirstOrDefaultAsync();
+
+    if (listing == null)
+        return Results.BadRequest("Associated listing not found.");
+
+    var amount = listing.Price;
+
+    // 5. Create new payment
+    var payment = new Payment
+    {
+        AccountId = accountId,
+        Total = amount,
+        PaidOn = DateTime.UtcNow
+    };
+
+    db.Payments.Add(payment);
+    await db.SaveChangesAsync(); // save to get payment ID
+
+    // 6. Update orrder with paymentId
+    order.PaymentId = payment.Id;
+    await db.SaveChangesAsync();
+
+    return Results.Ok(new { payment.Id, payment.Total, payment.PaidOn });
+});
+
+
 app.Run();
 
 public partial class Program { }

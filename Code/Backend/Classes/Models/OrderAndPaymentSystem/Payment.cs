@@ -24,4 +24,10 @@ namespace ReMarket.Models
         }
 
     }
+    public record PaymentRequest(
+        int OrderId,
+        string CardNumber,
+        string CardCVC,
+        string CardExpirationMonth,
+        string CardExpirationYear);
 }
