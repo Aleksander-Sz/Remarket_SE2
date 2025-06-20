@@ -4,15 +4,15 @@ import axios from 'axios';
 
 function PurchaseForm() {
     const { productId } = useParams();
-    const [product, setProduct] = useState(null);
+    const [order, setOrder] = useState(null);
 
     useEffect(() => {
-        axios.get(`http://localhost:5134/api/products?id=${productId}`)
-            .then(res => setProduct(res.data))
-            .catch(err => console.error("Failed to load product", err));
+        axios.get(`http://localhost:5134/api/orders?orderId=${productId}`)
+            .then(res => setOrder(res.data))
+            .catch(err => console.error("Failed to load order", err));
     }, [productId]);
 
-    if (!product) return <p>Loading product info...</p>;
+    if (!order) return <p style={{ textAlign: 'center', color: 'white' }}>Loading product info...</p>;
 
     const inputStyle = {
         display: 'block',
@@ -36,13 +36,14 @@ function PurchaseForm() {
             backgroundColor: '#222',
             color: 'white',
             borderRadius: '8px',
-            maxWidth: '400px',
+            maxWidth: '500px',
             margin: '2rem auto',
             fontFamily: 'Arial, sans-serif'
         }}>
-            <h2>Purchase: {product.title}</h2>
-            <p>Price: {product.price} zł</p>
-            <p>Status: {product.status}</p>
+            <h2>Purchase: {order.product?.productName}</h2>
+            <p>Price: {order.product?.productPrice} $</p>
+            <p>Ship To: {order.shipTo}</p>
+            <p>Description: {order.description}</p>
 
             <form>
                 <label style={{ display: 'block', marginBottom: '0.75rem' }}>
@@ -57,64 +58,26 @@ function PurchaseForm() {
 
                 <label style={{ display: 'block', marginBottom: '0.75rem' }}>
                     Credit Card Number:
-                    <input
-                        type="text"
-                        name="creditCard"
-                        placeholder="1234 5678 9012 3456"
-                        style={inputStyle}
-                    />
+                    <input type="text" name="creditCard" placeholder="1234 5678 9012 3456" style={inputStyle} />
                 </label>
 
                 <label style={{ display: 'block', marginBottom: '0.75rem' }}>
                     Cardholder Name:
-                    <input
-                        type="text"
-                        name="cardholderName"
-                        placeholder="John Doe"
-                        style={inputStyle}
-                    />
+                    <input type="text" name="cardholderName" placeholder="John Doe" style={inputStyle} />
                 </label>
 
                 <div style={{ marginBottom: '1rem' }}>
-                    <label style={{ color: 'white', fontWeight: 'bold' }}>Expiration Date:</label><br />
-                    <input
-                        type="text"
-                        name="expiryMonth"
-                        placeholder="MM"
-                        maxLength={2}
-                        style={{ ...halfInputStyle, marginRight: '4%' }}
-                    />
-                    <input
-                        type="text"
-                        name="expiryYear"
-                        placeholder="YY"
-                        maxLength={2}
-                        style={halfInputStyle}
-                    />
+                    <label style={{ fontWeight: 'bold' }}>Expiration Date:</label><br />
+                    <input type="text" name="expiryMonth" placeholder="MM" maxLength={2} style={{ ...halfInputStyle, marginRight: '4%' }} />
+                    <input type="text" name="expiryYear" placeholder="YY" maxLength={2} style={halfInputStyle} />
                 </div>
 
                 <label style={{ display: 'block', marginBottom: '1rem' }}>
                     CVC/CVV:
-                    <input
-                        type="text"
-                        name="cvc"
-                        placeholder="123"
-                        maxLength={3}
-                        style={{ width: '100px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }}
-                    />
+                    <input type="text" name="cvc" placeholder="123" maxLength={3} style={{ width: '100px', padding: '0.5rem', borderRadius: '4px', border: '1px solid #ccc', fontSize: '1rem' }} />
                 </label>
 
-                <button type="submit"
-                    style={{
-                        backgroundColor: '#007bff',
-                        color: 'white',
-                        padding: '0.75rem 1.5rem',
-                        border: 'none',
-                        borderRadius: '4px',
-                        cursor: 'pointer',
-                        fontSize: '1rem',
-                        width: '100%'
-                    }}>
+                <button type="submit" style={{ backgroundColor: '#007bff', color: 'white', padding: '0.75rem 1.5rem', border: 'none', borderRadius: '4px', cursor: 'pointer', fontSize: '1rem', width: '100%' }}>
                     Submit Order
                 </button>
             </form>
