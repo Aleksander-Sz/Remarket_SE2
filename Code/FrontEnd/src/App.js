@@ -34,7 +34,7 @@ import AboutUs from './pages/AboutUs';
 import MyListingPage from './pages/MyListingPage';
 import AddProductPage from './pages/AddProductPage';
 import PublicProfile from './pages/PublicProfile';
-
+import PlaceOrder from './pages/PlaceOrderPage';
 
 
 // Account Manager
@@ -106,7 +106,7 @@ function AnimatedRoutes() {
                 <Route path="/user/:profileId" element={<><WipeTransition /><PublicProfile /></>} />
                 <Route path="/editprofile" element={<><WipeTransition /><EditProfilePage /></>} />
                 <Route path="/myorders" element={<MyOrdersPage />} />
-
+                <Route path="/placeOrder/:productId" element={<PlaceOrder />} />
 
 
 
