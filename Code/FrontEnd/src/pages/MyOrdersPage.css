@@ -1,25 +1,23 @@
-.myorders-container {
-    padding: 20px;
+.orders-page {
+    padding: 2rem;
 }
 
-.orders-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 40px;
-}
+    .orders-page h1 {
+        margin-bottom: 1rem;
+    }
 
-    .orders-table th,
-    .orders-table td {
+    .orders-page table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 2rem;
+    }
+
+    .orders-page th, .orders-page td {
+        padding: 0.75rem;
         border: 1px solid #ccc;
-        padding: 8px 12px;
         text-align: left;
     }
 
-    .orders-table th {
-        background-color: #f0f0f0;
-    }
-
-    .orders-table button {
-        padding: 5px 10px;
-        cursor: pointer;
+    .orders-page th {
+        background-color: #f8f8f8;
     }
