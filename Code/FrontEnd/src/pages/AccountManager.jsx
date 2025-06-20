@@ -48,6 +48,26 @@ function AccountManager() {
         }
     };
 
+    const handlePromote = async (userId) => {
+        console.log('Promoting user with id:', userId);
+        if (!window.confirm('Are you sure you want to promote this user?')) {
+            return;
+        }
+        try {
+            const response = await axios.post(`/changeRole/${userId}`, {
+                newRole: 'A'
+            });
+            setUsers(users.map(u =>
+                u.id === userId ? { ...u, role: 'A' } : u
+            ));
+            alert('User promoted successfully.');
+            console.log(response.data.message);
+        } catch (err) {
+            console.error('Failed to promote user:', err);
+            alert('Failed to promote user.');
+        }
+    };
+
     if (loading) {
         return <p>Loading user data...</p>;
     }
@@ -76,6 +96,7 @@ function AccountManager() {
                                 <td>{u.email}</td>
                                 <td>{u.role}</td>
                                 <td>
+                                    <button onClick={() => handlePromote(u.id)}>Promote</button>
                                     <button onClick={() => handleDelete(u.id)}>Delete</button>
                                 </td>
                             </tr>

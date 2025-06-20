@@ -7,16 +7,28 @@ namespace ReMarket.Models
 //Reviews are linked directly to listings, showing that reviews pertain to specific items."
     public class Review
     {
-        public string title { get; set; }
-        public int score { get; set; }
-        public string description { get; set; } //this description has nothing to do with class Description
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public int Score { get; set; }
+        public string Description { get; set; } //this description has nothing to do with class Description
+        public int AccountId { get; set; }
+        public Account Account { get; set; }
+        public int ListingId { get; set; }
+        public Listing Listing { get; set; }
 
+        public Review() { }
 
         public Review(string title, int score, string description)
         {
-            this.title = title;
-            this.description=description;
-            this.score=score;
+            this.Title = title;
+            this.Description=description;
+            this.Score=score;
         }
     }
+    public record ReviewRequest(
+        int ListingId,
+        string Title,
+        int Score,
+        string Description
+    );
 }

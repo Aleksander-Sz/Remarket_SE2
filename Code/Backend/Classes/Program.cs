@@ -147,6 +147,37 @@ app.MapGet("/api/products", async (
     return Results.Json(listings);
 });
 
+app.MapGet("/api/reviews", async (
+    AppDbContext db,
+    int? userId,
+    int? listingId) =>
+{
+    var query = db.Reviews
+        .Include(r => r.Listing)     // Assuming a navigation property exists
+        .Include(r => r.Account)     // Assuming a navigation property exists
+        .AsQueryable();
+
+    if (userId.HasValue)
+        query = query.Where(r => r.AccountId == userId.Value);
+
+    if (listingId.HasValue)
+        query = query.Where(r => r.ListingId == listingId.Value);
+
+    var reviews = await query
+        .Select(r => new
+        {
+            r.Id,
+            r.Title,
+            r.Score,
+            r.Description,
+            Account = new { r.AccountId, r.Account.Username },
+            Listing = new { r.ListingId, r.Listing.Title }
+        })
+        .ToListAsync();
+
+    return Results.Json(reviews);
+});
+
 app.MapGet("/api/categories", async (AppDbContext db) =>
 {
     var categories = await db.Categories.ToListAsync();
@@ -179,10 +210,6 @@ app.MapPost("/api/photo", async (HttpRequest request, AppDbContext db) =>
 
     return Results.Ok(new { id = photo.Id });
 });
-
-
-
-
 
 app.MapPost("/api/login", async (
     AppDbContext db,
@@ -327,6 +354,18 @@ app.MapGet("/api/account", async (
     return account is not null ? Results.Ok(account) : Results.NotFound();
 }).RequireAuthorization();
 
+app.MapGet("/api/user/{id}", async (
+    int id,
+    AppDbContext db) =>
+{
+    var account = await db.Accounts
+        .Where(a => a.Id == id)
+        .Select(a => new { a.Id, a.Username, PhotoId = (int?)a.PhotoId, a.Description }) // don't return password
+        .FirstOrDefaultAsync();
+
+    return account is not null ? Results.Ok(account) : Results.NotFound();
+});
+
 app.MapGet("/api/info", () =>
 {
     var time = DateTime.Now.ToString("HH:mm:ss");
@@ -412,9 +451,127 @@ app.MapDelete("/api/accounts/{id}", async (int id, ClaimsPrincipal user, AppDbCo
     return Results.Ok(new { message = $"User {id} deleted" });
 }).RequireAuthorization();
 
+app.MapPost("/api/changeRole/{UserId}", async (int UserId, RoleChangeRequest data, AppDbContext db, ClaimsPrincipal user) =>
+{
+    var roleClaim = user.FindFirst(ClaimTypes.Role);
+    if (roleClaim == null || roleClaim.Value != "admin")
+        return Results.Forbid();
+    var userToUpdate = await db.Accounts.FindAsync(UserId);
+    if (userToUpdate == null)
+        return Results.NotFound();
+    userToUpdate.Role = data.NewRole;
+    await db.SaveChangesAsync();
 
+    return Results.Ok(new { message = $"User {UserId} role changed to '{data.NewRole}'" });
+}).RequireAuthorization();
 
+app.MapPost("/api/changeProfile/{UserId}", async (int UserId, ProfileChangeRequest data, AppDbContext db, ClaimsPrincipal user) =>
+{
+    var userIdClaim = user.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
 
+    int loggedInUserId = int.Parse(userIdClaim.Value);
+    if (loggedInUserId != UserId)
+        return Results.Forbid();
+
+    var userToUpdate = await db.Accounts.FindAsync(UserId);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    string message = "";
+    if (!string.IsNullOrWhiteSpace(data.NewUsername))
+    {
+        userToUpdate.Username = data.NewUsername;
+        message += "username, ";
+    }
+    if (!string.IsNullOrWhiteSpace(data.NewDescription))
+    {
+        userToUpdate.Description = data.NewDescription;
+        message += "description, ";
+    }
+    if (data.NewPhotoId.HasValue)
+    {
+        userToUpdate.PhotoId = data.NewPhotoId.Value;
+        message += "photo";
+    }
+    if (!string.IsNullOrWhiteSpace(data.NewPassword))
+    {
+        var hashedPassword = BCrypt.Net.BCrypt.HashPassword(data.NewPassword);
+        userToUpdate.Password = hashedPassword;
+        message += "password, ";
+    }
+    await db.SaveChangesAsync();
+
+    if(message=="")
+        return Results.Ok(new { message = $"Nothing to change" });
+    else
+        return Results.Ok(new { message = $"User {UserId} profile updated, things changed: " + message + "." });
+}).RequireAuthorization();
+
+app.MapPost("/api/addReview", async (
+    ReviewRequest data,
+    AppDbContext db,
+    ClaimsPrincipal user) =>
+{
+    var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    int accountId = int.Parse(userIdClaim.Value);
+
+    // Prevent duplicate reviews per user per listing
+    var existing = await db.Reviews.FirstOrDefaultAsync(r => r.AccountId == accountId && r.ListingId == data.ListingId);
+    if (existing != null)
+        return Results.BadRequest("You have already submitted a review for this listing.");
+
+    var review = new Review
+    {
+        Title = data.Title,
+        Score = data.Score,
+        Description = data.Description,
+        ListingId = data.ListingId,
+        AccountId = accountId
+    };
+
+    db.Reviews.Add(review);
+    await db.SaveChangesAsync();
+
+    // include username in response
+    var account = await db.Accounts.FindAsync(accountId);
+
+    return Results.Ok(new
+    {
+        review.Id,
+        review.Title,
+        review.Score,
+        review.Description,
+        Account = new { account.Id, account.Username },
+        Listing = new { Id = data.ListingId }
+    });
+}).RequireAuthorization();
+
+app.MapGet("/api/reviews/forUser/{userId}", async (
+    int userId,
+    AppDbContext db) =>
+{
+    var reviews = await db.Reviews
+        .Include(r => r.Account) // the person who wrote the review
+        .Include(r => r.Listing)
+        .Where(r => r.Listing.OwnerId == userId)
+        .Select(r => new
+        {
+            r.Id,
+            r.Title,
+            r.Score,
+            r.Description,
+            Reviewer = new { r.Account.Id, r.Account.Username },
+            Listing = new { r.Listing.Id, r.Listing.Title }
+        })
+        .ToListAsync();
+
+    return Results.Json(reviews);
+});
 
 
 app.Run();

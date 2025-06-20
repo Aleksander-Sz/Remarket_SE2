@@ -1,4 +1,4 @@
-import './App.css';
+﻿import './App.css';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
 
@@ -10,14 +10,13 @@ import QuoteSection from './components/QuoteSection';
 import GalleryShowcase from './components/GalleryShowcase';
 import Footer from './components/Footer';
 
-import ProfilePage from './pages/ProfilePage';
 import { WishlistProvider } from './context/WishlistContext';
 import { UserProvider } from './context/UserContext';
 import { CartProvider } from './context/CartContext';
+
 import ListingGrid from './components/ListingGrid';
 import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
-
 
 // Pages
 import Login from './pages/Login';
@@ -31,19 +30,20 @@ import OurStories from './pages/OurStories';
 import SuperDealsPage from './pages/SuperDealsPage';
 import SellerDashboard from './pages/SellerDashboard';
 import Register from './pages/Register';
-import AboutUs from './pages/AboutUs'; 
+import AboutUs from './pages/AboutUs';
 import MyListingPage from './pages/MyListingPage';
 import AddProductPage from './pages/AddProductPage';
+import PublicProfile from './pages/PublicProfile';
 
 
 
 // Account Manager
-import AccountManager from './pages/accountmanager';
-
-
-//PurchaseForm
+import AccountManager from './pages/AccountManager';
 import PurchaseForm from './pages/PurchaseForm';
 
+// User profile pages
+import ProfilePage from './pages/ProfilePage';
+import EditProfilePage from './pages/EditProfilePage'; // ✅ nowa strona
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -101,6 +101,8 @@ function AnimatedRoutes() {
         <Route path="/addproduct" element={<><WipeTransition /><AddProductPage /></>} />
         <Route path="/accountmanager" element={<><WipeTransition /><AccountManager /></>} />
         <Route path="/purchase/:productId" element={<><WipeTransition /><PurchaseForm /></>} />
+        <Route path="/user/:profileId" element={<><WipeTransition /><PublicProfile /></>} />
+        <Route path="/editprofile" element={<><WipeTransition /><EditProfilePage /></>} />
 
 
 
@@ -114,18 +116,18 @@ function AnimatedRoutes() {
 }
 
 function App() {
-  return (
-    <UserProvider>
-      <WishlistProvider>
-        <CartProvider>
-        <Router>
-          <Navbar />
-          <AnimatedRoutes />
-        </Router>
-        </CartProvider>
-      </WishlistProvider>
-    </UserProvider>
-  );
+    return (
+        <UserProvider>
+            <WishlistProvider>
+                <CartProvider>
+                    <Router>
+                        <Navbar />
+                        <AnimatedRoutes />
+                    </Router>
+                </CartProvider>
+            </WishlistProvider>
+        </UserProvider>
+    );
 }
 
 export default App;

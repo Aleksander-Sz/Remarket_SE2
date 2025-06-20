@@ -20,6 +20,7 @@ namespace ReMarket.Services
         public DbSet<Account> Accounts { get; set; }
         public DbSet<Photo> Photos { get; set; }
         public DbSet<ListingPhoto> ListingPhotos {  get; set; }
+        public DbSet<Review> Reviews { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -48,6 +49,22 @@ namespace ReMarket.Services
                 .HasOne(lp => lp.Photo)
                 .WithMany(p => p.ListingPhotos)
                 .HasForeignKey(lp => lp.PhotoId);
+
+            modelBuilder.Entity<Review>()
+                .ToTable("review")
+                .HasKey(r => r.Id);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Account)
+                .WithMany() // or `.WithMany(a => a.Reviews)` if you define a `List<Review>` in `Account`
+                .HasForeignKey(r => r.AccountId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Review>()
+                .HasOne(r => r.Listing)
+                .WithMany() // or `.WithMany(l => l.Reviews)` if you define a `List<Review>` in `Listing`
+                .HasForeignKey(r => r.ListingId)
+                .OnDelete(DeleteBehavior.Cascade);
 
 
         }

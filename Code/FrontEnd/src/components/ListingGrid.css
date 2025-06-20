@@ -1,8 +1,8 @@
 .listing-grid {
   padding: 2rem;
-  color: white;
+  color: #111;
   text-align: center;
-  background-color: #000; 
+  background-color: #f6f6f6;
   min-height: 100vh;
 }
 
@@ -19,12 +19,14 @@
 }
 
 .listing-card {
-  background: #1c1c1c;
+  background: #fff;
+  color: #111;
   padding: 1rem;
   border-radius: 10px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-  transition: transform 0.3s ease;
-  position: relative; 
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+  position: relative;
+  text-align: left;
 }
 
 .listing-card:hover {
@@ -40,28 +42,32 @@
 
 .listing-card h3 {
   margin: 0.8rem 0 0.4rem;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #111;
 }
 
 .listing-card p {
-  color: #cccccc;
-  font-size: 0.95rem;
+  color: #555;
+  font-size: 0.9rem;
   margin-bottom: 0.6rem;
 }
 
 .listing-card button {
-  background: #4bb869;
-  color: white;
-  border: none;
-  padding: 0.5rem 1.2rem;
-  border-radius: 25px;
+  background: transparent;
+  color: #4bb869;
+  border: 2px solid #4bb869;
+  padding: 0.4rem 1rem;
+  border-radius: 20px;
   cursor: pointer;
-  font-weight: bold;
-  transition: background 0.3s ease;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  font-size: 0.9rem;
 }
 
 .listing-card button:hover {
-  background: #3da95a;
+  background: #4bb869;
+  color: white;
 }
 
 .wishlist-icon {
@@ -74,26 +80,25 @@
 
 .filter-form {
   display: flex;
+  flex-direction: column;
+  align-items: center;
   gap: 10px;
-  margin-bottom: 20px;
-  flex-wrap: wrap;
-  justify-content: center;
 }
 
 .filter-form select,
 .filter-form input {
   padding: 8px;
   border-radius: 5px;
-  border: 1px solid #444;
-  background-color: #222;
-  color: #fff;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  color: #111;
 }
 
 .filter-form button {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 8px 14px;
+  flex: none;
+  width: auto;
+  display: inline-block;
+  padding: 6px 14px;
   background: linear-gradient(145deg, #4bb869, #3da95a);
   color: white;
   font-weight: 600;
@@ -103,6 +108,7 @@
   transition: all 0.25s ease-in-out;
   cursor: pointer;
   font-size: 0.95rem;
+  white-space: nowrap;
 }
 
 .filter-form button:hover {
@@ -114,8 +120,8 @@
 .image-placeholder {
   width: 100%;
   height: 180px;
-  background-color: #333;
-  color: #aaa;
+  background-color: #eee;
+  color: #777;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -131,7 +137,7 @@
 
 .desc-small {
   font-size: 0.85rem;
-  color: #bbb;
+  color: #666;
   margin-bottom: 0.4rem;
 }
 
@@ -140,6 +146,7 @@
   color: #4bb869;
   margin-bottom: 0.6rem;
 }
+
 .pagination-controls {
   margin-top: 20px;
   display: flex;
@@ -159,7 +166,11 @@
 }
 
 .pagination-controls button:disabled {
-  background-color: #555;
+  background-color: #ccc;
+  color: #888;
   cursor: not-allowed;
 }
 
+.filter-form input[type="number"] {
+  width: 120px;
+}

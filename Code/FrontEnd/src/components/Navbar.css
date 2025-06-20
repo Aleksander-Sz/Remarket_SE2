@@ -1,54 +1,63 @@
 .navbar {
-    background-color: #1a1a1a;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 3rem;
-    font-family: 'Segoe UI', sans-serif;
-  }
-  
-  .logo {
-    font-size: 1.5rem;
-    font-weight: bold;
-    letter-spacing: 1px;
-  }
-  
-  .navbar-center {
-    list-style: none;
-    display: flex;
-    gap: 2rem;
-  }
-  
-  .navbar-center li a {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-    transition: 0.2s ease;
-  }
-  
-  .navbar-center li a:hover {
-    color: #bbbbbb;
-  }
-  
-  .navbar-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-  
-  .icon {
-    font-size: 1.2rem;
-    cursor: pointer;
-  }
-  
-  .login-link {
-    color: white;
-    text-decoration: none;
-    font-size: 1rem;
-  }
-  
-  .login-link:hover {
-    color: #bbbbbb;
-  }
-  
+  background-color: #000;
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 3rem;
+  font-family: 'Segoe UI', sans-serif;
+  border-bottom: 1px solid #333;
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: white;
+  text-decoration: none;
+}
+
+.navbar-center {
+  display: flex;
+  list-style: none;
+  gap: 2rem;
+}
+
+.navbar-center li a {
+  color: white;
+  text-decoration: none;
+  font-size: 0.95rem;
+  transition: 0.2s ease;
+  font-weight: 500;
+}
+
+.navbar-center li a:hover {
+  color: #bbb;
+}
+
+.navbar-right {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.icon {
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+.login-link {
+  background: transparent;
+  border: 1px solid white;
+  color: white;
+  padding: 6px 12px;
+  border-radius: 20px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.login-link:hover {
+  background: white;
+  color: black;
+}

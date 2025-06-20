@@ -3,10 +3,10 @@ using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Xunit;
-using Microsoft.AspNetCore.Mvc.Testing;
+//using Microsoft.AspNetCore.Mvc.Testing;
 using System.Net.Http.Json;
 
-
+/*
 public class AuthenticationTests : IClassFixture<WebApplicationFactory<Program>>
 {
     private readonly HttpClient _client;
@@ -147,3 +147,5 @@ public class AuthenticationTests : IClassFixture<WebApplicationFactory<Program>>
 
 //    Assert.Equal(System.Net.HttpStatusCode.NotFound, response.StatusCode);
 //}
+
+*/

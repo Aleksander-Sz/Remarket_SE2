@@ -14,11 +14,13 @@ namespace ReMarket.Models
 
     public class Account
     {
-        public string Username { get; private set; }
+        public string Username { get; set; }
         public string Email { get; private set; }
-        public string Password { get; private set; }
+        public string Password { get; set; }
         public int Id { get; private set; }
-        public char Role { get; private set; } = 'U';
+        public char Role { get; set; } = 'U';
+        public int PhotoId { get; set; }
+        public string Description { get; set; }
 
 
         public Account(string username, string email, string password)
@@ -99,7 +101,7 @@ namespace ReMarket.Models
             return account;
         }
     }
-
-
+    public record RoleChangeRequest(char NewRole);
+    public record ProfileChangeRequest(string? NewUsername, string? NewDescription, int? NewPhotoId, string? NewPassword);
 }
 

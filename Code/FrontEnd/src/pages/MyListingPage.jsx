@@ -4,11 +4,13 @@ import { motion } from 'framer-motion';
 import { useUser } from '../context/UserContext';
 import { useWishlist } from '../context/WishlistContext';
 import axios from '../api/axiosInstance';
+import { useNavigate } from 'react-router-dom';
 function MyListingsPage() {
   const [items, setItems] = useState([]);
   const { wishlist, toggleWishlist } = useWishlist();
   const { id: userId } = useUser();
   const ITEMS_PER_PAGE = 40;
+  const navigate = useNavigate();
 
   const fetchSellerListings = async () => {
     try {
@@ -48,6 +50,7 @@ function MyListingsPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.4 }}
+              onClick={() => navigate(`/product/${item.id}`)}
             >
               <img src={`/api/photo/${item.imageIds[0]}`} alt={item.title} />
               <h3>{item.title}</h3>

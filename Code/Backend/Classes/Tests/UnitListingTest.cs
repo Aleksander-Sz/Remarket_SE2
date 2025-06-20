@@ -12,13 +12,10 @@ public class ListingTests : IDisposable
 {
     private readonly AppDbContext _db;
 
+
     public ListingTests()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Development.json")
-            .Build();
-
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection");
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))

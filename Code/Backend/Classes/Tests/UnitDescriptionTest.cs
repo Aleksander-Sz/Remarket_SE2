@@ -13,11 +13,8 @@ public class DescriptionTests : IDisposable
 
     public DescriptionTests()
     {
-        var configuration = new ConfigurationBuilder()
-            .AddJsonFile("appsettings.Development.json")
-            .Build();
-
-        var connectionString = configuration.GetConnectionString("DefaultConnection");
+        var connectionString = Environment.GetEnvironmentVariable("ConnectionStrings__DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string not found in environment variables.");
 
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
