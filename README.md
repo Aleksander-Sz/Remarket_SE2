@@ -62,3 +62,4 @@ FInish 1 sprint within 2 weeks
     /changeRole/{id} [POST] - updates the role of a user
     /changeProfile/{id} [POST] - updates the user profile, attributes: NewUsername, NewDescription, NewPhotoId, NewPassword
     /orders [GET] - gets a list of the orders based on sellerId or buyerId
+    /createOrder [POST] - creates a new order, with SellerId, ShipTo, Description and PaymentId
