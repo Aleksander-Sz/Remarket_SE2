@@ -12,13 +12,14 @@ namespace ReMarket.Models
     {
         public int Id { get; set; }
         public string ShipTo { get; set; }
-        public DateTime Shipped { get; set; } //date when shipped
+        public DateTime? Shipped { get; set; } //date when shipped
         public string Description { get; set; } //this can be wrong, on figure 1 it says it should be of type ListingDescription
         public int SellerId { get; set; }
         public Account Seller {  get; set; }
         public int BuyerId { get; set; }
         public Account Buyer { get; set; }
-
+        public int? PaymentId { get; set; }
+        
         public Order() { }
 
         public Order(int Id, string shipTo, DateTime shipped, string description)
@@ -29,4 +30,10 @@ namespace ReMarket.Models
             this.ShipTo=shipTo;
         }
     }
+    public record CreateOrderRequest(
+        int SellerId,
+        string ShipTo,
+        string Description
+    );
+
 }

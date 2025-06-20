@@ -603,6 +603,42 @@ app.MapGet("/api/orders", async (AppDbContext db, string? sellerId, string? buye
     return Results.Json(orders);
 });
 
+app.MapPost("/api/createOrder", async (
+    CreateOrderRequest data,
+    AppDbContext db,
+    ClaimsPrincipal user) =>
+{
+    // Ensure user is authenticated
+    var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
+    if (userIdClaim == null)
+        return Results.Unauthorized();
+
+    int buyerId = int.Parse(userIdClaim.Value);
+
+    var newOrder = new ReMarket.Models.Order
+    {
+        ShipTo = data.ShipTo,
+        Description = data.Description,
+        SellerId = data.SellerId,
+        BuyerId = buyerId,
+        PaymentId = null,
+        Shipped = null
+    };
+
+    db.Orders.Add(newOrder);
+    await db.SaveChangesAsync();
+
+    return Results.Created($"/api/orders/{newOrder.Id}", new
+    {
+        newOrder.Id,
+        newOrder.ShipTo,
+        newOrder.Description,
+        newOrder.SellerId,
+        newOrder.BuyerId,
+        newOrder.PaymentId,
+        newOrder.Shipped
+    });
+}).RequireAuthorization();
 
 app.Run();
 
