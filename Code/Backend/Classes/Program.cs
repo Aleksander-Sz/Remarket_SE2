@@ -595,8 +595,8 @@ app.MapGet("/api/orders", async (AppDbContext db, string? sellerId, string? buye
             o.Shipped,
             o.Description,
             o.SellerId,
-            o.BuyerId
-            //o.PaymentId
+            o.BuyerId,
+            o.PaymentId
         })
         .ToListAsync();
 
