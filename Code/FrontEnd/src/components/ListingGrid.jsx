@@ -126,14 +126,16 @@ function ListingGrid() {
                             <h3>{item.title}</h3>
                             <p>${item.price.toFixed(2)}</p>
 
-                            <button onClick={() => navigate(`/purchase/${item.id}`)}>Buy Now</button>
+                            <button onClick={() => navigate(`/placeorder/${item.id}`)}>Buy Now</button>
                             <button onClick={() => navigate(`/product/${item.id}`)}>Learn More</button>
-                            <button onClick={() => addToCart(item)}>Add to Cart</button>
+
+                            {/* <button onClick={() => addToCart(item)}>Add to Cart</button> */}
 
                             <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
                                 {isWished ? <FaHeart color="red" /> : <FaRegHeart />}
                             </span>
                         </motion.div>
+
                     );
                 })}
             </div>
