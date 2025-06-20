@@ -1,11 +1,15 @@
 import { useEffect, useState } from 'react';
 import axios from '../api/axiosInstance';
-import './ProfilePage.css'; // Mo¿esz u¿yæ tej samej klasy co wczeœniej
+import './ProfilePage.css';
 
 function EditProfilePage() {
     const [formData, setFormData] = useState({
         bio: '',
         avatar: null,
+        username: '',
+        email: '',
+        newPassword: '',
+        confirmNewPassword: '',
     });
 
     const [loading, setLoading] = useState(true);
@@ -16,9 +20,14 @@ function EditProfilePage() {
         const fetchProfile = async () => {
             try {
                 const response = await axios.get('/account');
-                setUser(response.data); // { username, email }
+                setUser(response.data);
+                setFormData((prev) => ({
+                    ...prev,
+                    username: response.data.username,
+                    email: response.data.email,
+                }));
             } catch (err) {
-                if (err.response && err.response.status === 401) {
+                if (err.response?.status === 401) {
                     setError('You must be logged in to view this page.');
                 } else {
                     setError('Failed to load profile.');
@@ -34,9 +43,9 @@ function EditProfilePage() {
     const handleChange = (e) => {
         const { name, value, files, type } = e.target;
         if (type === 'file') {
-            setFormData({ ...formData, [name]: files[0] });
+            setFormData((prev) => ({ ...prev, [name]: files[0] }));
         } else {
-            setFormData({ ...formData, [name]: value });
+            setFormData((prev) => ({ ...prev, [name]: value }));
         }
     };
 
@@ -53,17 +62,27 @@ function EditProfilePage() {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (formData.newPassword && formData.newPassword !== formData.confirmNewPassword) {
+            alert('New passwords do not match.');
+            return;
+        }
+
         try {
             let photoId = null;
             if (formData.avatar) {
                 photoId = await handleImageUpload();
             }
 
-            await axios.post(`/changeProfile/${user.id}`, {
+            const payload = {
                 NewDescription: formData.bio,
                 NewPhotoId: photoId,
-            });
+                NewUsername: formData.username,
+                NewEmail: formData.email,
+                NewPassword: formData.newPassword || null,
+            };
 
+            await axios.post(`/changeProfile/${user.id}`, payload);
             alert('Profile updated!');
         } catch (err) {
             console.error('Error updating profile:', err);
@@ -74,8 +93,52 @@ function EditProfilePage() {
     return (
         <div className="profile-container">
             <h1>Edit Your Profile</h1>
-            {loading ? <p>Loading...</p> : (
+            {loading ? (
+                <p>Loading...</p>
+            ) : error ? (
+                <p className="error">{error}</p>
+            ) : (
                 <form className="product-form" onSubmit={handleSubmit}>
+                    <label>
+                        Username:
+                        <input
+                            type="text"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                        />
+                    </label><br />
+
+                    <label>
+                        Email:
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                        />
+                    </label><br />
+
+                    <label>
+                        New Password:
+                        <input
+                            type="password"
+                            name="newPassword"
+                            value={formData.newPassword}
+                            onChange={handleChange}
+                        />
+                    </label><br />
+
+                    <label>
+                        Confirm New Password:
+                        <input
+                            type="password"
+                            name="confirmNewPassword"
+                            value={formData.confirmNewPassword}
+                            onChange={handleChange}
+                        />
+                    </label><br />
+
                     <label>
                         Your Bio:
                         <textarea
