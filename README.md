@@ -59,4 +59,4 @@ FInish 1 sprint within 2 weeks
     /user/{id} [GET] - returns the id, username and photoId of the selected user
     /reviews [GET] - returns reviews from the database, arguments: userId, listingId
     /changeRole/{id} [POST] - updates the role of a user
-    /changeProfile/{id} - updates the description and photoId of a user
+    /changeProfile/{id} [POST] - updates the user profile, attributes: NewUsername, NewDescription, NewPhotoId, NewPassword
