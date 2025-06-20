@@ -43,7 +43,9 @@ import PurchaseForm from './pages/PurchaseForm';
 
 // User profile pages
 import ProfilePage from './pages/ProfilePage';
-import EditProfilePage from './pages/EditProfilePage'; // ✅ nowa strona
+import EditProfilePage from './pages/EditProfilePage'; 
+import MyOrdersPage from './pages/MyOrdersPage';
+
 
 function AnimatedRoutes() {
   const location = useLocation();
@@ -103,6 +105,8 @@ function AnimatedRoutes() {
         <Route path="/purchase/:productId" element={<><WipeTransition /><PurchaseForm /></>} />
         <Route path="/user/:profileId" element={<><WipeTransition /><PublicProfile /></>} />
         <Route path="/editprofile" element={<><WipeTransition /><EditProfilePage /></>} />
+        <Route path="/myorders" element={<MyOrdersPage />} />
+
 
 
 
