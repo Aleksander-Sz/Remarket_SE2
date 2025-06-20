@@ -37,7 +37,6 @@ import PublicProfile from './pages/PublicProfile';
 import PlaceOrder from './pages/PlaceOrderPage';
 import PaymentDetail from './pages/PaymentDetail';
 
-
 // Account Manager
 import AccountManager from './pages/AccountManager';
 import PurchaseForm from './pages/PurchaseForm';
@@ -47,50 +46,20 @@ import ProfilePage from './pages/ProfilePage';
 import EditProfilePage from './pages/EditProfilePage';
 import MyOrdersPage from './pages/MyOrdersPage';
 
-
 function AnimatedRoutes() {
     const location = useLocation();
 
     return (
         <AnimatePresence mode="wait">
             <Routes location={location} key={location.pathname}>
-                {/* Homepage */}
-                <Route
-                    path="/"
-                    element={
-                        <>
-                            <WipeTransition />
-                            <HeroBanner />
-                            <QuoteSection />
-                            <GalleryShowcase />
-                            <Footer />
-                        </>
-                    }
-                />
-
-                {/* Categories Page */}
-                <Route
-                    path="/products"
-                    element={
-                        <>
-                            <WipeTransition />
-                            <ListingGrid />
-                            <QuoteSection />
-                            <GalleryShowcase />
-                            <Footer />
-                        </>
-                    }
-                />
-
-                {/* Dynamic Category Listings */}
+                <Route path="/" element={<><WipeTransition /><HeroBanner /><QuoteSection /><GalleryShowcase /><Footer /></>} />
+                <Route path="/products" element={<><WipeTransition /><ListingGrid /><QuoteSection /><GalleryShowcase /><Footer /></>} />
                 <Route path="/category/clothes" element={<><WipeTransition /><ClothesPage /></>} />
                 <Route path="/category/accessories" element={<><WipeTransition /><AccessoriesPage /></>} />
                 <Route path="/category/toys" element={<><WipeTransition /><ToysPage /></>} />
                 <Route path="/category/kids" element={<><WipeTransition /><KidsPage /></>} />
                 <Route path="/category/women" element={<><WipeTransition /><WomenPage /></>} />
                 <Route path="/category/men" element={<><WipeTransition /><MenPage /></>} />
-
-                {/* Other Pages */}
                 <Route path="/our-stories" element={<><WipeTransition /><OurStories /></>} />
                 <Route path="/login" element={<><WipeTransition /><Login /></>} />
                 <Route path="/profile" element={<><WipeTransition /><ProfilePage /></>} />
@@ -106,15 +75,9 @@ function AnimatedRoutes() {
                 <Route path="/purchase/:productId" element={<><WipeTransition /><PurchaseForm /></>} />
                 <Route path="/user/:profileId" element={<><WipeTransition /><PublicProfile /></>} />
                 <Route path="/editprofile" element={<><WipeTransition /><EditProfilePage /></>} />
-                <Route path="/myorders" element={<MyOrdersPage />} />
-                <Route path="/placeOrder/:productId" element={<PlaceOrder />} />
-                <Route path="/payment/:paymentId" element={<PaymentDetail />} />
-
-
-
-
-
-
+                <Route path="/myorders" element={<><WipeTransition /><MyOrdersPage /></>} />
+                <Route path="/placeOrder/:productId" element={<><WipeTransition /><PlaceOrder /></>} />
+                <Route path="/payment/:paymentId" element={<><WipeTransition /><PaymentDetail /></>} />
             </Routes>
         </AnimatePresence>
     );
