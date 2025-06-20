@@ -50,7 +50,8 @@ function EditProfilePage() {
         const payload = {
             shipTo: formData.address,
             description: formData.comments,
-            sellerId: product.owner.id
+            sellerId: product.owner.id,
+            productId: product.id
         };
 
         try {

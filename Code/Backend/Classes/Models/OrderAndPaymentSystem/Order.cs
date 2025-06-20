@@ -33,7 +33,8 @@ namespace ReMarket.Models
     public record CreateOrderRequest(
         int SellerId,
         string ShipTo,
-        string Description
+        string Description,
+        int ProductId
     );
 
 }

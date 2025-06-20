@@ -646,13 +646,14 @@ app.MapPost("/api/createOrder", async (
     AppDbContext db,
     ClaimsPrincipal user) =>
 {
-    // Ensure user is authenticated
+    // Check if user is logged in
     var userIdClaim = user.FindFirst(ClaimTypes.NameIdentifier);
     if (userIdClaim == null)
         return Results.Unauthorized();
 
     int buyerId = int.Parse(userIdClaim.Value);
 
+    // Create order
     var newOrder = new ReMarket.Models.Order
     {
         ShipTo = data.ShipTo,
@@ -664,6 +665,15 @@ app.MapPost("/api/createOrder", async (
     };
 
     db.Orders.Add(newOrder);
+    await db.SaveChangesAsync(); // Generates newOrder.Id
+
+    // Add entry to orderlisting
+    var orderListing = new OrderListing
+    {
+        OrderId = newOrder.Id,
+        ListingId = data.ProductId
+    };
+    db.OrderListings.Add(orderListing);
     await db.SaveChangesAsync();
 
     return Results.Created($"/api/orders/{newOrder.Id}", new
