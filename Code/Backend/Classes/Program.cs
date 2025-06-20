@@ -594,7 +594,8 @@ app.MapGet("/api/orders", async (AppDbContext db, string? sellerId, string? buye
                     .Select(ol => new
                     {
                         ProductId = ol.Listing.Id,
-                        ProductName = ol.Listing.Title
+                        ProductName = ol.Listing.Title,
+                        ProductPrice = ol.Listing.Price
                     })
                     .FirstOrDefault()
             })
