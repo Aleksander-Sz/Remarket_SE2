@@ -16,6 +16,7 @@ namespace ReMarket.Models
         public int ListingId { get; set; }
         public Listing Listing { get; set; }
 
+        public Review() { }
 
         public Review(string title, int score, string description)
         {
@@ -24,4 +25,10 @@ namespace ReMarket.Models
             this.Score=score;
         }
     }
+    public record ReviewRequest(
+        int ListingId,
+        string Title,
+        int Score,
+        string Description
+    );
 }
