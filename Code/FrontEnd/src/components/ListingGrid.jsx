@@ -24,7 +24,7 @@ function ListingGrid() {
 
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
-    const ITEMS_PER_PAGE = 40;
+    const ITEMS_PER_PAGE = 36;
 
     const fetchCategories = async () => {
         try {
