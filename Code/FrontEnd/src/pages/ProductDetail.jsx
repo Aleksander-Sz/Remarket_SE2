@@ -1,6 +1,6 @@
 ﻿// src/pages/ProductDetail.jsx
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../api/axiosInstance';
 import './ProductDetail.css';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ function ProductDetail() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const navigate = useNavigate();
 
   const [newReview, setNewReview] = useState({
     title: '',
@@ -73,6 +74,7 @@ function ProductDetail() {
     <a href={`/user/${product.owner.id}`} class="plain-link"><p><strong>Seller:</strong> {product.owner?.username}</p></a>
     <p><strong>Description:</strong> {product.description?.header}</p>
     <p>{product.description?.paragraph}</p>
+    <button onClick={() => navigate(`/placeorder/${product.id}`)}>Buy Now</button>
   </div>
 
   <div className="reviews-section">
