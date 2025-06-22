@@ -79,7 +79,8 @@ app.MapGet("/api/products", async (
     string? page,
     string? limit,
     string? id,
-    string? ownerId) =>
+    string? ownerId,
+    string? search) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -121,6 +122,9 @@ app.MapGet("/api/products", async (
     //ownerId:
     if (int.TryParse(ownerId, out var ownerIdVal))
         query = query.Where(l => l.OwnerId == ownerIdVal);
+
+    if (!string.IsNullOrEmpty(search))
+        query = query.Where(l => l.Title.ToLower().Contains(search.ToLower()));
 
     // page and limit
 
