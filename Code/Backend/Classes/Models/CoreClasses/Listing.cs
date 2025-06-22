@@ -46,7 +46,7 @@ namespace ReMarket.Models
         [NotMapped]
         public int? ThumbnailId { get; set; }
         [NotMapped]
-        public Photo? Thumbnail { get; set; }
+        public List<Photo>? Thumbnail { get; set; }
         
         public int OwnerId { get; set; }
         public Account Owner { get; set; } = null!;
@@ -69,7 +69,7 @@ namespace ReMarket.Models
         public string? Paragraph { get; set; }
         public int? Category { get; set; }
         public int? Price { get; set; }
-        public int? PhotoId { get; set; }
+        public List<int>? PhotoIds { get; set; }
         public int? OwnerId { get; set; }
     }
 }

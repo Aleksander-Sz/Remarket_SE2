@@ -12,7 +12,7 @@ function ProfilePage() {
         categoryId: '',
         descriptionHeader: '',
         descriptionParagraph: '',
-        photograph: null,
+        photograph: [],
     });
 
     useEffect(() => {
@@ -33,31 +33,35 @@ function ProfilePage() {
     const handleChange = (e) => {
         const { name, value, type, files } = e.target;
         if (type === 'file') {
-            setFormData({ ...formData, [name]: files[0] });
+            const fileArray = Array.from(files).slice(0, 5);
+            setFormData({ ...formData, [name]: fileArray });
         } else {
             setFormData({ ...formData, [name]: value });
         }
     };
 
     const handleImageUpload = async () => {
-        const formDataImg = new FormData();
-        formDataImg.append('image', formData.photograph);
+        const uploadedIds = [];
+        for (const file of formData.photograph) {
+            const formDataImg = new FormData();
+            formDataImg.append('image', file);
 
-        const response = await axios.post('/photo', formDataImg, {
-            headers: {
-                'Content-Type': 'multipart/form-data',
-            },
-        });
+            const response = await axios.post('/photo', formDataImg, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
 
-        return response.data.id; // the photo ID returned from backend
+            uploadedIds.push(response.data.id);
+        }
+
+        return uploadedIds; // the photo IDs returned from backend
     };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            let photoId = null;
-            if (formData.photograph) {
-                photoId = await handleImageUpload();
+            let photoIds = [];
+            if (formData.photograph.length > 0) {
+                photoIds = await handleImageUpload();
             }
 
             await axios.post('/addListing', {
@@ -66,7 +70,7 @@ function ProfilePage() {
                 paragraph: formData.descriptionParagraph,
                 category: parseInt(formData.categoryId),
                 price: parseInt(formData.price),
-                photoId
+                photoIds
             });
 
 
@@ -140,11 +144,12 @@ function ProfilePage() {
                     </label><br />
 
                     <label>
-                        Photograph:
+                        Photographs:
                         <input
                             type="file"
                             name="photograph"
                             accept="image/*"
+                            multiple
                             onChange={handleChange}
                         />
                     </label><br />

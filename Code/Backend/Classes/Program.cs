@@ -325,14 +325,15 @@ app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db, ClaimsPr
     await db.SaveChangesAsync(); // Save first to get the auto-incremented ID
 
     // Link the photo (if provided)
-    if (data.PhotoId != null)
+    if (data.PhotoIds != null && data.PhotoIds.Any())
     {
-        var link = new ListingPhoto
+        var links = data.PhotoIds.Select(photoId => new ListingPhoto
         {
             ListingId = listing.Id,
-            PhotoId = data.PhotoId.Value
-        };
-        db.ListingPhotos.Add(link);
+            PhotoId = photoId
+        }).ToList();
+
+        db.ListingPhotos.AddRange(links);
         await db.SaveChangesAsync();
     }
 
