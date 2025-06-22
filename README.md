@@ -47,7 +47,7 @@ FInish 1 sprint within 2 weeks
 ## Backend
 # This section describes, how to interact with the backend api
 # Available endpoints:
-    /products [GET] - returns listings from the database, arguments: category, min_price, max_price, page, limit, id, sellerId (the id is not to be used together with filters)
+    /products [GET] - returns listings from the database, arguments: category, min_price, max_price, page, limit, id, search, sellerId (the id is not to be used together with filters)
     /photo/{id} [GET] - returns a photo with the specific id
     /photo [POST] - adds a photo to data base, it returns the id of added photo
     /login [POST] - is used for logging in
