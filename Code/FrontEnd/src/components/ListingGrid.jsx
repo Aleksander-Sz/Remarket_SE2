@@ -5,8 +5,9 @@ import PaymentModal from '../components/PaymentModal';
 import { useWishlist } from '../context/WishlistContext';
 import { FaHeart, FaRegHeart } from 'react-icons/fa';
 import axios from '../api/axiosInstance';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
+
 
 function ListingGrid() {
     const [items, setItems] = useState([]);
@@ -16,13 +17,16 @@ function ListingGrid() {
     const navigate = useNavigate();
     const { addToCart } = useCart();
 
+    const [searchParams] = useSearchParams();
+    const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
+
     const [filters, setFilters] = useState({
         category: '',
         minPrice: '',
         maxPrice: '',
     });
 
-    const [page, setPage] = useState(1);
+    
     const [hasMore, setHasMore] = useState(true);
     const ITEMS_PER_PAGE = 36;
 
