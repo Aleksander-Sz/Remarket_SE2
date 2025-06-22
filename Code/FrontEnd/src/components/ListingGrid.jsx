@@ -26,6 +26,7 @@ function ListingGrid() {
         category: categoryParam ? categoryParam : 'all categories',
         minPrice: parseInt(searchParams.get('minPrice')),
         maxPrice: parseInt(searchParams.get('maxPrice')),
+        search: searchParams.get('search')
     });
 
     
@@ -51,6 +52,7 @@ function ListingGrid() {
                     max_price: filters.maxPrice,
                     page,
                     limit: ITEMS_PER_PAGE,
+                    search: filters.search
                 },
             });
 
@@ -118,10 +120,12 @@ function ListingGrid() {
         url.searchParams.delete('category');
         url.searchParams.delete('minPrice');
         url.searchParams.delete('maxPrice');
+        url.searchParams.delete('search');
 
         // Add filters to query params if they have a value
         if (filters.category) {
-            url.searchParams.set('category', filters.category);
+            if (filters.category !== 'all categories')
+                url.searchParams.set('category', filters.category);
         }
 
         if (filters.minPrice) {
@@ -130,6 +134,10 @@ function ListingGrid() {
 
         if (filters.maxPrice) {
             url.searchParams.set('maxPrice', filters.maxPrice);
+        }
+
+        if (filters.search) {
+            url.searchParams.set('search', filters.search);
         }
 
         window.history.pushState({}, '', url);
@@ -156,6 +164,17 @@ function ListingGrid() {
             <h2 className="listing-title">Browse Listings</h2>
 
             <form className="filter-form" onSubmit={handleFilter}>
+                <input
+                    type="text"
+                    placeholder="Search..."
+                    value={filters.search}
+                    onChange={(e) => {
+                        const newFilters = { ...filters, search: e.target.value };
+                        setFilters(newFilters);
+                        throttledUpdateFilters(newFilters);
+                    }}
+                />
+                
                 <select
                     value={filters.category}
                     onChange={(e) => {
