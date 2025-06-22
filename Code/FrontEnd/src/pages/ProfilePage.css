@@ -76,13 +76,14 @@ textarea {
   max-width: 300px;
   padding: 12px 24px;
   font-size: 1rem;
-  background-color: #4bb869;
+  background-color: #e74c3c;
   border-radius: 8px;
   transition: background 0.3s ease;
+  width:100%;
 }
 
 .logout-btn:hover {
-  background-color: #3da95a;
+  background-color: #c0392b;
 }
 
 .error {

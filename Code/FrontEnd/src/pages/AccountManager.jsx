@@ -96,8 +96,8 @@ function AccountManager() {
                                 <td>{u.email}</td>
                                 <td>{u.role}</td>
                                 <td>
-                                    <button onClick={() => handlePromote(u.id)}>Promote</button>
-                                    <button onClick={() => handleDelete(u.id)}>Delete</button>
+                                    <button onClick={() => handlePromote(u.id)} class="yellow-button">Promote</button>
+                                    <button onClick={() => handleDelete(u.id)} class="red-button">Delete</button>
                                 </td>
                             </tr>
                         ))
