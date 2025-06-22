@@ -20,10 +20,12 @@ function ListingGrid() {
     const [searchParams] = useSearchParams();
     const [page, setPage] = useState(parseInt(searchParams.get('page')) || 1);
 
+
+    const categoryParam = searchParams.get('category');
     const [filters, setFilters] = useState({
-        category: '',
-        minPrice: '',
-        maxPrice: '',
+        category: categoryParam ? categoryParam : 'all categories',
+        minPrice: parseInt(searchParams.get('minPrice')),
+        maxPrice: parseInt(searchParams.get('maxPrice')),
     });
 
     
@@ -40,7 +42,7 @@ function ListingGrid() {
         }
     };
 
-    const fetchProducts = async () => {
+    const fetchProducts = async (filters, page) => {
         try {
             const response = await axios.get('/products', {
                 params: {
@@ -75,18 +77,47 @@ function ListingGrid() {
         window.history.pushState({}, '', url);
     };
 
+    const updateFilters = (filters) => {
+        //first the local page
+        setPage(1);
+        fetchProducts(filters, 1);
+
+        // now the url
+        const url = new URL(window.location);
+
+        url.searchParams.delete('category');
+        url.searchParams.delete('minPrice');
+        url.searchParams.delete('maxPrice');
+
+        // Add filters to query params if they have a value
+        if (filters.category) {
+            url.searchParams.set('category', filters.category);
+        }
+
+        if (filters.minPrice) {
+            url.searchParams.set('minPrice', filters.minPrice);
+        }
+
+        if (filters.maxPrice) {
+            url.searchParams.set('maxPrice', filters.maxPrice);
+        }
+
+        window.history.pushState({}, '', url);
+    };
+
+
     useEffect(() => {
         fetchCategories();
     }, []);
 
     useEffect(() => {
-        fetchProducts();
+        fetchProducts(filters,page);
     }, [page]);
 
     const handleFilter = (e) => {
         e.preventDefault();
         setPage(1);
-        fetchProducts();
+        fetchProducts(filters,page);
     };
 
     return (
@@ -96,7 +127,11 @@ function ListingGrid() {
             <form className="filter-form" onSubmit={handleFilter}>
                 <select
                     value={filters.category}
-                    onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                    onChange={(e) => {
+                        const newFilters = { ...filters, category: e.target.value };
+                        setFilters(newFilters);
+                        updateFilters(newFilters);
+                    }}
                 >
                     <option value="">All Categories</option>
                     {categories.map((cat) => (
@@ -110,17 +145,25 @@ function ListingGrid() {
                     type="number"
                     placeholder="Min Price"
                     value={filters.minPrice}
-                    onChange={(e) => setFilters({ ...filters, minPrice: e.target.value })}
+                    onChange={(e) => {
+                        const newFilters = { ...filters, minPrice: e.target.value };
+                        setFilters(newFilters);
+                        updateFilters(newFilters);
+                    }}
                 />
 
                 <input
                     type="number"
                     placeholder="Max Price"
                     value={filters.maxPrice}
-                    onChange={(e) => setFilters({ ...filters, maxPrice: e.target.value })}
+                    onChange={(e) => {
+                        const newFilters = { ...filters, maxPrice: e.target.value };
+                        setFilters(newFilters);
+                        updateFilters(newFilters);
+                    }}
                 />
 
-                <button type="submit">Filter</button>
+                {/*<button type="submit">Filter</button>*/}
             </form>
 
             <div className="grid">
