@@ -144,7 +144,7 @@ function ProfilePage() {
                     </label><br />
 
                     <label>
-                        Photograph:
+                        Photographs:
                         <input
                             type="file"
                             name="photograph"
