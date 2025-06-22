@@ -46,7 +46,7 @@ function ListingGrid() {
         try {
             const response = await axios.get('/products', {
                 params: {
-                    category: filters.category,
+                    category: filters.category === 'all categories' ? null : filters.category,
                     min_price: filters.minPrice,
                     max_price: filters.maxPrice,
                     page,
@@ -76,6 +76,36 @@ function ListingGrid() {
         url.searchParams.set('page', newPage);
         window.history.pushState({}, '', url);
     };
+    function createThrottled(fn, delay) {
+        let lastCall = 0;
+        let timeout = null;
+        let queuedArgs = null;
+
+        const callFn = (args) => {
+            lastCall = Date.now();
+            fn(...args);
+        };
+
+        return (...args) => {
+            const now = Date.now();
+            const timeSinceLastCall = now - lastCall;
+
+            if (timeSinceLastCall >= delay) {
+                // It's been long enough: run immediately
+                callFn(args);
+            } else {
+                // Too soon: queue the latest args
+                clearTimeout(timeout);
+                queuedArgs = args;
+
+                timeout = setTimeout(() => {
+                    callFn(queuedArgs);
+                    queuedArgs = null;
+                    timeout = null;
+                }, delay - timeSinceLastCall);
+            }
+        };
+    }
 
     const updateFilters = (filters) => {
         //first the local page
@@ -105,6 +135,7 @@ function ListingGrid() {
         window.history.pushState({}, '', url);
     };
 
+    const throttledUpdateFilters = React.useMemo(() => createThrottled(updateFilters, 2000), []);
 
     useEffect(() => {
         fetchCategories();
@@ -130,7 +161,7 @@ function ListingGrid() {
                     onChange={(e) => {
                         const newFilters = { ...filters, category: e.target.value };
                         setFilters(newFilters);
-                        updateFilters(newFilters);
+                        throttledUpdateFilters(newFilters);
                     }}
                 >
                     <option value="">All Categories</option>
@@ -148,7 +179,7 @@ function ListingGrid() {
                     onChange={(e) => {
                         const newFilters = { ...filters, minPrice: e.target.value };
                         setFilters(newFilters);
-                        updateFilters(newFilters);
+                        throttledUpdateFilters(newFilters);
                     }}
                 />
 
@@ -159,7 +190,7 @@ function ListingGrid() {
                     onChange={(e) => {
                         const newFilters = { ...filters, maxPrice: e.target.value };
                         setFilters(newFilters);
-                        updateFilters(newFilters);
+                        throttledUpdateFilters(newFilters);
                     }}
                 />
 
