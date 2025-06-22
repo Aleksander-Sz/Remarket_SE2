@@ -78,31 +78,37 @@ function ProductDetail() {
   if (!product) return <p>Loading...</p>;
 
   return (
-    <div className="product-detail-page">
-  <div className="image-section">
-    <img
-      src={`/api/photo/${product.photoIds[photoIndex]}`}
-      alt={`${product.title} - photo ${photoIndex + 1}`}
-    />
-    {product.photoIds.length > 1 && (
-      <div className="photo-nav">
-        <button onClick={showPrevPhoto}>◀</button>
-        <span>
-          {photoIndex + 1} / {product.photoIds.length}
-        </span>
-        <button onClick={showNextPhoto}>▶</button>
-      </div>
-    )}
+<div className="product-detail-page">
+  <div className="product-main">
+    <div className="image-section">
+      <img
+        src={`/api/photo/${product.photoIds[photoIndex]}`}
+        alt={`${product.title} - photo ${photoIndex + 1}`}
+      />
+      {product.photoIds.length > 1 && (
+        <div className="photo-nav">
+          <button onClick={showPrevPhoto}>◀</button>
+          <span>
+            {photoIndex + 1} / {product.photoIds.length}
+          </span>
+          <button onClick={showNextPhoto}>▶</button>
+        </div>
+      )}
+    </div>
+    <div className="info-section">
+      <h1>{product.title}</h1>
+      <p><strong>Price:</strong> ${product.price}</p>
+      <p><strong>Status:</strong> {product.status}</p>
+      <Link to={`/user/${product.owner.id}`} className="plain-link">
+        <p><strong>Seller:</strong> {product.owner?.username}</p>
+      </Link>
+      <button onClick={() => navigate(`/placeorder/${product.id}`)}>Buy Now</button>
+    </div>
   </div>
 
-  <div className="info-section">
-    <h1>{product.title}</h1>
-    <p><strong>Price:</strong> ${product.price}</p>
-    <p><strong>Status:</strong> {product.status}</p>
-    <a href={`/user/${product.owner.id}`} class="plain-link"><p><strong>Seller:</strong> {product.owner?.username}</p></a>
+  <div className="description-section">
     <p><strong>Description:</strong> {product.description?.header}</p>
     <p>{product.description?.paragraph}</p>
-    <button onClick={() => navigate(`/placeorder/${product.id}`)}>Buy Now</button>
   </div>
 
   <div className="reviews-section">
