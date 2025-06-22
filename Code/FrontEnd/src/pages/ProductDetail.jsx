@@ -18,6 +18,8 @@ function ProductDetail() {
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
+
 
   useEffect(() => {
     // Fetch product
@@ -28,7 +30,21 @@ function ProductDetail() {
     axios.get(`/reviews?listingId=${productId}`)
       .then(res => setReviews(res.data))
       .catch(err => console.error('Failed to load reviews', err));
+    // set the photoIndex to 0
+    setPhotoIndex(0);
   }, [productId]);
+
+  const showNextPhoto = () => {
+      if (!product || !product.photoIds?.length) return;
+      setPhotoIndex((prev) => (prev + 1) % product.photoIds.length);
+  };
+
+  const showPrevPhoto = () => {
+      if (!product || !product.photoIds?.length) return;
+      setPhotoIndex((prev) =>
+          (prev - 1 + product.photoIds.length) % product.photoIds.length
+      );
+  };
 
   const handleReviewChange = (e) => {
     const { name, value } = e.target;
@@ -64,7 +80,19 @@ function ProductDetail() {
   return (
     <div className="product-detail-page">
   <div className="image-section">
-    <img src={`/api/photo/${product.photoIds[0]}`} alt={product.title} />
+    <img
+      src={`/api/photo/${product.photoIds[photoIndex]}`}
+      alt={`${product.title} - photo ${photoIndex + 1}`}
+    />
+    {product.photoIds.length > 1 && (
+      <div className="photo-nav">
+        <button onClick={showPrevPhoto}>◀</button>
+        <span>
+          {photoIndex + 1} / {product.photoIds.length}
+        </span>
+        <button onClick={showNextPhoto}>▶</button>
+      </div>
+    )}
   </div>
 
   <div className="info-section">
