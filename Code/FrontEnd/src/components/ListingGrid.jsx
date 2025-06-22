@@ -170,7 +170,7 @@ function ListingGrid() {
         <section className="listing-grid">
             <h2 className="listing-title">Browse Listings</h2>
 
-            <form className="filter-form" onSubmit={handleFilter}>
+            <form className="filter-form">
                 <input
                     type="text"
                     placeholder="Search..."
@@ -220,7 +220,16 @@ function ListingGrid() {
                     }}
                 />
 
-                {/*<button type="submit">Filter</button>*/}
+                <button type="reset" onClick={(e) => {
+                    const newFilters = {
+                        category: 'all categories',
+                        minPrice: '',
+                        maxPrice: '',
+                        search: ''
+                    };
+                    setFilters(newFilters);
+                    throttledUpdateFilters(newFilters);
+                }}>Reset Filters</button>
             </form>
 
             <div className="grid">
