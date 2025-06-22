@@ -75,7 +75,12 @@ function ListingGrid() {
         setPage(newPage);
 
         const url = new URL(window.location);
-        url.searchParams.set('page', newPage);
+        if (newPage === 1) {
+            url.searchParams.delete('page');
+        }
+        else {
+            url.searchParams.set('page', newPage);
+        }
         window.history.pushState({}, '', url);
     };
     function createThrottled(fn, delay) {
@@ -121,6 +126,8 @@ function ListingGrid() {
         url.searchParams.delete('minPrice');
         url.searchParams.delete('maxPrice');
         url.searchParams.delete('search');
+
+        url.searchParams.delete('page');
 
         // Add filters to query params if they have a value
         if (filters.category) {
