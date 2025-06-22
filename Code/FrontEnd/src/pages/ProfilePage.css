@@ -70,7 +70,7 @@ textarea {
   background-color: #3da95a;
 }
 
-.logout-btn {
+.profile-container .logout-btn {
   margin-top: 1.5rem;
   width: 100%;
   max-width: 300px;
@@ -82,7 +82,7 @@ textarea {
   width:100%;
 }
 
-.logout-btn:hover {
+.profile-container .logout-btn:hover {
   background-color: #c0392b;
 }
 
