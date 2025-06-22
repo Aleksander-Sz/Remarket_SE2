@@ -67,6 +67,14 @@ function ListingGrid() {
         }
     };
 
+    const goToPage = (newPage) => {
+        setPage(newPage);
+
+        const url = new URL(window.location);
+        url.searchParams.set('page', newPage);
+        window.history.pushState({}, '', url);
+    };
+
     useEffect(() => {
         fetchCategories();
     }, []);
@@ -145,11 +153,11 @@ function ListingGrid() {
             </div>
 
             <div className="pagination-controls">
-                <button onClick={() => setPage((p) => Math.max(p - 1, 1))} disabled={page === 1}>
+                <button onClick={() => goToPage(Math.max(page - 1, 1))} disabled={page === 1}>
                     ◀ Previous
                 </button>
                 <span>Page {page}</span>
-                <button onClick={() => setPage((p) => p + 1)} disabled={!hasMore}>
+                <button onClick={() => goToPage(page + 1)} disabled={!hasMore}>
                     Next ▶
                 </button>
             </div>
