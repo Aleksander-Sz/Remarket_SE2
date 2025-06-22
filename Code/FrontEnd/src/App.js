@@ -1,6 +1,9 @@
 ﻿import './App.css';
 import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
 import { AnimatePresence } from 'framer-motion';
+import { useEffect } from 'react';
+
+import { useUser } from './context/UserContext';
 
 import Navbar from './components/Navbar';
 import WipeTransition from './components/WipeTransition';
@@ -83,12 +86,24 @@ function AnimatedRoutes() {
     );
 }
 
+function SessionChecker() {
+    const location = useLocation();
+    const { verifySession } = useUser();
+
+    useEffect(() => {
+        verifySession(); // run on every route change
+    }, [location.pathname]);
+
+    return null;
+}
+
 function App() {
     return (
         <UserProvider>
             <WishlistProvider>
                 <CartProvider>
                     <Router>
+                        <SessionChecker />
                         <Navbar />
                         <AnimatedRoutes />
                     </Router>
