@@ -32,17 +32,17 @@ function Login() {
       setError('Invalid email or password.');
     }
   };
-
-  // ✅ Google login method
+  /*
+  //  Google login method
   const handleGoogleLogin = () => {
     window.location.href = `${import.meta.env.VITE_BACKEND_URL || ''}/auth/google`;
   };
 
-  // ✅ GitHub login method
+  //  GitHub login method
   const handleGithubLogin = () => {
     window.location.href = `${import.meta.env.VITE_BACKEND_URL || ''}/auth/github`;
   };
-
+  */
   return (
     <div className="login-page">
       <div className="login-box">
@@ -65,15 +65,13 @@ function Login() {
           <button type="submit">Login</button>
           {error && <p style={{ color: 'red' }}>{error}</p>}
         </form>
-
-        {/* Divider */}
+        {/*
         <div className="divider">or</div>
 
-        {/* ✅ Login Options */}
         <div className="login-options">
           <button className="google" onClick={handleGoogleLogin}>Login with Google</button>
           <button className="github" onClick={handleGithubLogin}>Login with GitHub</button>
-        </div>
+        </div>*/}
 
         <p style={{ marginTop: '1rem' }}>
           Don’t have an account?{' '}

@@ -19,7 +19,7 @@ function Navbar() {
         <li><Link to="/our-stories">Our stories</Link></li>
         <li><Link to="/super-deals">Super deals</Link></li>
         <li><Link to="/about">About Us</Link></li>
-        <li><Link to="/dashboard">Dashboard</Link></li>
+        {/*<li><Link to="/profile">Dashboard</Link></li>*/}
       </ul>
 
       <div className="navbar-right">
