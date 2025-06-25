@@ -32,6 +32,10 @@ function MyListingsPage() {
     }
   };
 
+  const deleteProduct = () => {
+      ;
+  };
+
     useEffect(() => {
         //console.log('User ID:', userId);
     if (userId) fetchSellerListings();
@@ -55,8 +59,8 @@ function MyListingsPage() {
               <img src={`/api/photo/${item.imageIds[0]}`} alt={item.title} />
               <h3>{item.title}</h3>
               <p>${item.price.toFixed(2)}</p>
-              <span className="wishlist-icon" onClick={() => toggleWishlist(item)}>
-                {isWished ? '❤️' : '🤍'}
+              <span className="wishlist-icon" onClick={() => deleteProduct(item.id)}>
+                🗑
               </span>
             </motion.div>
           );

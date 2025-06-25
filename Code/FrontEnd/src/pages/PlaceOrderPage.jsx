@@ -101,7 +101,7 @@ function EditProfilePage() {
                     </label><br />
 
                     <button type="button" onClick={(e) => handleSubmit(e, '/purchase', true)}>Pay now</button>
-                    <button type="button" onClick={(e) => handleSubmit(e, '/profile', false)}>Pay later</button>
+                    <button type="button" onClick={(e) => handleSubmit(e, '/myorders', false)}>Pay later</button>
 
                 </form>
             )}

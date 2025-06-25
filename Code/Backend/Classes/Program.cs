@@ -79,7 +79,8 @@ app.MapGet("/api/products", async (
     string? page,
     string? limit,
     string? id,
-    string? ownerId) =>
+    string? ownerId,
+    string? search) =>
 {
     var query = db.Listings
         .Include(l => l.Category)
@@ -121,6 +122,9 @@ app.MapGet("/api/products", async (
     //ownerId:
     if (int.TryParse(ownerId, out var ownerIdVal))
         query = query.Where(l => l.OwnerId == ownerIdVal);
+
+    if (!string.IsNullOrEmpty(search))
+        query = query.Where(l => l.Title.ToLower().Contains(search.ToLower()));
 
     // page and limit
 
@@ -321,14 +325,15 @@ app.MapPost("/api/addListing", async (ListingDto data, AppDbContext db, ClaimsPr
     await db.SaveChangesAsync(); // Save first to get the auto-incremented ID
 
     // Link the photo (if provided)
-    if (data.PhotoId != null)
+    if (data.PhotoIds != null && data.PhotoIds.Any())
     {
-        var link = new ListingPhoto
+        var links = data.PhotoIds.Select(photoId => new ListingPhoto
         {
             ListingId = listing.Id,
-            PhotoId = data.PhotoId.Value
-        };
-        db.ListingPhotos.Add(link);
+            PhotoId = photoId
+        }).ToList();
+
+        db.ListingPhotos.AddRange(links);
         await db.SaveChangesAsync();
     }
 

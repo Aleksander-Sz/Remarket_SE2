@@ -8,28 +8,6 @@ function Footer() {
           <h2>ReMarket</h2>
           <p>© 2025 ReMarket. All rights reserved.</p>
         </div>
-
-        <div className="footer-links">
-          <div>
-            <h4>Info</h4>
-            <ul>
-              <li>About</li>
-              <li>Stories</li>
-              <li>Deals</li>
-              <li>Help</li>
-            </ul>
-          </div>
-
-          <div>
-            <h4>Account</h4>
-            <ul>
-              <li>Login</li>
-              <li>Register</li>
-              <li>Orders</li>
-              <li>Wishlist</li>
-            </ul>
-          </div>
-        </div>
       </div>
 
       <div className="footer-bottom">

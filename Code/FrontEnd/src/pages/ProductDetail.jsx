@@ -1,6 +1,6 @@
 ﻿// src/pages/ProductDetail.jsx
 import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import axios from '../api/axiosInstance';
 import './ProductDetail.css';
 import { Link } from 'react-router-dom';
@@ -9,6 +9,7 @@ function ProductDetail() {
   const { productId } = useParams();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
+  const navigate = useNavigate();
 
   const [newReview, setNewReview] = useState({
     title: '',
@@ -17,6 +18,8 @@ function ProductDetail() {
   });
 
   const [submitting, setSubmitting] = useState(false);
+  const [photoIndex, setPhotoIndex] = useState(0);
+
 
   useEffect(() => {
     // Fetch product
@@ -27,7 +30,21 @@ function ProductDetail() {
     axios.get(`/reviews?listingId=${productId}`)
       .then(res => setReviews(res.data))
       .catch(err => console.error('Failed to load reviews', err));
+    // set the photoIndex to 0
+    setPhotoIndex(0);
   }, [productId]);
+
+  const showNextPhoto = () => {
+      if (!product || !product.photoIds?.length) return;
+      setPhotoIndex((prev) => (prev + 1) % product.photoIds.length);
+  };
+
+  const showPrevPhoto = () => {
+      if (!product || !product.photoIds?.length) return;
+      setPhotoIndex((prev) =>
+          (prev - 1 + product.photoIds.length) % product.photoIds.length
+      );
+  };
 
   const handleReviewChange = (e) => {
     const { name, value } = e.target;
@@ -61,16 +78,35 @@ function ProductDetail() {
   if (!product) return <p>Loading...</p>;
 
   return (
-    <div className="product-detail-page">
-  <div className="image-section">
-    <img src={`/api/photo/${product.photoIds[0]}`} alt={product.title} />
+<div className="product-detail-page">
+  <div className="product-main">
+    <div className="image-section">
+      <img
+        src={`/api/photo/${product.photoIds[photoIndex]}`}
+        alt={`${product.title} - photo ${photoIndex + 1}`}
+      />
+      {product.photoIds.length > 1 && (
+        <div className="photo-nav">
+          <button onClick={showPrevPhoto}>◀</button>
+          <span>
+            {photoIndex + 1} / {product.photoIds.length}
+          </span>
+          <button onClick={showNextPhoto}>▶</button>
+        </div>
+      )}
+    </div>
+    <div className="info-section">
+      <h1>{product.title}</h1>
+      <p><strong>Price:</strong> ${product.price}</p>
+      <p><strong>Status:</strong> {product.status}</p>
+      <Link to={`/user/${product.owner.id}`} className="plain-link">
+        <p><strong>Seller:</strong> {product.owner?.username}</p>
+      </Link>
+      <button onClick={() => navigate(`/placeorder/${product.id}`)}>Buy Now</button>
+    </div>
   </div>
 
-  <div className="info-section">
-    <h1>{product.title}</h1>
-    <p><strong>Price:</strong> ${product.price}</p>
-    <p><strong>Status:</strong> {product.status}</p>
-    <a href={`/user/${product.owner.id}`} class="plain-link"><p><strong>Seller:</strong> {product.owner?.username}</p></a>
+  <div className="description-section">
     <p><strong>Description:</strong> {product.description?.header}</p>
     <p>{product.description?.paragraph}</p>
   </div>
